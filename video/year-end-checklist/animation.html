@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Do These 5 Money Moves Before December 31 - animated video</title>
+<style>
+  html, body { margin: 0; padding: 0; background: #0F172A; overflow: hidden; }
+  #stage { position: relative; width: 1280px; height: 720px; overflow: hidden;
+           font-family: "Montserrat", sans-serif; color: #F8FAFC; }
+  #stage svg { position: absolute; left: 0; top: 0; }
+  .ov { position: absolute; text-align: center; font-weight: 900; line-height: 1.05; }
+  .cap { position: absolute; left: 90px; width: 1100px; bottom: 26px; text-align: center; }
+  .cap span.box { display: inline-block; background: rgba(2,6,23,0.82); border-radius: 14px;
+                  padding: 10px 22px; font-weight: 800; font-size: 33px; line-height: 1.25; }
+  .hl { color: #EAB308; }
+  .g { color: #22C55E; } .r { color: #EF4444; } .y { color: #EAB308; }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<script>
+/* ============================================================
+   Video 2: "Do These 5 Money Moves Before December 31"
+   Deterministic animation: render(t) draws the frame at time t (s).
+   Figures are for the 2026 tax year (IRS Rev. Proc. 2025-32 etc.).
+   ============================================================ */
+const W = 1280, H = 720;
+const GREEN = '#22C55E', GREY = '#94A3B8', GOLD = '#EAB308', RED = '#EF4444',
+      NAVY = '#0F172A', WHITE = '#F8FAFC', SLATE = '#1E293B', BLUE = '#1D4ED8';
+
+/* ---------- narration cues (captions) ---------- */
+const CUES = [
+ // HOOK
+ ['hook','h1','December 31 is a money deadline most people ignore.'],
+ ['hook','h2','Miss it, and some of your money can simply disappear.'],
+ ['hook','h3','So here are 5 money moves to make before the year ends.'],
+ ['hook','h4','The first one could be free money already sitting in your account.'],
+ // INTRO
+ ['intro','i1',"Maya's back. This time, she's doing a year-end money check."],
+ ['intro','i2',"Five boxes to tick. One deadline. Let's go."],
+ // MOVE 1: FSA
+ ['fsa','f1','Move one: spend your FSA money.'],
+ ['fsa','f2','A flexible spending account lets you pay for health costs with pre-tax dollars.'],
+ ['fsa','f3',"But it's use it or lose it."],
+ ['fsa','f4','Some plans let you carry up to $680 into next year. Others give you a short grace period. Some give you neither.'],
+ ['fsa','f5','Whatever is left beyond that is simply gone.'],
+ ['fsa','f6','So check your balance now. Glasses, contacts, prescriptions, a dentist visit, even sunscreen can qualify.'],
+ // MOVE 2: 401(k)
+ ['k401','k1','Move two: boost your 401(k) before your last paycheck.'],
+ ['k401','k2','In 2026, you can put up to $24,500 of your own pay into a 401(k).'],
+ ['k401','k3','It comes straight out of your paycheck, so your last December paycheck is the real deadline.'],
+ ['k401','k4',"In the 22% tax bracket, every extra $1,000 into a traditional 401(k) cuts this year's tax bill by about $220."],
+ ['k401','k5','And at the very least, make sure you got your full employer match. That part is free money.'],
+ // MOVE 3: tax-loss harvesting
+ ['loss','l1','Move three: harvest your losses.'],
+ ['loss','l2','Got an investment in a regular brokerage account that lost value?'],
+ ['loss','l3','Selling it before December 31 locks in a loss you can actually use.'],
+ ['loss','l4','Losses cancel out gains. And up to $3,000 of extra loss can lower your regular taxable income.'],
+ ['loss','l5',"Just watch the wash-sale rule: buy the same investment back within 30 days, and the loss doesn't count."],
+ ['loss','l6','This only works in taxable accounts, not inside your 401(k) or IRA.'],
+ // MOVE 4: charity
+ ['give','d1','Move four: give before the year ends.'],
+ ['give','d2','Donations only count for 2026 if you make them by December 31.'],
+ ['give','d3',"And here's what's new: starting in 2026, even if you don't itemize, you can deduct up to $1,000 in cash gifts to charity."],
+ ['give','d4','Married and filing jointly? Up to $2,000.'],
+ ['give','d5','Keep the receipt, and make sure the charity qualifies.'],
+ // MOVE 5: next year
+ ['next','o1','Move five: set up next year before it starts.'],
+ ['next','o2','Open enrollment is usually your one chance a year to change your benefits.'],
+ ['next','o3','If you pick a high-deductible health plan, look at an HSA.'],
+ ['next','o4','Unlike an FSA, HSA money never expires. It rolls over year after year.'],
+ ['next','o5',"Then raise your 401(k) contribution by just 1% for January. You'll barely notice it."],
+ // BONUS
+ ['bonus','x1','Bonus: one deadline that is NOT December 31.'],
+ ['bonus','x2','You can still put money into an IRA for 2026 until April 15, 2027.'],
+ ['bonus','x3','Up to $7,500. So that one can wait for tax season.'],
+ // RECAP
+ ['recap','r1',"Let's recap."],
+ ['recap','r2','Use your FSA. Boost your 401(k). Harvest losses. Give to charity. Set up next year.'],
+ ['recap','r3','Tax rules change and every situation is different, so double-check on IRS.gov or with a tax pro.'],
+ // END
+ ['end','e1','Tick off even one of these before December 31, and you start next year ahead.'],
+ ['end','e2','Subscribe for the next one: 401(k) explained, and the free money most people miss.'],
+];
+
+/* timing: ~2.45 spoken words/sec; numbers count as ~3 spoken words */
+function spokenWords(s) {
+  return s.split(/\s+/).filter(Boolean).reduce((n, w) => n + (/\d/.test(w) ? 3 : 1), 0);
+}
+const CUE = {}; const SCENES = {}; const ORDER = [];
+(function buildTimeline() {
+  let t = 0.4, prevScene = null;
+  for (const [scene, key, text] of CUES) {
+    if (scene !== prevScene) {
+      if (prevScene) { SCENES[prevScene].end = t + 0.5; t += 0.9; }
+      SCENES[scene] = { start: t - 0.2 }; ORDER.push(scene); prevScene = scene;
+    }
+    const d = Math.max(1.9, spokenWords(text) / 2.45);
+    CUE[key] = { start: t, end: t + d, text };
+    t += d + 0.35;
+  }
+  SCENES[prevScene].end = t + 15;          // 15 s end-screen hold
+  window.TOTAL = SCENES[prevScene].end;
+})();
+const C = k => CUE[k].start, E = k => CUE[k].end, D = k => CUE[k].end - CUE[k].start;
+
+/* ---------- helpers ---------- */
+const clamp = (x, a=0, b=1) => Math.max(a, Math.min(b, x));
+const ease = x => { x = clamp(x); return x < .5 ? 4*x*x*x : 1 - Math.pow(-2*x+2, 3)/2; };
+const easeOut = x => 1 - Math.pow(1 - clamp(x), 3);
+const P = (t, a, d) => ease((t - a) / d);
+const lerp = (a, b, p) => a + (b - a) * p;
+const money = n => '$' + Math.round(n).toLocaleString('en-US');
+const pop = (t, a, d=0.45) => { const x = clamp((t - a) / d); return x === 0 ? 0 : 1 + 0.25*Math.sin(x*Math.PI) * (1 - x) + (easeOut(x) - 1); };
+const fin = (T, k, d=0.4) => clamp((T - C(k)) / d);             // fade-in at cue k
+const fout = (T, k, d=0.4) => 1 - clamp((T - C(k)) / d);        // fade-out at cue k
+const scaleAt = (cx, cy, s) => `translate(${cx},${cy}) scale(${s}) translate(${-cx},${-cy})`;
+
+function text(x, y, s, size, color=WHITE, weight=900, anchor='middle', extra='') {
+  return `<text x="${x}" y="${y}" font-family="Montserrat" font-weight="${weight}" font-size="${size}"
+           fill="${color}" text-anchor="${anchor}" ${extra}>${s}</text>`;
+}
+function ov(html, x, y, w, size, color=WHITE, opacity=1, extra='') {
+  return `<div class="ov" style="left:${x}px;top:${y}px;width:${w}px;font-size:${size}px;color:${color};opacity:${opacity};${extra}">${html}</div>`;
+}
+function badge(s, x, y, color=GOLD, fg=NAVY, size=24, op=1) {
+  const w = s.length * size * 0.66 + 40;
+  return `<g opacity="${op}"><rect x="${x - w/2}" y="${y - size - 8}" width="${w}" height="${size + 26}" rx="${(size+26)/2}" fill="${color}"/>
+          ${text(x, y + 5, s, size, fg, 900)}</g>`;
+}
+const floorLine = (y=600) => `<line x1="80" y1="${y}" x2="1200" y2="${y}" stroke="#334155" stroke-width="4"/>`;
+const check = (x, y, s, color=WHITE, prog=1, w=4) =>
+  `<path d="M${x-10*s} ${y} L${x-3*s} ${y+7*s} L${x+11*s} ${y-9*s}" stroke="${color}" stroke-width="${w}" fill="none"
+     stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="${40*s}" stroke-dashoffset="${40*s*(1-prog)}"/>`;
+const cross = (x, y, r, color=RED, w=12, op=1) =>
+  `<g opacity="${op}"><line x1="${x-r}" y1="${y-r}" x2="${x+r}" y2="${y+r}" stroke="${color}" stroke-width="${w}" stroke-linecap="round"/>
+   <line x1="${x+r}" y1="${y-r}" x2="${x-r}" y2="${y+r}" stroke="${color}" stroke-width="${w}" stroke-linecap="round"/></g>`;
+
+/* ---------- characters & props ---------- */
+function person(kind, x, y, s=1, o={}) {
+  const maya = kind === 'maya';
+  const skin = maya ? '#C68642' : '#F1C27D';
+  const hair = maya ? '#2B1B17' : '#6B4423';
+  const top = o.color || (maya ? GREEN : GREY);
+  const op = o.opacity == null ? 1 : o.opacity;
+  let g = `<g transform="translate(${x},${y}) scale(${s})" opacity="${op}">`;
+  g += `<ellipse cx="0" cy="0" rx="48" ry="8" fill="#020617" opacity="0.5"/>`;
+  g += `<rect x="-22" y="-72" width="17" height="70" rx="6" fill="${SLATE}"/><rect x="5" y="-72" width="17" height="70" rx="6" fill="${SLATE}"/>`;
+  g += `<ellipse cx="-15" cy="-3" rx="15" ry="7" fill="#0B1120"/><ellipse cx="15" cy="-3" rx="15" ry="7" fill="#0B1120"/>`;
+  if (maya) g += `<circle cx="-30" cy="-196" r="15" fill="${hair}"/><circle cx="30" cy="-196" r="15" fill="${hair}"/>`;
+  g += `<rect x="-41" y="-178" width="82" height="112" rx="30" fill="${top}"/>`;
+  const armA = o.wave ? -40 + Math.sin((o.t || 0) * 9) * 10 : 0;
+  g += `<g transform="rotate(${armA} -45 -165)"><rect x="-56" y="-168" width="19" height="84" rx="9" fill="${top}"/><circle cx="-46" cy="-84" r="10" fill="${skin}"/></g>`;
+  if (o.clip) {
+    g += `<g transform="rotate(-8 60 -120)"><rect x="34" y="-158" width="64" height="84" rx="8" fill="#92400E"/>
+          <rect x="40" y="-148" width="52" height="68" rx="4" fill="${WHITE}"/><rect x="52" y="-164" width="28" height="12" rx="4" fill="#64748B"/>`;
+    for (let i = 0; i < 4; i++) {
+      const done = (o.ticks || 0) > i;
+      g += `<rect x="46" y="${-140 + i*15}" width="9" height="9" rx="2" fill="${done ? GREEN : 'none'}" stroke="${done ? GREEN : '#94A3B8'}" stroke-width="2"/>
+            <rect x="60" y="${-137 + i*15}" width="26" height="4" rx="2" fill="#CBD5E1"/>`;
+    }
+    g += `</g><rect x="37" y="-168" width="19" height="70" rx="9" fill="${top}"/><circle cx="48" cy="-100" r="10" fill="${skin}"/>`;
+  } else {
+    g += `<rect x="37" y="-168" width="19" height="84" rx="9" fill="${top}"/><circle cx="46" cy="-84" r="10" fill="${skin}"/>`;
+  }
+  if (!maya) g += `<path d="M-30 -176 Q 0 -150 30 -176" stroke="#64748B" stroke-width="7" fill="none"/>`;
+  g += `<rect x="-9" y="-194" width="18" height="22" fill="${skin}"/>`;
+  g += `<circle cx="0" cy="-226" r="37" fill="${skin}"/>`;
+  if (maya) {
+    for (const [cx, cy, r] of [[-30,-244,16],[-17,-259,16],[0,-265,17],[17,-259,16],[30,-244,16],[-37,-222,13],[37,-222,13]])
+      g += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${hair}"/>`;
+  } else {
+    g += `<path d="M-37 -230 Q -36 -272 0 -268 Q 36 -272 37 -230 Q 22 -250 0 -248 Q -22 -250 -37 -230Z" fill="${hair}"/>`;
+  }
+  g += `<circle cx="-12" cy="-224" r="4.5" fill="${NAVY}"/><circle cx="12" cy="-224" r="4.5" fill="${NAVY}"/>`;
+  g += o.sad ? `<path d="M-11 -204 Q 0 -212 11 -204" stroke="${NAVY}" stroke-width="3.5" fill="none" stroke-linecap="round"/>`
+             : `<path d="M-12 -209 Q 0 -198 12 -209" stroke="${NAVY}" stroke-width="3.5" fill="none" stroke-linecap="round"/>`;
+  if (o.party) g += `<path d="M-14 -258 L0 -312 L14 -258Z" fill="${GOLD}"/><circle cx="0" cy="-314" r="7" fill="${RED}"/>`;
+  return g + '</g>';
+}
+function coin(x, y, r=13, op=1) {
+  return `<g opacity="${op}"><circle cx="${x}" cy="${y}" r="${r}" fill="${GOLD}" stroke="#A16207" stroke-width="3"/>
+          ${text(x, y + r*0.42, '$', r*1.15, '#854D0E', 900)}</g>`;
+}
+function jar(x, y, fill, label, opacity=1, color=GOLD) {   // x center, y bottom
+  const h = 170, w = 130, fh = clamp(fill) * (h - 14);
+  let g = `<g opacity="${opacity}">`;
+  g += `<rect x="${x-w/2}" y="${y-h}" width="${w}" height="${h}" rx="22" fill="#1E293B" opacity="0.55"/>`;
+  g += `<rect x="${x-w/2+7}" y="${y-7-fh}" width="${w-14}" height="${fh}" rx="14" fill="${color}"/>`;
+  for (let yy = y - 7 - 14; yy > y - 7 - fh + 4; yy -= 14)
+    g += `<line x1="${x-w/2+12}" y1="${yy}" x2="${x+w/2-12}" y2="${yy}" stroke="#000" stroke-width="2" opacity="0.18"/>`;
+  g += `<rect x="${x-w/2}" y="${y-h}" width="${w}" height="${h}" rx="22" fill="none" stroke="#CBD5E1" stroke-width="5"/>`;
+  g += `<rect x="${x-w/2-8}" y="${y-h-16}" width="${w+16}" height="20" rx="8" fill="#64748B"/>`;
+  if (label) g += text(x, y + 40, label, 30, '#E2E8F0', 900);
+  return g + '</g>';
+}
+function calendar(cx, cy, s, month, day, sub='', op=1, sy=1) {
+  return `<g transform="translate(${cx},${cy}) scale(${s},${s*sy})" opacity="${op}">
+   <rect x="-112" y="-115" width="240" height="270" rx="24" fill="#020617" opacity="0.4"/>
+   <rect x="-120" y="-125" width="240" height="270" rx="24" fill="${WHITE}"/>
+   <path d="M-120 -101 Q-120 -125 -96 -125 L96 -125 Q120 -125 120 -101 L120 -50 L-120 -50Z" fill="${RED}"/>
+   ${text(0, -76, month, 30, WHITE)}
+   ${text(0, sub ? 62 : 72, day, 128, NAVY)}
+   ${sub ? text(0, 118, sub, 28, '#64748B', 900) : ''}
+   <rect x="-70" y="-142" width="16" height="36" rx="8" fill="#64748B"/><rect x="54" y="-142" width="16" height="36" rx="8" fill="#64748B"/>
+  </g>`;
+}
+function alarmClock(cx, cy, s, rot=0, ring=false) {
+  let g = `<g transform="translate(${cx},${cy}) rotate(${rot}) scale(${s})">
+   <line x1="-40" y1="50" x2="-58" y2="80" stroke="#475569" stroke-width="10" stroke-linecap="round"/>
+   <line x1="40" y1="50" x2="58" y2="80" stroke="#475569" stroke-width="10" stroke-linecap="round"/>
+   <circle cx="-50" cy="-58" r="26" fill="${GOLD}"/><circle cx="50" cy="-58" r="26" fill="${GOLD}"/>
+   <circle cx="0" cy="0" r="72" fill="${RED}"/><circle cx="0" cy="0" r="56" fill="${WHITE}"/>
+   <line x1="0" y1="0" x2="-5" y2="-30" stroke="${NAVY}" stroke-width="8" stroke-linecap="round"/>
+   <line x1="0" y1="0" x2="-10" y2="-46" stroke="${NAVY}" stroke-width="5" stroke-linecap="round"/>
+   <circle cx="0" cy="0" r="7" fill="${NAVY}"/>`;
+  if (ring) g += `<path d="M-92 -92 L-110 -110 M-104 -60 L-128 -64 M92 -92 L110 -110 M104 -60 L128 -64" stroke="${GOLD}" stroke-width="7" stroke-linecap="round"/>`;
+  return g + '</g>';
+}
+function hourglass(cx, cy, s, u, op=1) {
+  const t = 1 - clamp(u), b = clamp(u), wb = 0.35 + 0.65 * b;
+  let g = `<g transform="translate(${cx},${cy}) scale(${s})" opacity="${op}">
+   <path d="M-56 -92 L56 -92 L8 0 L56 92 L-56 92 L-8 0 Z" fill="#CBD5E1" opacity="0.18" stroke="#CBD5E1" stroke-width="4" stroke-linejoin="round"/>`;
+  if (t > 0.01) g += `<path d="M${-46*t} ${-4-80*t} L${46*t} ${-4-80*t} L0 -4 Z" fill="${GOLD}"/>`;
+  g += `<path d="M${-50*wb} 88 L${50*wb} 88 L0 ${88 - 70*b - 4}Z" fill="${GOLD}"/>`;
+  if (t > 0.01) g += `<line x1="0" y1="-4" x2="0" y2="86" stroke="${GOLD}" stroke-width="4"/>`;
+  g += `<rect x="-72" y="-112" width="144" height="20" rx="7" fill="#92400E"/><rect x="-72" y="92" width="144" height="20" rx="7" fill="#92400E"/>`;
+  return g + '</g>';
+}
+function tile(x, y, w, h, op=1, stroke='#334155') {
+  return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="20" fill="${SLATE}" stroke="${stroke}" stroke-width="4" opacity="${op}"/>`;
+}
+
+/* persistent header for the 5 moves: "MOVE n/5" pill + title + checklist tracker */
+const MOVES = ['fsa', 'k401', 'loss', 'give', 'next'];
+function header(n, title, T) {
+  const sc = SCENES[MOVES[n - 1]], a = clamp((T - sc.start - 0.1) / 0.4);
+  let g = `<g opacity="${a}"><rect x="30" y="34" width="176" height="48" rx="24" fill="${GOLD}"/>${text(118, 67, 'MOVE ' + n + '/5', 24, NAVY)}</g>`;
+  for (let i = 0; i < 5; i++) {
+    const s2 = SCENES[MOVES[i]], x = 1064 + i * 38, y = 42;
+    const chk = i < n - 1 ? 1 : (i === n - 1 ? clamp((T - (s2.end - 1.5)) / 0.4) : 0);
+    g += `<rect x="${x}" y="${y}" width="30" height="30" rx="7" fill="${chk > 0.3 ? GREEN : SLATE}" stroke="${i === n - 1 ? GOLD : '#475569'}" stroke-width="3"/>`;
+    if (chk > 0) g += check(x + 15, y + 16, 0.95, WHITE, chk, 4);
+  }
+  // big intro number while the first line of the move plays
+  const nxt = ['f2', 'k2', 'l2', 'd2', 'o2'][n - 1], bx = [640, 640, 640, 720, 840][n - 1];
+  const bi = pop(T, sc.start + 0.25, 0.55) * (1 - clamp((T - C(nxt) + 0.25) / 0.4));
+  if (bi > 0) g += `<g transform="${scaleAt(bx, 330, bi)}"><circle cx="${bx}" cy="330" r="150" fill="${GOLD}" opacity="0.14"/>
+      <circle cx="${bx}" cy="330" r="118" fill="${GOLD}"/>${text(bx, 392, n, 170, NAVY)}</g>`;
+  const o = ov(title, 220, 36, 840, 46, WHITE, a);
+  return [g, o];
+}
+
+/* ---------- scenes ---------- */
+const S = {};
+
+S.hook = (T) => {
+  let g = '', o = '';
+  const a = pop(T, C('h1'), 0.6), slide = P(T, C('h3'), 0.9);
+  const cx = lerp(640, 330, slide), cy = 320, s = 1.05;
+  g += `<circle cx="${cx}" cy="${cy}" r="${250 * a}" fill="${RED}" opacity="${0.10 * a}"/>`;
+  if (a > 0) g += calendar(cx, cy, s * a, 'DECEMBER', '31');
+  const ca = pop(T, C('h1') + 0.6, 0.5), ringing = T > C('h1') + 1.0;
+  if (ca > 0) g += alarmClock(cx + 190, cy + 120, 0.72 * ca, ringing ? Math.sin(T * 42) * 7 : 0, ringing && Math.sin(T * 6) > -0.3);
+  // coins that evaporate
+  const ci = clamp((T - C('h1') - 1.1) / 0.5) * (1 - slide);
+  for (let i = 0; i < 6; i++) {
+    const k = clamp((T - C('h2') - 0.3 - i * 0.15) / 1.3);
+    if (ci > 0) g += coin(465 + i * 70, 548 - 170 * easeOut(k), 22, ci * (1 - k));
+  }
+  const pf = clamp((T - C('h2') - 1.3) / 0.4) * (1 - slide);
+  if (pf > 0) g += text(640, 560, 'POOF.', 46, RED, 900, 'middle', `opacity="${pf}"`);
+  const t3 = clamp((T - C('h3') - 0.3) / 0.5);
+  if (t3 > 0) {
+    o += ov('5 MONEY<br>MOVES', 600, 150, 640, 96, GOLD, t3);
+    o += ov('BEFORE <span class="r">DECEMBER 31</span>', 600, 365, 640, 42, WHITE, t3);
+  }
+  const b4 = pop(T, C('h4'), 0.5);
+  if (b4 > 0) g += `<g transform="${scaleAt(920, 470, b4)}">${badge('#1 COULD BE FREE MONEY', 920, 480, GREEN, NAVY, 28)}</g>`;
+  return [g, o];
+};
+
+S.intro = (T) => {
+  let g = '', o = '';
+  const p = P(T, C('i1') - 0.3, 1.5), mx = lerp(-120, 300, p);
+  g += floorLine();
+  g += person('maya', mx, 600, 1.05, { clip: true, wave: T > C('i1') + 1.4 && T < C('i2') + 0.6, t: T });
+  const b = pop(T, C('i1') + 0.8, 0.6);
+  if (b > 0) {
+    g += `<g transform="${scaleAt(860, 345, b)}"><rect x="590" y="130" width="540" height="430" rx="26" fill="${SLATE}" stroke="#334155" stroke-width="4"/>
+          ${text(860, 190, 'YEAR-END CHECKLIST', 30, GOLD)}`;
+    for (let i = 0; i < 5; i++) {
+      const r = clamp((T - C('i1') - 1.3 - i * 0.25) / 0.35), y = 230 + i * 62;
+      g += `<g opacity="${r}"><rect x="630" y="${y}" width="42" height="42" rx="9" fill="none" stroke="#64748B" stroke-width="4"/>
+            ${text(700, y + 31, 'MOVE ' + (i + 1), 28, '#CBD5E1', 800, 'start')}<rect x="845" y="${y + 16}" width="${230 - i * 22}" height="10" rx="5" fill="#334155"/></g>`;
+    }
+    g += '</g>';
+  }
+  const q = fin(T, 'i2', 0.5);
+  if (q > 0) o += ov('5 BOXES &middot; <span class="r">1 DEADLINE</span>', 0, 46, W, 50, WHITE, q);
+  return [g, o];
+};
+
+S.fsa = (T) => {
+  let [g, o] = header(1, 'USE YOUR FSA MONEY', T);
+  // FSA card (left)
+  const c = pop(T, C('f2'), 0.6);
+  if (c > 0) {
+    g += `<g transform="${scaleAt(350, 310, c)}">
+      <rect x="150" y="192" width="420" height="260" rx="26" fill="#020617" opacity="0.45"/>
+      <rect x="140" y="180" width="420" height="260" rx="26" fill="${BLUE}"/>
+      <path d="M420 180 L534 180 Q560 180 560 206 L560 300 Z" fill="#3B82F6" opacity="0.5"/>
+      ${text(180, 250, 'FSA', 58, WHITE, 900, 'start')}
+      ${text(180, 284, 'Flexible Spending Account', 20, '#BFDBFE', 800, 'start')}
+      <rect x="180" y="312" width="66" height="50" rx="9" fill="${GOLD}"/>
+      <line x1="180" y1="337" x2="246" y2="337" stroke="#A16207" stroke-width="3"/><line x1="213" y1="312" x2="213" y2="362" stroke="#A16207" stroke-width="3"/>
+      ${text(180, 412, 'BALANCE', 18, '#BFDBFE', 800, 'start')}
+      ${text(525, 415, '$900', 62, WHITE, 900, 'end')}</g>`;
+    const pt = clamp((T - C('f2') - 1.6) / 0.4);
+    if (pt > 0) g += badge('PAID WITH PRE-TAX DOLLARS', 350, 515, GREEN, NAVY, 22, pt * fout(T, 'f6'));
+  }
+  // f3: hourglass + stamp
+  const a3 = fin(T, 'f3') * fout(T, 'f4');
+  if (a3 > 0) {
+    g += hourglass(920, 285, 1.0, clamp((T - C('f3')) / (C('f4') - C('f3'))), a3);
+    const st = pop(T, C('f3') + 0.3, 0.4);
+    o += ov('USE IT OR LOSE IT', 690, 440, 460, 40, RED, a3 * clamp(st),
+            `transform:rotate(-6deg) scale(${st});border:5px solid #EF4444;border-radius:14px;padding:10px 0;background:rgba(15,23,42,0.6)`);
+  }
+  // f4/f5: what happens to a $900 balance
+  const a4 = fin(T, 'f4') * fout(T, 'f6');
+  if (a4 > 0) {
+    const x0 = 640, w = 520, y = 200, gw = w * 680 / 900;
+    const k = clamp((T - C('f5') - 0.2) / 1.4);
+    g += `<g opacity="${a4}">${text(x0, y - 16, 'YOUR $900 ON THE DEADLINE', 22, '#94A3B8', 800, 'start')}
+      <rect x="${x0}" y="${y}" width="${gw}" height="70" rx="14" fill="${GREEN}"/>
+      ${text(x0 + gw / 2, y + 120, '$680', 44, GREEN)}${text(x0 + gw / 2, y + 152, 'can carry over', 22, '#CBD5E1', 800)}
+      <g transform="translate(0,${-110 * easeOut(k)})" opacity="${1 - k}">
+        <rect x="${x0 + gw + 6}" y="${y}" width="${w - gw - 6}" height="70" rx="14" fill="${RED}"/>
+        ${text(x0 + gw + (w - gw) / 2 + 3, y + 120, '$220', 44, RED)}${text(x0 + gw + (w - gw) / 2 + 3, y + 152, 'at risk', 22, '#CBD5E1', 800)}</g></g>`;
+    const gf = clamp((T - C('f4') - 0.42 * D('f4')) / 0.4) * fout(T, 'f5');
+    const nf = clamp((T - C('f4') - 0.74 * D('f4')) / 0.4) * fout(T, 'f5');
+    o += ov('OR: A SHORT <span class="y">GRACE PERIOD</span>', 640, 405, 520, 30, WHITE, gf * a4);
+    o += ov('SOME PLANS: <span class="r">NEITHER</span>', 640, 455, 520, 30, WHITE, nf * a4);
+    const gone = clamp((T - C('f5') - 0.8) / 0.4);
+    if (gone > 0) o += ov('$220 &rarr; GONE', 640, 420, 520, 60, RED, gone * a4);
+  }
+  // f6: what it can pay for
+  const a6 = fin(T, 'f6');
+  if (a6 > 0) {
+    const items = [['GLASSES &amp; CONTACTS', 'glasses'], ['PRESCRIPTIONS', 'pills'], ['DENTIST VISITS', 'tooth'], ['SUNSCREEN', 'sun']];
+    items.forEach(([lab, ic], i) => {
+      const p = pop(T, C('f6') + 1.3 + i * 0.9, 0.45); if (p <= 0) return;
+      const x = 640 + (i % 2) * 270, y = 150 + Math.floor(i / 2) * 190, cx = x + 125, cy = y + 72;
+      g += `<g transform="${scaleAt(cx, y + 85, p)}">${tile(x, y, 250, 170)}`;
+      if (ic === 'glasses') g += `<circle cx="${cx-36}" cy="${cy}" r="28" fill="#BFDBFE" fill-opacity="0.25" stroke="${WHITE}" stroke-width="8"/>
+          <circle cx="${cx+36}" cy="${cy}" r="28" fill="#BFDBFE" fill-opacity="0.25" stroke="${WHITE}" stroke-width="8"/>
+          <path d="M${cx-8} ${cy-4} Q${cx} ${cy-14} ${cx+8} ${cy-4}" stroke="${WHITE}" stroke-width="7" fill="none"/>`;
+      if (ic === 'pills') g += `<rect x="${cx-30}" y="${cy-32}" width="60" height="76" rx="10" fill="#F97316"/><rect x="${cx-36}" y="${cy-54}" width="72" height="24" rx="6" fill="${WHITE}"/>
+          <rect x="${cx-22}" y="${cy-10}" width="44" height="34" rx="4" fill="${WHITE}"/>${text(cx, cy + 14, 'Rx', 22, '#F97316')}`;
+      if (ic === 'tooth') g += `<path d="M${cx-34} ${cy-30} Q${cx-34} ${cy-54} ${cx-14} ${cy-50} Q${cx} ${cy-44} ${cx+14} ${cy-50} Q${cx+34} ${cy-54} ${cx+34} ${cy-30}
+          Q${cx+36} ${cy} ${cx+24} ${cy+16} L${cx+16} ${cy+46} Q${cx+10} ${cy+56} ${cx+5} ${cy+42} L${cx} ${cy+20} L${cx-5} ${cy+42} Q${cx-10} ${cy+56} ${cx-16} ${cy+46} L${cx-24} ${cy+16} Q${cx-36} ${cy} ${cx-34} ${cy-30}Z" fill="${WHITE}"/>`;
+      if (ic === 'sun') g += `<rect x="${cx-28}" y="${cy-50}" width="56" height="84" rx="14" fill="${GOLD}"/><rect x="${cx-18}" y="${cy+32}" width="36" height="20" rx="5" fill="#F97316"/>
+          ${text(cx, cy, 'SPF', 20, NAVY)}`;
+      g += text(cx, y + 152, lab, 19, '#CBD5E1', 800) + '</g>';
+    });
+    const cb = clamp((T - C('f6') - 0.2) / 0.4);
+    if (cb > 0) g += badge('CHECK YOUR BALANCE NOW', 350, 515, GOLD, NAVY, 22, cb);
+  }
+  return [g, o];
+};
+
+S.k401 = (T) => {
+  let [g, o] = header(2, 'BOOST YOUR 401(k)', T);
+  const bA = fin(T, 'k2');
+  if (bA > 0) {
+    const p = P(T, C('k2') + 0.3, 2.6), x0 = 160, w = 960, y = 200;
+    g += `<g opacity="${bA}">${text(x0, y - 20, '2026 LIMIT: YOUR OWN CONTRIBUTIONS', 22, '#94A3B8', 800, 'start')}
+      ${text(x0 + w, y - 16, money(24500 * p), 42, GOLD, 900, 'end')}
+      <rect x="${x0}" y="${y}" width="${w}" height="56" rx="28" fill="${SLATE}" stroke="#334155" stroke-width="3"/>
+      <rect x="${x0 + 6}" y="${y + 6}" width="${Math.max(0, (w - 12) * p)}" height="44" rx="22" fill="${GREEN}"/></g>`;
+  }
+  // k3: paychecks feeding the 401(k)
+  const a3 = fin(T, 'k3') * fout(T, 'k4');
+  if (a3 > 0) {
+    ['NOV 14', 'NOV 28', 'DEC 12', 'DEC 26'].forEach((d, i) => {
+      const p = pop(T, C('k3') + 0.2 + i * 0.3, 0.4); if (p <= 0) return;
+      const x = 180 + i * 240, y = 330, last = i === 3;
+      const k = ((T - C('k3') - i * 0.3) % 1.3) / 1.3;
+      if (T > C('k3') + 0.6) g += coin(x + 100, lerp(y - 10, 268, easeOut(k)), 14, a3 * (1 - k));
+      g += `<g transform="${scaleAt(x + 100, y + 55, p)}" opacity="${a3}">
+        <rect x="${x}" y="${y}" width="200" height="110" rx="14" fill="${WHITE}" stroke="${last ? GOLD : 'none'}" stroke-width="7"/>
+        <rect x="${x}" y="${y}" width="18" height="110" rx="8" fill="${GREEN}"/>
+        ${text(x + 108, y + 48, 'PAYCHECK', 24, NAVY)}${text(x + 108, y + 84, d, 22, '#64748B', 800)}</g>`;
+    });
+    const lf = clamp((T - C('k3') - 2.0) / 0.4);
+    if (lf > 0) g += text(1000, 488, 'LAST ONE = DEADLINE', 22, RED, 900, 'middle', `opacity="${lf * a3}"`);
+  }
+  // k4: tax savings math
+  const a4 = fin(T, 'k4');
+  if (a4 > 0) {
+    const r = pop(T, C('k4') + 2.2, 0.5);
+    g += `<g opacity="${a4}"><rect x="230" y="310" width="340" height="150" rx="20" fill="${SLATE}" stroke="${GREEN}" stroke-width="4"/>
+      ${text(400, 388, '+$1,000', 58, GREEN)}${text(400, 428, 'INTO A TRADITIONAL 401(k)', 18, WHITE, 800)}
+      <line x1="592" y1="385" x2="676" y2="385" stroke="${WHITE}" stroke-width="8" stroke-linecap="round" opacity="${clamp(r)}"/>
+      <path d="M672 368 L700 385 L672 402Z" fill="${WHITE}" opacity="${clamp(r)}"/></g>`;
+    if (r > 0) g += `<g transform="${scaleAt(880, 385, r)}"><rect x="710" y="310" width="340" height="150" rx="20" fill="${SLATE}" stroke="${GOLD}" stroke-width="4"/>
+      ${text(880, 388, '&minus;$220', 58, GOLD)}${text(880, 428, "OFF THIS YEAR'S TAXES", 18, WHITE, 800)}</g>`;
+    const nb = clamp((T - C('k4') + 0.2 - 0.5 * D('k4')) / 0.4);
+    if (nb > 0) g += text(640, 495, 'example: 22% federal tax bracket', 22, '#94A3B8', 800, 'middle', `opacity="${nb * a4}"`);
+  }
+  const m5 = pop(T, C('k5') + 0.3, 0.5);
+  if (m5 > 0) g += `<g transform="${scaleAt(640, 540, m5)}">${badge('FULL EMPLOYER MATCH = FREE MONEY', 640, 552, GREEN, NAVY, 24)}</g>`;
+  return [g, o];
+};
+
+function stockCard(x, y, name, up, val, op=1) {
+  const col = up ? GREEN : RED;
+  const pts = up ? [[0,70],[50,60],[95,66],[140,40],[190,46],[240,22],[290,26],[340,6]] : [[0,6],[50,18],[95,12],[140,40],[190,34],[240,58],[290,52],[340,74]];
+  const d = pts.map(([px, py], i) => (i ? 'L' : 'M') + (x + 30 + px) + ' ' + (y + 100 + py)).join(' ');
+  return `<g opacity="${op}"><rect x="${x}" y="${y}" width="400" height="250" rx="20" fill="${SLATE}" stroke="${col}" stroke-width="4"/>
+    ${text(x + 30, y + 50, name, 28, WHITE, 900, 'start')}${text(x + 30, y + 78, 'TAXABLE BROKERAGE ACCOUNT', 15, '#94A3B8', 800, 'start')}
+    <path d="${d}" stroke="${col}" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    ${text(x + 370, y + 228, val, 40, col, 900, 'end')}</g>`;
+}
+S.loss = (T) => {
+  let [g, o] = header(3, 'HARVEST YOUR LOSSES', T);
+  const cOut = fout(T, 'l5');
+  const red = pop(T, C('l2'), 0.6), grn = pop(T, C('l4'), 0.6);
+  const rx = lerp(440, 710, P(T, C('l4'), 0.8));
+  if (red > 0 && cOut > 0) g += `<g transform="${scaleAt(rx + 200, 275, red)}">${stockCard(rx, 150, 'FUND B', false, '&#9660; &minus;$3,000', cOut)}</g>`;
+  if (grn > 0 && cOut > 0) g += `<g transform="${scaleAt(370, 275, grn)}">${stockCard(170, 150, 'FUND A', true, '&#9650; +$3,000', cOut)}</g>`;
+  const st = pop(T, C('l3') + 0.3, 0.4);
+  if (st > 0 && cOut > 0) o += ov('SELL BY DEC 31', rx + 50, 230, 300, 30, RED, clamp(st) * cOut,
+      `transform:rotate(-10deg) scale(${st});border:5px solid #EF4444;border-radius:12px;padding:8px 0;background:rgba(15,23,42,0.88);white-space:nowrap`);
+  const eq = clamp((T - C('l4') - 0.8) / 0.4) * cOut;
+  if (eq > 0) o += ov('<span class="g">+$3,000 gain</span> &minus; <span class="r">$3,000 loss</span> = <span class="y">$0 taxed</span>', 0, 432, W, 36, WHITE, eq);
+  const xb = clamp((T - C('l4') - 0.55 * D('l4')) / 0.4) * cOut;
+  if (xb > 0) g += badge('EXTRA LOSS: UP TO $3,000 OFF YOUR INCOME', 640, 540, GOLD, NAVY, 24, xb);
+  // l5: wash-sale calendar
+  const a5 = fin(T, 'l5') * fout(T, 'l6');
+  if (a5 > 0) {
+    g += badge('WASH-SALE RULE', 640, 150, RED, WHITE, 24, a5);
+    const bb = clamp((T - C('l5') - 2.6) / 0.4);
+    for (let i = 0; i < 30; i++) {
+      const x = 315 + (i % 10) * 66, y = 190 + Math.floor(i / 10) * 66;
+      const lit = clamp((T - C('l5') - 0.3 - i * 0.06) / 0.25);
+      const buy = i === 11 && bb > 0;
+      g += `<g opacity="${a5}"><rect x="${x}" y="${y}" width="56" height="56" rx="10" fill="${buy ? '#7F1D1D' : (lit > 0 ? '#334155' : SLATE)}" stroke="${buy ? RED : '#475569'}" stroke-width="3"/>
+        ${text(x + 28, y + 36, i + 1, 22, lit > 0 ? WHITE : '#475569', 800)}</g>`;
+    }
+    if (bb > 0) g += cross(315 + 11 % 10 * 66 + 28, 190 + 66 + 28, 20, RED, 9, bb * a5);
+    if (bb > 0) o += ov('BUY IT BACK WITHIN <span class="y">30 DAYS</span> &rarr; <span class="r">LOSS DOESN&rsquo;T COUNT</span>', 0, 420, W, 32, WHITE, bb * a5);
+  }
+  // l6: where it works
+  const a6 = fin(T, 'l6');
+  if (a6 > 0) {
+    const p1 = pop(T, C('l6') + 0.2, 0.45), p2 = pop(T, C('l6') + 1.2, 0.45);
+    if (p1 > 0) g += `<g transform="${scaleAt(410, 300, p1)}">${tile(230, 170, 360, 260)}${text(410, 240, '401(k) &amp; IRA', 34, '#94A3B8')}
+        <circle cx="410" cy="345" r="54" fill="#7F1D1D"/>${cross(410, 345, 24, RED, 12)}</g>`;
+    if (p2 > 0) g += `<g transform="${scaleAt(870, 300, p2)}">${tile(690, 170, 360, 260, 1, GREEN)}${text(870, 232, 'TAXABLE', 34, WHITE)}${text(870, 268, 'BROKERAGE', 28, WHITE)}
+        <circle cx="870" cy="352" r="54" fill="#14532D"/>${check(870, 352, 2.3, GREEN, 1, 12)}</g>`;
+  }
+  return [g, o];
+};
+
+S.give = (T) => {
+  let [g, o] = header(4, 'GIVE BEFORE YEAR-END', T);
+  const mx = lerp(-120, 250, P(T, C('d1') - 0.2, 1.3));
+  g += floorLine();
+  const a2 = fin(T, 'd2') * fout(T, 'd3');
+  if (a2 > 0) {
+    // donation box + coins
+    g += `<g opacity="${a2}"><rect x="810" y="440" width="180" height="155" rx="14" fill="#F59E0B"/><rect x="800" y="430" width="200" height="22" rx="8" fill="#D97706"/>
+      <rect x="862" y="436" width="76" height="10" rx="5" fill="${NAVY}"/>
+      <path d="M900 560 C 860 530 852 500 876 490 C 890 484 900 496 900 504 C 900 496 910 484 924 490 C 948 500 940 530 900 560Z" fill="${RED}"/></g>`;
+    g += calendar(1110, 260, 0.5, 'DECEMBER', '31', '', a2);
+    for (let i = 0; i < 3; i++) {
+      const k = ((T - C('d2') - i * 0.45) % 1.35) / 1.35;
+      if (T > C('d2') + i * 0.45) g += coin(lerp(mx + 50, 900, k), lerp(505, 432, k) - Math.sin(Math.PI * k) * 160, 16, a2 * (k < 0.9 ? 1 : (1 - k) * 10));
+    }
+  }
+  g += person('maya', mx, 600, 1.0, {});
+  const a3 = fin(T, 'd3') * fout(T, 'd5');
+  if (a3 > 0) {
+    const big = pop(T, C('d3') + 1.0, 0.5);
+    g += `<g opacity="${a3}"><rect x="500" y="140" width="660" height="400" rx="26" fill="${SLATE}" stroke="#334155" stroke-width="4"/></g>`;
+    g += badge('NEW FOR 2026', 830, 205, GREEN, NAVY, 26, a3);
+    if (big > 0) g += `<g transform="${scaleAt(830, 300, big)}">${text(830, 330, '$1,000', 112, GOLD)}</g>`;
+    g += `<g opacity="${a3 * clamp((T - C('d3') - 1.6) / 0.4)}">${text(830, 382, 'deduction for cash gifts to charity', 26, WHITE, 800)}
+          ${text(830, 420, "even if you don't itemize", 26, '#94A3B8', 800)}</g>`;
+    const m4 = pop(T, C('d4'), 0.5);
+    if (m4 > 0) g += `<g transform="${scaleAt(830, 490, m4)}" opacity="${a3}">${text(830, 500, '$2,000 married filing jointly', 32, GREEN)}</g>`;
+  }
+  const a5 = fin(T, 'd5');
+  if (a5 > 0) {
+    const p = pop(T, C('d5'), 0.5);
+    let zig = ''; for (let i = 0; i <= 10; i++) zig += ` L${830 - i * 26} ${i % 2 ? 505 : 520}`;
+    g += `<g transform="${scaleAt(700, 330, p)}"><path d="M570 150 L830 150 L830 520${zig} Z" fill="${WHITE}"/>
+      ${text(700, 205, 'RECEIPT', 30, NAVY)}`;
+    for (let i = 0; i < 5; i++) g += `<rect x="600" y="${240 + i * 40}" width="${i === 4 ? 120 : 200}" height="12" rx="6" fill="#CBD5E1"/>`;
+    g += `<circle cx="800" cy="460" r="46" fill="${GREEN}"/>${check(800, 460, 2.0, WHITE, 1, 10)}</g>`;
+    o += ov('KEEP THE<br>RECEIPT', 870, 220, 380, 46, WHITE, clamp((T - C('d5') - 0.3) / 0.4));
+    o += ov('QUALIFIED<br>CHARITY <span class="g">&#10003;</span>', 870, 360, 380, 46, WHITE, clamp((T - C('d5') - 1.6) / 0.4));
+  }
+  return [g, o];
+};
+
+S.next = (T) => {
+  let [g, o] = header(5, 'SET UP NEXT YEAR NOW', T);
+  // o1: Maya with her clipboard
+  const a1 = fin(T, 'o1', 0.3) * fout(T, 'o2');
+  if (a1 > 0) g += `<g opacity="${a1}">${floorLine()}${person('maya', 380, 600, 1.1, { clip: true, ticks: 4 })}</g>`;
+  // o2: benefits form
+  const a2 = fin(T, 'o2') * fout(T, 'o3');
+  if (a2 > 0) {
+    g += `<g opacity="${a2}"><rect x="390" y="150" width="500" height="390" rx="24" fill="${WHITE}"/>
+      <path d="M390 174 Q390 150 414 150 L866 150 Q890 150 890 174 L890 220 L390 220Z" fill="${BLUE}"/>
+      ${text(640, 197, '2027 BENEFITS', 30, WHITE)}`;
+    ['Health plan', 'HSA', '401(k) %'].forEach((s, i) => {
+      const y = 262 + i * 88, ck = clamp((T - C('o2') - 1.2 - i * 0.7) / 0.35);
+      g += `<rect x="430" y="${y}" width="44" height="44" rx="9" fill="${ck > 0.3 ? GREEN : WHITE}" stroke="${ck > 0.3 ? GREEN : '#94A3B8'}" stroke-width="4"/>
+            ${ck > 0 ? check(452, y + 23, 1.3, WHITE, ck, 6) : ''}${text(500, y + 33, s, 32, NAVY, 800, 'start')}
+            <rect x="500" y="${y + 50}" width="340" height="4" rx="2" fill="#E2E8F0"/>`;
+    });
+    g += `</g>`;
+    o += ov('OPEN ENROLLMENT = <span class="y">ONCE A YEAR</span>', 0, 110, W, 26, '#CBD5E1', a2 * clamp((T - C('o2') - 0.6) / 0.4), 'font-weight:800');
+  }
+  // o3/o4: FSA vs HSA
+  const a3 = fin(T, 'o3') * fout(T, 'o5');
+  if (a3 > 0) {
+    const yrs = clamp((T - C('o4') - 1.2) / (D('o4') - 1.0));
+    const hp = pop(T, C('o3') + 0.2, 0.5);
+    if (hp > 0) g += `<g transform="${scaleAt(830, 420, hp)}">${jar(830, 480, lerp(0.25, 0.9, yrs), 'HSA', a3, GREEN)}</g>`;
+    o += ov('HIGH-DEDUCTIBLE PLAN &rarr; <span class="g">HSA</span>', 0, 112, W, 30, WHITE, a3 * clamp((T - C('o3') - 0.6) / 0.4));
+    const fp = fin(T, 'o4') * a3;
+    if (fp > 0) {
+      g += jar(420, 480, lerp(0.6, 0.0, clamp((T - C('o4') - 0.8) / 1.6)), 'FSA', fp, GOLD);
+      g += hourglass(560, 330, 0.45, clamp((T - C('o4')) / 2.4), fp);
+      g += text(420, 260, 'EXPIRES', 30, RED, 900, 'middle', `opacity="${fp}"`);
+      g += text(830, 260, 'NEVER EXPIRES', 30, GREEN, 900, 'middle', `opacity="${fp}"`);
+      ['2027', '2028', '2029'].forEach((y, i) => {
+        const yp = clamp((T - C('o4') - 1.4 - i * 0.9) / 0.35);
+        if (yp > 0) g += badge(y, 1000, 470 - i * 62, GOLD, NAVY, 22, yp * a3);
+      });
+    }
+  }
+  // o5: +1% slider
+  const a5 = fin(T, 'o5');
+  if (a5 > 0) {
+    const pct = lerp(6, 7, P(T, C('o5') + 1.2, 0.9));
+    const kx = 360 + 560 * pct / 15;
+    g += `<g opacity="${a5}"><rect x="290" y="150" width="700" height="370" rx="26" fill="${SLATE}" stroke="#334155" stroke-width="4"/>
+      ${text(640, 212, '401(k) CONTRIBUTION', 30, '#94A3B8', 800)}
+      ${text(640, 340, Math.round(pct) + '%', 120, GREEN)}
+      <rect x="360" y="392" width="560" height="16" rx="8" fill="#334155"/><rect x="360" y="392" width="${kx - 360}" height="16" rx="8" fill="${GREEN}"/>
+      <circle cx="${kx}" cy="400" r="22" fill="${GOLD}" stroke="${NAVY}" stroke-width="4"/></g>`;
+    const b = pop(T, C('o5') + 2.0, 0.5);
+    if (b > 0) g += `<g transform="${scaleAt(640, 470, b)}">${badge('+1% STARTING IN JANUARY', 640, 478, GOLD, NAVY, 24)}</g>`;
+  }
+  return [g, o];
+};
+
+function piggy(cx, cy, s, op=1) {
+  return `<g transform="translate(${cx},${cy}) scale(${s})" opacity="${op}">
+    <rect x="-80" y="60" width="30" height="50" rx="10" fill="#DB2777"/><rect x="50" y="60" width="30" height="50" rx="10" fill="#DB2777"/>
+    <path d="M-132 -6 q-36 -12 -26 -40" stroke="#DB2777" stroke-width="8" fill="none" stroke-linecap="round"/>
+    <path d="M40 -70 L66 -118 L92 -62Z" fill="#DB2777"/>
+    <ellipse cx="0" cy="0" rx="135" ry="98" fill="#F472B6"/>
+    <ellipse cx="130" cy="10" rx="32" ry="26" fill="#EC4899"/><circle cx="122" cy="8" r="5" fill="#9D174D"/><circle cx="140" cy="8" r="5" fill="#9D174D"/>
+    <circle cx="78" cy="-30" r="8" fill="${NAVY}"/>
+    <rect x="-36" y="-100" width="72" height="12" rx="6" fill="#9D174D"/>
+    ${text(-10, 26, 'IRA', 58, WHITE)}</g>`;
+}
+S.bonus = (T) => {
+  let g = '', o = '';
+  const a = clamp((T - SCENES.bonus.start - 0.1) / 0.4);
+  g += `<g opacity="${a}"><rect x="30" y="34" width="150" height="48" rx="24" fill="${RED}"/>${text(105, 67, 'BONUS', 24, WHITE)}</g>`;
+  o += ov('THE DEADLINE THAT ISN&rsquo;T DEC 31', 200, 36, 880, 42, WHITE, a);
+  // calendar flip: DEC 31 -> APRIL 15
+  const f = clamp((T - C('x2')) / 0.7), first = f < 0.5, sy = first ? 1 - f * 2 : (f - 0.5) * 2;
+  const cp = pop(T, C('x1'), 0.5);
+  if (cp > 0) g += first ? calendar(380, 340, 1.05 * cp, 'DECEMBER', '31', '', 1, Math.max(sy, 0.01))
+                         : calendar(380, 340, 1.05, 'APRIL', '15', '2027', 1, Math.max(sy, 0.01));
+  const xx = clamp((T - C('x1') - 1.0) / 0.3) * (first ? 1 : 0);
+  if (xx > 0 && f < 0.05) g += cross(380, 345, 110 * easeOut(xx), RED, 18, 0.9);
+  const pp = pop(T, C('x2') + 0.8, 0.5);
+  if (pp > 0) {
+    g += `<g transform="${scaleAt(880, 360, pp)}">${piggy(880, 370, 1.0)}</g>`;
+    const k = ((T - C('x2') - 1.2) % 1.2) / 1.2;
+    if (T > C('x2') + 1.2) g += coin(870, lerp(160, 268, easeOut(k)), 20, k < 0.85 ? 1 : (1 - k) * 6);
+  }
+  const p3 = pop(T, C('x3'), 0.5);
+  if (p3 > 0) g += `<g transform="${scaleAt(880, 540, p3)}">${text(880, 556, 'UP TO $7,500', 46, GOLD)}</g>`;
+  if (pp > 0) g += text(380, 545, 'IRA DEADLINE FOR 2026', 24, '#CBD5E1', 800, 'middle', `opacity="${clamp((T - C('x2') - 0.8) / 0.4)}"`);
+  return [g, o];
+};
+
+S.recap = (T) => {
+  let g = '', o = '';
+  const a = clamp((T - SCENES.recap.start - 0.1) / 0.4), dbl = fin(T, 'r3', 0.5);
+  o += ov('RECAP', 0, 36, W, 52, GOLD, a * (1 - dbl));
+  o += ov('DOUBLE-CHECK AT <span class="y">IRS.gov</span>', 0, 40, W, 44, WHITE, dbl);
+  g += `<rect x="300" y="112" width="680" height="440" rx="26" fill="${SLATE}" stroke="#334155" stroke-width="4" opacity="${a}"/>`;
+  const items = ['Use your FSA', 'Boost your 401(k)', 'Harvest losses', 'Give to charity', 'Set up next year'];
+  items.forEach((s, i) => {
+    const y = 140 + i * 82, ck = clamp((T - C('r2') - 0.2 - i * D('r2') / 5) / 0.35);
+    g += `<g opacity="${a}"><rect x="345" y="${y}" width="52" height="52" rx="11" fill="${ck > 0.3 ? GREEN : 'none'}" stroke="${ck > 0.3 ? GREEN : '#64748B'}" stroke-width="4"/>
+          ${ck > 0 ? check(371, y + 27, 1.5, WHITE, ck, 7) : ''}${text(425, y + 38, (i + 1) + '. ' + s, 34, ck > 0.3 ? WHITE : '#94A3B8', 800, 'start')}</g>`;
+  });
+  return [g, o];
+};
+
+S.end = (T) => {
+  let g = '', o = '';
+  if (T < C('e2')) {
+    // fireworks
+    [[860, 200, GOLD, 0], [1080, 280, GREEN, 0.55], [700, 150, RED, 1.1], [1000, 140, '#60A5FA', 0.8]].forEach(([fx, fy, col, off]) => {
+      const t0 = T - C('e1') - off; if (t0 < 0) return;
+      const k = (t0 % 1.7) / 1.7, r = 95 * easeOut(k);
+      for (let i = 0; i < 14; i++) { const th = i / 14 * Math.PI * 2;
+        g += `<circle cx="${fx + Math.cos(th) * r}" cy="${fy + Math.sin(th) * r}" r="${6 * (1 - k) + 2}" fill="${col}" opacity="${1 - k}"/>`; }
+    });
+    g += floorLine();
+    g += person('maya', 380, 600, 1.1, { clip: true, ticks: 4, wave: true, t: T, party: true });
+    o += ov('START 2027<br><span class="y">AHEAD</span>', 600, 360, 620, 64, WHITE, fin(T, 'e1', 0.5));
+    return [g, o];
+  }
+  const a = fin(T, 'e2', 0.6);
+  o += ov('THANKS FOR WATCHING', 0, 90, W, 40, '#94A3B8', a, 'font-weight:800;letter-spacing:4px');
+  g += `<g opacity="${a}"><rect x="500" y="200" width="280" height="76" rx="14" fill="${RED}"/>${text(640, 250, 'SUBSCRIBE', 36, WHITE)}</g>`;
+  g += `<g opacity="${a}"><rect x="140" y="340" width="460" height="260" rx="18" fill="#1E293B" stroke="#334155" stroke-width="3" stroke-dasharray="10 10"/>
+        <rect x="680" y="340" width="460" height="260" rx="18" fill="#1E293B" stroke="#334155" stroke-width="3" stroke-dasharray="10 10"/></g>`;
+  o += ov('NEXT:<br><span class="y">401(k) Explained:<br>The Free Money<br>Most People Miss</span>', 140, 385, 460, 34, WHITE, a);
+  o += ov('WATCH:<br><span class="g">Two Friends<br>Earn $60K</span>', 680, 410, 460, 36, WHITE, a);
+  return [g, o];
+};
+
+/* ---------- frame renderer ---------- */
+function captionHTML(T) {
+  for (const k in CUE) {
+    const c = CUE[k];
+    if (T >= c.start - 0.05 && T <= c.end + 0.3) {
+      const s = c.text.replace(/(401\(k\)|December 31|April 15, 2027|\$[\d,]+(?:\.\d+)?|\d+%|\b\d{2,}\b)/g, '<span class="hl">$1</span>');
+      return `<div class="cap"><span class="box">${s}</span></div>`;
+    }
+  }
+  return '';
+}
+
+window.render = function (T) {
+  let svg = '', html = '';
+  for (const name of ORDER) {
+    const sc = SCENES[name];
+    if (T < sc.start - 0.01 || T > sc.end + 0.01) continue;
+    const fade = Math.min(1, (T - sc.start) / 0.45, (sc.end - T) / 0.45);
+    if (fade <= 0) continue;
+    const [g, o] = S[name](T);
+    svg += `<g opacity="${fade.toFixed(3)}">${g}</g>`;
+    html += `<div style="opacity:${fade.toFixed(3)}">${o}</div>`;
+  }
+  const disc = T < C('e2') ? '2026 tax year &middot; General info, not tax advice' : '';
+  const bg = `<rect width="${W}" height="${H}" fill="${NAVY}"/><circle cx="640" cy="320" r="620" fill="#1E293B" opacity="0.35"/>`;
+  document.getElementById('stage').innerHTML =
+    `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${bg}${svg}</svg>` + html +
+    (disc ? `<div class="ov" style="left:20px;top:8px;font-size:15px;font-weight:800;color:#64748B;text-align:left">${disc}</div>` : '') +
+    captionHTML(T);
+};
+window.CUE_LIST = () => Object.entries(CUE).map(([k, c]) => ({ key: k, start: c.start, end: c.end, text: c.text }));
+window.render(0);
+</script>
+</body>
+</html>

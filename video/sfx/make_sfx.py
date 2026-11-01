@@ -149,7 +149,7 @@ def mk(vid):
         a(C['t1'], 'poplo', 0.25); a(C['t2'] + 0.6, 'sparkle', 0.4); a(C['t3'], 'pop', 0.35)
         for k in ('t4', 't6', 't7', 't8', 't9'): a(C[k], 'whooshS', 0.2, 0.3); a(C[k] + 0.25, 'tick', 0.3, 0.3)
         a(C['e1'], 'whoosh', 0.2); a(C['e3'], 'chime', 0.35); a(C['e4'], 'pop', 0.4); a(C['e4'] + 0.3, 'ding', 0.3)
-    else:
+    elif vid == 'v2':
         a(C['h1'], 'pop', 0.4); a(C['h1'] + 0.6, 'pophi', 0.35, 0.3); a(C['h1'] + 1.0, 'alarm', 0.12, 0.3, dur=2.6)
         a(C['h1'] + 1.1, 'coin', 0.2); a(C['h2'] + 0.3, 'poof', 0.45); a(C['h2'] + 1.3, 'thud', 0.3)
         a(C['h3'], 'whoosh', 0.3); a(C['h3'] + 0.35, 'pop', 0.35, 0.3); a(C['h4'], 'pop', 0.35, 0.4); a(C['h4'] + 0.1, 'sparkle', 0.3, 0.4)
@@ -201,6 +201,37 @@ def mk(vid):
             t = C['e1'] + off
             while t < C['e2']: a(t, 'firework', 0.25, pan); t += 1.7
         a(C['e1'], 'chime', 0.4); a(C['e2'], 'pop', 0.4); a(C['e2'] + 0.3, 'ding', 0.3)
+    elif vid == 'v3':
+        a(C['h1'], 'pop', 0.4); a(C['h1'] + 0.7, 'whooshS', 0.3); a(C['h1'] + 0.9, 'sparkle', 0.4)
+        for i in range(9): a(C['h1'] + 0.95 + i * 0.06, 'coin', 0.08, -0.6 + i * 0.15)
+        a(C['h2'] + 0.2, 'stamp', 0.55); a(C['h3'], 'whoosh', 0.3); a(C['h3'] + 0.35, 'pop', 0.35, 0.3)
+        for i in range(5): a(C['w1'] - 0.15 + i * 0.27, 'step', 0.25, 0.5 - i * 0.12)
+        a(C['w1'] + 1.8, 'whooshS', 0.25); a(C['w1'] + 2.9, 'thud', 0.2); a(C['w2'], 'whoosh', 0.3, 0.4); a(C['w2'] + 0.5, 'pop', 0.4, 0.4)
+        a(C['w3'], 'pop', 0.3, -0.3); a(C['w4'], 'pophi', 0.3, -0.3)
+        for i in range(4): a(C['w4'] + 0.9 + i * 1.2, 'coin', 0.15)
+        a(C['w5'], 'whooshS', 0.25, 0.4)
+        for i in range(12): a(C['w5'] + 0.3 + i * 0.12, 'pop', 0.12, 0.3 + (i % 4) * 0.1, pitch=1 + (i % 4) * 0.1)
+        a(C['w6'], 'pop', 0.4); a(C['w6'] + 0.1, 'flip', 0.3)
+        a(C['m1'] + 0.2, 'pop', 0.4); a(C['m1'] + 0.3, 'sparkle', 0.3); a(C['m2'], 'whooshS', 0.25); a(C['m3'], 'tick', 0.3)
+        t = C['m4'] + 1.1
+        while t < C['m7']: a(t, 'coin', 0.16, -0.4); t += 0.55
+        t = C['m5'] + 1.1
+        while t < C['m7']: a(t, 'coin', 0.16, 0.4); t += 1.1
+        a(C['m4'] + 0.5, 'riser', 0.15, dur=1.5); a(C['m5'] + 0.3, 'cash', 0.4, 0.4); a(C['m6'], 'pop', 0.4); a(C['m6'] + 0.1, 'chime', 0.4)
+        a(C['m7'] + 0.3, 'poof', 0.4); a(C['m7'] + 0.4, 'buzzer', 0.3)
+        a(C['c1'], 'thud', 0.4); a(C['c2'], 'pop', 0.35); a(C['c3'] + 0.4, 'riser', 0.28, dur=D['c3'] - 0.2); a(E['c3'] + 0.2, 'cash', 0.45)
+        a(C['c4'], 'pop', 0.35, -0.3); a(C['c4'] + 0.5, 'ding', 0.35, 0.3)
+        a(C['t2'] + 1.2, 'whooshS', 0.3); a(C['t2'] + 1.9, 'tick', 0.3); a(C['t3'] + 0.6, 'cash', 0.4, 0.3)
+        a(C['t4'], 'whoosh', 0.25); a(C['t5'] + 0.1, 'pop', 0.35, -0.4); a(C['t5'] + 1.6, 'pop', 0.35, 0.4, pitch=1.15)
+        a(C['t6'], 'pop', 0.35); a(C['t6'] + 0.1, 'sparkle', 0.3)
+        for i in range(4): a(C['r1'] + 0.2 + i * 0.15, 'pop', 0.3, -0.5 + i * 0.33, pitch=1 + i * 0.1)
+        for k in ('r2', 'r3', 'r4', 'r5'): a(C[k], 'whooshS', 0.25); a(C[k] + 0.1, 'pop', 0.3, -0.4)
+        a(C['r3'] + 1.0, 'stamp', 0.25, -0.4); a(C['r5'] + 1.2, 'whooshS', 0.25, -0.4)
+        for k in ('s2', 's3', 's4', 's5'): a(C[k] + 0.6, 'tick', 0.35, 0.3); a(C[k] + 0.62, 'dinghi', 0.2, 0.3)
+        a(C['s6'] + 0.2, 'pop', 0.35, 0.3); a(C['s6'] + 0.3, 'buzzer', 0.15, 0.3)
+        a(C['e1'], 'chime', 0.4)
+        for i in range(10): a(C['e1'] + 0.3 + i * 0.5, 'coin', 0.1, -0.7 + (i * 0.37) % 1.4)
+        a(C['e2'], 'pop', 0.4); a(C['e2'] + 0.3, 'ding', 0.3)
     return ev, d['total']
 
 def resample(x, r):
@@ -228,4 +259,4 @@ def render(vid, out):
         w.setnchannels(2); w.setsampwidth(2); w.setframerate(SR); w.writeframes(pcm.tobytes())
     print(vid, len(ev), 'events ->', out)
 
-render('v1', '/tmp/sfx/v1.wav'); render('v2', '/tmp/sfx/v2.wav')
+for v in (sys.argv[1:] or ['v1', 'v2']): render(v, f'/tmp/sfx/{v}.wav')

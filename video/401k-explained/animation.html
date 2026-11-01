@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>401(k) Explained for Beginners - animated video</title>
+<style>
+  html, body { margin: 0; padding: 0; background: #0F172A; overflow: hidden; }
+  #stage { position: relative; width: 1280px; height: 720px; overflow: hidden;
+           font-family: "Montserrat", sans-serif; color: #F8FAFC; }
+  #stage svg { position: absolute; left: 0; top: 0; }
+  .ov { position: absolute; text-align: center; font-weight: 900; line-height: 1.05; }
+  .cap { position: absolute; left: 90px; width: 1100px; bottom: 26px; text-align: center; }
+  .cap span.box { display: inline-block; background: rgba(2,6,23,0.82); border-radius: 14px;
+                  padding: 10px 22px; font-weight: 800; font-size: 33px; line-height: 1.25; }
+  .hl { color: #EAB308; }
+  .g { color: #22C55E; } .r { color: #EF4444; } .y { color: #EAB308; }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<script>
+/* ============================================================
+   Video 3: "401(k) Explained for Beginners: The Free Money Most People Miss"
+   Deterministic animation: render(t) draws the frame at time t (s).
+   Figures are for the 2026 tax year (IRS Rev. Proc. 2025-32 etc.).
+   ============================================================ */
+const W = 1280, H = 720;
+const GREEN = '#22C55E', GREY = '#94A3B8', GOLD = '#EAB308', RED = '#EF4444',
+      NAVY = '#0F172A', WHITE = '#F8FAFC', SLATE = '#1E293B', BLUE = '#1D4ED8';
+
+/* ---------- narration cues (captions) ---------- */
+const CUES = [
+ // HOOK
+ ['hook','h1','Your job might be offering you free money every single year.'],
+ ['hook','h2','And millions of people never claim it.'],
+ ['hook','h3',"It's called the 401(k) match. Let's break it down in plain English."],
+ // WHAT
+ ['what','w1','Jake just started a new job. In his welcome packet, there was a form he almost threw away.'],
+ ['what','w2','A 401(k) enrollment form.'],
+ ['what','w3','A 401(k) is a retirement account you get through your job.'],
+ ['what','w4','You pick a percentage of your paycheck, and it goes in automatically, before you ever see it.'],
+ ['what','w5','That money gets invested, usually in funds that own hundreds of companies, so it can grow for decades.'],
+ ['what','w6',"And the name? It's just the section of the tax code that created it."],
+ // MATCH
+ ['match','m1','Now, the part most people miss: the employer match.'],
+ ['match','m2','Many companies add money to your 401(k) when you contribute.'],
+ ['match','m3','A common deal: they add 50 cents for every dollar you put in, up to 6% of your pay.'],
+ ['match','m4',"Jake earns $60,000 a year. If he puts in 6%, that's $3,600 a year."],
+ ['match','m5','His company adds another $1,800. For free.'],
+ ['match','m6',"That's an instant 50% return, before the market does anything at all."],
+ ['match','m7','But if Jake puts in nothing, his company adds nothing. The match just disappears.'],
+ // COST
+ ['cost','c1','So what does skipping the match really cost?'],
+ ['cost','c2',"$1,800 a year is $150 a month."],
+ ['cost','c3','Invested from age 25 to 65 at a 7% average return, the match alone could grow to about $394,000.'],
+ ['cost','c4',"That's what people leave on the table by skipping one form."],
+ // TAX
+ ['tax','t1',"There's also a tax bonus."],
+ ['tax','t2','With a traditional 401(k), your contributions come out before income tax.'],
+ ['tax','t3',"Many people earning $60,000 are in the 12% federal bracket, so Jake's $3,600 cuts his tax bill by about $432 this year."],
+ ['tax','t4','He pays the tax later, when he takes the money out in retirement.'],
+ ['tax','t5','Many plans also offer a Roth 401(k): you pay the tax now, and qualified withdrawals in retirement are tax-free.'],
+ ['tax','t6','Either way, the match still counts. The real mistake is choosing neither.'],
+ // RULES
+ ['rules','r1','Four rules to know.'],
+ ['rules','r2',"One: in 2026, you can put in up to $24,500 of your own money. More if you're 50 or older."],
+ ['rules','r3',"Two: it's meant for retirement. Take money out before age 59 and a half, and you'll usually pay a 10% penalty plus income tax."],
+ ['rules','r4','Three: your own contributions are always yours, but the match may vest over a few years. Leave early, and you could lose part of it.'],
+ ['rules','r5',"Four: if you change jobs, your 401(k) comes with you. Roll it into your new plan or an IRA. Don't cash it out."],
+ // START
+ ['start','s1',"Here's how to start this week."],
+ ['start','s2','Step one: ask HR two questions. What is the match, and when does it vest?'],
+ ['start','s3','Step two: contribute at least enough to get the full match.'],
+ ['start','s4','Step three: pick a low-cost fund. A target-date fund for the year you plan to retire is a simple default.'],
+ ['start','s5','Step four: turn on automatic 1% yearly increases, if your plan offers them.'],
+ ['start','s6',"And if you were enrolled automatically, often at just 3%, check that it's enough to get the full match."],
+ // END
+ ['end','e1','Jake almost threw that form away. It could be worth hundreds of thousands of dollars.'],
+ ['end','e2','Subscribe for the next one: the sneaky ways supermarkets get you to spend more.'],
+];
+
+/* timing: ~2.45 spoken words/sec; numbers count as ~3 spoken words */
+function spokenWords(s) {
+  return s.split(/\s+/).filter(Boolean).reduce((n, w) => n + (/\d/.test(w) ? 3 : 1), 0);
+}
+const CUE = {}; const SCENES = {}; const ORDER = [];
+(function buildTimeline() {
+  let t = 0.4, prevScene = null;
+  for (const [scene, key, text] of CUES) {
+    if (scene !== prevScene) {
+      if (prevScene) { SCENES[prevScene].end = t + 0.5; t += 0.9; }
+      SCENES[scene] = { start: t - 0.2 }; ORDER.push(scene); prevScene = scene;
+    }
+    const d = Math.max(1.9, spokenWords(text) / 2.45);
+    CUE[key] = { start: t, end: t + d, text };
+    t += d + 0.35;
+  }
+  SCENES[prevScene].end = t + 15;          // 15 s end-screen hold
+  window.TOTAL = SCENES[prevScene].end;
+})();
+const C = k => CUE[k].start, E = k => CUE[k].end, D = k => CUE[k].end - CUE[k].start;
+
+/* ---------- helpers ---------- */
+const clamp = (x, a=0, b=1) => Math.max(a, Math.min(b, x));
+const ease = x => { x = clamp(x); return x < .5 ? 4*x*x*x : 1 - Math.pow(-2*x+2, 3)/2; };
+const easeOut = x => 1 - Math.pow(1 - clamp(x), 3);
+const P = (t, a, d) => ease((t - a) / d);
+const lerp = (a, b, p) => a + (b - a) * p;
+const money = n => '$' + Math.round(n).toLocaleString('en-US');
+const pop = (t, a, d=0.45) => { const x = clamp((t - a) / d); return x === 0 ? 0 : 1 + 0.25*Math.sin(x*Math.PI) * (1 - x) + (easeOut(x) - 1); };
+const fin = (T, k, d=0.4) => clamp((T - C(k)) / d);             // fade-in at cue k
+const fout = (T, k, d=0.4) => 1 - clamp((T - C(k)) / d);        // fade-out at cue k
+const scaleAt = (cx, cy, s) => `translate(${cx},${cy}) scale(${s}) translate(${-cx},${-cy})`;
+
+function text(x, y, s, size, color=WHITE, weight=900, anchor='middle', extra='') {
+  return `<text x="${x}" y="${y}" font-family="Montserrat" font-weight="${weight}" font-size="${size}"
+           fill="${color}" text-anchor="${anchor}" ${extra}>${s}</text>`;
+}
+function ov(html, x, y, w, size, color=WHITE, opacity=1, extra='') {
+  return `<div class="ov" style="left:${x}px;top:${y}px;width:${w}px;font-size:${size}px;color:${color};opacity:${opacity};${extra}">${html}</div>`;
+}
+function badge(s, x, y, color=GOLD, fg=NAVY, size=24, op=1) {
+  const w = s.length * size * 0.66 + 40;
+  return `<g opacity="${op}"><rect x="${x - w/2}" y="${y - size - 8}" width="${w}" height="${size + 26}" rx="${(size+26)/2}" fill="${color}"/>
+          ${text(x, y + 5, s, size, fg, 900)}</g>`;
+}
+const floorLine = (y=600) => `<line x1="80" y1="${y}" x2="1200" y2="${y}" stroke="#334155" stroke-width="4"/>`;
+const check = (x, y, s, color=WHITE, prog=1, w=4) =>
+  `<path d="M${x-10*s} ${y} L${x-3*s} ${y+7*s} L${x+11*s} ${y-9*s}" stroke="${color}" stroke-width="${w}" fill="none"
+     stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="${40*s}" stroke-dashoffset="${40*s*(1-prog)}"/>`;
+const cross = (x, y, r, color=RED, w=12, op=1) =>
+  `<g opacity="${op}"><line x1="${x-r}" y1="${y-r}" x2="${x+r}" y2="${y+r}" stroke="${color}" stroke-width="${w}" stroke-linecap="round"/>
+   <line x1="${x+r}" y1="${y-r}" x2="${x-r}" y2="${y+r}" stroke="${color}" stroke-width="${w}" stroke-linecap="round"/></g>`;
+
+/* ---------- characters & props ---------- */
+function person(kind, x, y, s=1, o={}) {
+  const maya = kind === 'maya';
+  const skin = maya ? '#C68642' : '#F1C27D';
+  const hair = maya ? '#2B1B17' : '#6B4423';
+  const top = o.color || (maya ? GREEN : GREY);
+  const op = o.opacity == null ? 1 : o.opacity;
+  let g = `<g transform="translate(${x},${y}) scale(${s})" opacity="${op}">`;
+  g += `<ellipse cx="0" cy="0" rx="48" ry="8" fill="#020617" opacity="0.5"/>`;
+  g += `<rect x="-22" y="-72" width="17" height="70" rx="6" fill="${SLATE}"/><rect x="5" y="-72" width="17" height="70" rx="6" fill="${SLATE}"/>`;
+  g += `<ellipse cx="-15" cy="-3" rx="15" ry="7" fill="#0B1120"/><ellipse cx="15" cy="-3" rx="15" ry="7" fill="#0B1120"/>`;
+  if (maya) g += `<circle cx="-30" cy="-196" r="15" fill="${hair}"/><circle cx="30" cy="-196" r="15" fill="${hair}"/>`;
+  g += `<rect x="-41" y="-178" width="82" height="112" rx="30" fill="${top}"/>`;
+  const armA = o.wave ? -40 + Math.sin((o.t || 0) * 9) * 10 : 0;
+  g += `<g transform="rotate(${armA} -45 -165)"><rect x="-56" y="-168" width="19" height="84" rx="9" fill="${top}"/><circle cx="-46" cy="-84" r="10" fill="${skin}"/></g>`;
+  if (o.clip) {
+    g += `<g transform="rotate(-8 60 -120)"><rect x="34" y="-158" width="64" height="84" rx="8" fill="#92400E"/>
+          <rect x="40" y="-148" width="52" height="68" rx="4" fill="${WHITE}"/><rect x="52" y="-164" width="28" height="12" rx="4" fill="#64748B"/>`;
+    for (let i = 0; i < 4; i++) {
+      const done = (o.ticks || 0) > i;
+      g += `<rect x="46" y="${-140 + i*15}" width="9" height="9" rx="2" fill="${done ? GREEN : 'none'}" stroke="${done ? GREEN : '#94A3B8'}" stroke-width="2"/>
+            <rect x="60" y="${-137 + i*15}" width="26" height="4" rx="2" fill="#CBD5E1"/>`;
+    }
+    g += `</g><rect x="37" y="-168" width="19" height="70" rx="9" fill="${top}"/><circle cx="48" cy="-100" r="10" fill="${skin}"/>`;
+  } else {
+    g += `<rect x="37" y="-168" width="19" height="84" rx="9" fill="${top}"/><circle cx="46" cy="-84" r="10" fill="${skin}"/>`;
+  }
+  if (!maya) g += `<path d="M-30 -176 Q 0 -150 30 -176" stroke="#64748B" stroke-width="7" fill="none"/>`;
+  g += `<rect x="-9" y="-194" width="18" height="22" fill="${skin}"/>`;
+  g += `<circle cx="0" cy="-226" r="37" fill="${skin}"/>`;
+  if (maya) {
+    for (const [cx, cy, r] of [[-30,-244,16],[-17,-259,16],[0,-265,17],[17,-259,16],[30,-244,16],[-37,-222,13],[37,-222,13]])
+      g += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${hair}"/>`;
+  } else {
+    g += `<path d="M-37 -230 Q -36 -272 0 -268 Q 36 -272 37 -230 Q 22 -250 0 -248 Q -22 -250 -37 -230Z" fill="${hair}"/>`;
+  }
+  g += `<circle cx="-12" cy="-224" r="4.5" fill="${NAVY}"/><circle cx="12" cy="-224" r="4.5" fill="${NAVY}"/>`;
+  g += o.sad ? `<path d="M-11 -204 Q 0 -212 11 -204" stroke="${NAVY}" stroke-width="3.5" fill="none" stroke-linecap="round"/>`
+             : `<path d="M-12 -209 Q 0 -198 12 -209" stroke="${NAVY}" stroke-width="3.5" fill="none" stroke-linecap="round"/>`;
+  if (o.party) g += `<path d="M-14 -258 L0 -312 L14 -258Z" fill="${GOLD}"/><circle cx="0" cy="-314" r="7" fill="${RED}"/>`;
+  return g + '</g>';
+}
+function coin(x, y, r=13, op=1) {
+  return `<g opacity="${op}"><circle cx="${x}" cy="${y}" r="${r}" fill="${GOLD}" stroke="#A16207" stroke-width="3"/>
+          ${text(x, y + r*0.42, '$', r*1.15, '#854D0E', 900)}</g>`;
+}
+function jar(x, y, fill, label, opacity=1, color=GOLD) {   // x center, y bottom
+  const h = 170, w = 130, fh = clamp(fill) * (h - 14);
+  let g = `<g opacity="${opacity}">`;
+  g += `<rect x="${x-w/2}" y="${y-h}" width="${w}" height="${h}" rx="22" fill="#1E293B" opacity="0.55"/>`;
+  g += `<rect x="${x-w/2+7}" y="${y-7-fh}" width="${w-14}" height="${fh}" rx="14" fill="${color}"/>`;
+  for (let yy = y - 7 - 14; yy > y - 7 - fh + 4; yy -= 14)
+    g += `<line x1="${x-w/2+12}" y1="${yy}" x2="${x+w/2-12}" y2="${yy}" stroke="#000" stroke-width="2" opacity="0.18"/>`;
+  g += `<rect x="${x-w/2}" y="${y-h}" width="${w}" height="${h}" rx="22" fill="none" stroke="#CBD5E1" stroke-width="5"/>`;
+  g += `<rect x="${x-w/2-8}" y="${y-h-16}" width="${w+16}" height="20" rx="8" fill="#64748B"/>`;
+  if (label) g += text(x, y + 40, label, 30, '#E2E8F0', 900);
+  return g + '</g>';
+}
+function calendar(cx, cy, s, month, day, sub='', op=1, sy=1) {
+  return `<g transform="translate(${cx},${cy}) scale(${s},${s*sy})" opacity="${op}">
+   <rect x="-112" y="-115" width="240" height="270" rx="24" fill="#020617" opacity="0.4"/>
+   <rect x="-120" y="-125" width="240" height="270" rx="24" fill="${WHITE}"/>
+   <path d="M-120 -101 Q-120 -125 -96 -125 L96 -125 Q120 -125 120 -101 L120 -50 L-120 -50Z" fill="${RED}"/>
+   ${text(0, -76, month, 30, WHITE)}
+   ${text(0, sub ? 62 : 72, day, 128, NAVY)}
+   ${sub ? text(0, 118, sub, 28, '#64748B', 900) : ''}
+   <rect x="-70" y="-142" width="16" height="36" rx="8" fill="#64748B"/><rect x="54" y="-142" width="16" height="36" rx="8" fill="#64748B"/>
+  </g>`;
+}
+function alarmClock(cx, cy, s, rot=0, ring=false) {
+  let g = `<g transform="translate(${cx},${cy}) rotate(${rot}) scale(${s})">
+   <line x1="-40" y1="50" x2="-58" y2="80" stroke="#475569" stroke-width="10" stroke-linecap="round"/>
+   <line x1="40" y1="50" x2="58" y2="80" stroke="#475569" stroke-width="10" stroke-linecap="round"/>
+   <circle cx="-50" cy="-58" r="26" fill="${GOLD}"/><circle cx="50" cy="-58" r="26" fill="${GOLD}"/>
+   <circle cx="0" cy="0" r="72" fill="${RED}"/><circle cx="0" cy="0" r="56" fill="${WHITE}"/>
+   <line x1="0" y1="0" x2="-5" y2="-30" stroke="${NAVY}" stroke-width="8" stroke-linecap="round"/>
+   <line x1="0" y1="0" x2="-10" y2="-46" stroke="${NAVY}" stroke-width="5" stroke-linecap="round"/>
+   <circle cx="0" cy="0" r="7" fill="${NAVY}"/>`;
+  if (ring) g += `<path d="M-92 -92 L-110 -110 M-104 -60 L-128 -64 M92 -92 L110 -110 M104 -60 L128 -64" stroke="${GOLD}" stroke-width="7" stroke-linecap="round"/>`;
+  return g + '</g>';
+}
+function hourglass(cx, cy, s, u, op=1) {
+  const t = 1 - clamp(u), b = clamp(u), wb = 0.35 + 0.65 * b;
+  let g = `<g transform="translate(${cx},${cy}) scale(${s})" opacity="${op}">
+   <path d="M-56 -92 L56 -92 L8 0 L56 92 L-56 92 L-8 0 Z" fill="#CBD5E1" opacity="0.18" stroke="#CBD5E1" stroke-width="4" stroke-linejoin="round"/>`;
+  if (t > 0.01) g += `<path d="M${-46*t} ${-4-80*t} L${46*t} ${-4-80*t} L0 -4 Z" fill="${GOLD}"/>`;
+  g += `<path d="M${-50*wb} 88 L${50*wb} 88 L0 ${88 - 70*b - 4}Z" fill="${GOLD}"/>`;
+  if (t > 0.01) g += `<line x1="0" y1="-4" x2="0" y2="86" stroke="${GOLD}" stroke-width="4"/>`;
+  g += `<rect x="-72" y="-112" width="144" height="20" rx="7" fill="#92400E"/><rect x="-72" y="92" width="144" height="20" rx="7" fill="#92400E"/>`;
+  return g + '</g>';
+}
+function tile(x, y, w, h, op=1, stroke='#334155') {
+  return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="20" fill="${SLATE}" stroke="${stroke}" stroke-width="4" opacity="${op}"/>`;
+}
+
+/* ---------- math: missed match ($150/mo from 25 to 65 at 7%) ---------- */
+const R = 0.07 / 12, MATCH = [0];
+for (let k = 1; k <= 480; k++) MATCH.push(MATCH[k - 1] * (1 + R) + 150);
+const matchAt = age => { const m = clamp((age - 25) * 12, 0, 480), i = Math.floor(m), f = m - i; return i >= 480 ? MATCH[480] : MATCH[i] * (1 - f) + MATCH[i + 1] * f; };
+
+/* section header: pill + title */
+function section(label, title, T, scene, pillColor=GOLD) {
+  const a = clamp((T - SCENES[scene].start - 0.1) / 0.4), w = label.length * 15 + 44;
+  const g = `<g opacity="${a}"><rect x="30" y="34" width="${w}" height="48" rx="24" fill="${pillColor}"/>${text(30 + w / 2, 66, label, 22, NAVY)}</g>`;
+  return [g, title ? ov(title, 240, 36, 800, 44, WHITE, a) : ''];
+}
+function giftBox(cx, by, s, lid) {
+  const lx = cx - 135, ly = by - 236 - 75 * lid;
+  return `<g transform="translate(${cx},${by}) scale(${s}) translate(${-cx},${-by})">
+    <rect x="${cx - 120}" y="${by - 190}" width="240" height="190" rx="12" fill="${RED}"/>
+    <rect x="${cx - 17}" y="${by - 190}" width="34" height="190" fill="${GOLD}"/>
+    <g transform="rotate(${-22 * lid} ${lx} ${ly + 46})">
+      <rect x="${lx}" y="${ly}" width="270" height="48" rx="10" fill="#DC2626"/><rect x="${cx - 19}" y="${ly}" width="38" height="48" fill="${GOLD}"/>
+      <ellipse cx="${cx - 34}" cy="${ly - 16}" rx="36" ry="20" fill="${GOLD}" transform="rotate(-20 ${cx - 34} ${ly - 16})"/>
+      <ellipse cx="${cx + 34}" cy="${ly - 16}" rx="36" ry="20" fill="${GOLD}" transform="rotate(20 ${cx + 34} ${ly - 16})"/>
+      <circle cx="${cx}" cy="${ly - 8}" r="14" fill="#CA8A04"/></g></g>`;
+}
+function paycheck(x, y, w=220, h=120, op=1, label='PAYCHECK', amt='') {
+  return `<g opacity="${op}"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="14" fill="${WHITE}"/>
+    <rect x="${x}" y="${y}" width="18" height="${h}" rx="8" fill="${GREEN}"/>
+    ${text(x + w / 2 + 8, y + 50, label, 24, NAVY)}${amt ? text(x + w / 2 + 8, y + 88, amt, 26, '#15803D') : ''}</g>`;
+}
+function building(x, y, w, h, col='#64748B') {
+  let g = `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="4" fill="${col}"/>`;
+  for (let r = 0; r < Math.floor((h - 10) / 16); r++) for (let c = 0; c < Math.floor((w - 8) / 14); c++)
+    g += `<rect x="${x + 6 + c * 14}" y="${y + 8 + r * 16}" width="7" height="8" fill="${GOLD}" opacity="0.85"/>`;
+  return g;
+}
+function formCard(x, y, s, op=1) {
+  return `<g transform="translate(${x},${y}) scale(${s})" opacity="${op}">
+    <rect x="-150" y="-190" width="300" height="380" rx="16" fill="${WHITE}"/>
+    <rect x="-150" y="-190" width="300" height="70" rx="16" fill="${BLUE}"/><rect x="-150" y="-140" width="300" height="20" fill="${BLUE}"/>
+    ${text(0, -145, '401(k) ENROLLMENT', 24, WHITE)}
+    ${text(-120, -80, 'Contribution:', 20, NAVY, 800, 'start')}<rect x="20" y="-104" width="70" height="34" rx="6" fill="none" stroke="#94A3B8" stroke-width="3"/>${text(102, -80, '%', 22, NAVY, 800, 'start')}
+    ${text(-120, -20, 'Investment:', 20, NAVY, 800, 'start')}<rect x="-120" y="-6" width="240" height="30" rx="6" fill="none" stroke="#94A3B8" stroke-width="3"/>
+    <rect x="-120" y="50" width="240" height="8" rx="4" fill="#CBD5E1"/><rect x="-120" y="74" width="200" height="8" rx="4" fill="#CBD5E1"/>
+    <rect x="-120" y="98" width="220" height="8" rx="4" fill="#CBD5E1"/>
+    ${text(-120, 160, 'Signature: ______', 18, '#64748B', 800, 'start')}</g>`;
+}
+function trashCan(cx, by, op=1) {
+  return `<g opacity="${op}"><rect x="${cx - 52}" y="${by - 130}" width="104" height="130" rx="10" fill="#475569"/>
+    <rect x="${cx - 62}" y="${by - 146}" width="124" height="20" rx="6" fill="#64748B"/>
+    ${[-26, 0, 26].map(d => `<rect x="${cx + d - 4}" y="${by - 112}" width="8" height="96" rx="4" fill="#334155"/>`).join('')}</g>`;
+}
+
+const S = {};
+
+S.hook = (T) => {
+  let g = '', o = '';
+  const slide = P(T, C('h3'), 0.9), cx = lerp(640, 330, slide), s = lerp(1, 0.9, slide);
+  const b = pop(T, C('h1'), 0.5), lid = P(T, C('h1') + 0.7, 0.5);
+  if (b > 0) g += `<circle cx="${cx}" cy="400" r="${230 * b}" fill="${GOLD}" opacity="${0.10 * b}"/>` + giftBox(cx, 540, s * b, lid);
+  const ca = lid * (1 - slide);
+  for (let i = 0; i < 9; i++) {
+    const k = clamp((T - C('h1') - 0.9 - i * 0.06) / 0.9), th = -Math.PI / 2 + (i - 4) * 0.28;
+    if (k > 0 && ca > 0) g += coin(cx + Math.cos(th) * 260 * easeOut(k), 330 + Math.sin(th) * 200 * easeOut(k) + 60 * k * k, 22, ca);
+  }
+  const fm = clamp((T - C('h1') - 1.3) / 0.4) * fout(T, 'h2');
+  if (fm > 0) o += ov('FREE MONEY?', 0, 34, W, 64, GOLD, fm);
+  const st = pop(T, C('h2') + 0.2, 0.4);
+  if (st > 0) o += ov('UNCLAIMED', cx - 200 * s, 380, 400 * s, 54 * s, RED, clamp(st),
+      `transform:rotate(-10deg) scale(${st});border:6px solid #EF4444;border-radius:14px;padding:8px 0;background:rgba(15,23,42,0.75)`);
+  const t3 = clamp((T - C('h3') - 0.3) / 0.5);
+  if (t3 > 0) { o += ov('THE <span class="y">401(k)</span><br>MATCH', 620, 170, 620, 92, WHITE, t3);
+                o += ov('explained in plain English', 620, 395, 620, 34, '#CBD5E1', t3, 'font-weight:800'); }
+  return [g, o];
+};
+
+S.what = (T) => {
+  let [g, o] = section('THE BASICS', 'WHAT IS A 401(k)?', T, 'what');
+  const jakeOut = fout(T, 'w3');
+  const jx = lerp(1400, 380, P(T, C('w1') - 0.2, 1.4));
+  if (jakeOut > 0) {
+    g += `<g opacity="${jakeOut}">${floorLine()}${trashCan(640, 600)}${person('jake', jx, 600, 1.05, {})}</g>`;
+    // the form: from Jake's hand toward the trash, then rescued
+    const k = P(T, C('w1') + 1.8, 1.2), r = P(T, C('w2'), 0.7);
+    const fx = lerp(lerp(jx + 60, 640, k), 930, r), fy = lerp(lerp(470, 400, k) - Math.sin(Math.PI * k) * 120, 330, r);
+    const fs = lerp(0.22, 0.95, r), rot = (1 - r) * k * 25;
+    if (T > C('w1') + 0.8) g += `<g transform="rotate(${rot} ${fx} ${fy})">${formCard(fx, fy, fs, jakeOut)}</g>`;
+  }
+  const a3 = fin(T, 'w3') * fout(T, 'w6');
+  if (a3 > 0) {
+    const jf = clamp((T - C('w4')) / D('w4')) * 0.5 + 0.12;
+    g += paycheck(140, 300, 240, 130, a3, 'PAYCHECK', '$5,000/mo');
+    g += `<g opacity="${a3}"><line x1="400" y1="365" x2="500" y2="365" stroke="${WHITE}" stroke-width="7"/><path d="M496 350 L522 365 L496 380Z" fill="${WHITE}"/></g>`;
+    g += jar(640, 480, jf, '401(k)', a3, GREEN);
+    const p4 = fin(T, 'w4');
+    if (p4 > 0) { g += badge('6% GOES IN AUTOMATICALLY', 380, 230, GOLD, NAVY, 20, p4 * a3);
+      for (let i = 0; i < 3; i++) { const k = ((T - C('w4') - i * 0.4) % 1.2) / 1.2; g += coin(lerp(400, 640, k), lerp(340, 330, k) - Math.sin(Math.PI * k) * 60, 14, p4 * a3 * (1 - k * k)); } }
+    const p5 = fin(T, 'w5');
+    if (p5 > 0) {
+      g += `<g opacity="${p5 * a3}"><line x1="740" y1="390" x2="810" y2="390" stroke="${WHITE}" stroke-width="7"/><path d="M806 375 L832 390 L806 405Z" fill="${WHITE}"/></g>`;
+      for (let i = 0; i < 12; i++) { const q = pop(T, C('w5') + 0.3 + i * 0.12, 0.35); if (q <= 0) continue;
+        const bx = 860 + (i % 4) * 78, by = 470 - Math.floor(i / 4) * 92, h = 50 + ((i * 37) % 30);
+        g += `<g transform="${scaleAt(bx + 30, by, q)}" opacity="${a3}">${building(bx, by - h, 60, h, ['#64748B', '#475569', '#334155'][i % 3])}</g>`; }
+      g += text(1000, 540, 'HUNDREDS OF COMPANIES', 20, '#CBD5E1', 800, 'middle', `opacity="${p5 * a3}"`);
+    }
+  }
+  const a6 = fin(T, 'w6');
+  if (a6 > 0) {
+    const p = pop(T, C('w6'), 0.5);
+    g += `<g transform="${scaleAt(640, 340, p)}"><rect x="478" y="188" width="330" height="300" rx="14" fill="#E2E8F0"/>
+      <rect x="470" y="180" width="330" height="300" rx="14" fill="${BLUE}"/><rect x="490" y="180" width="10" height="300" fill="#1E3A8A"/>
+      ${text(645, 290, 'U.S. TAX', 40, WHITE)}${text(645, 340, 'CODE', 40, WHITE)}
+      <path d="M700 168 L770 168 L770 250 L735 230 L700 250Z" fill="${GOLD}"/>${text(735, 210, '&#167;401(k)', 16, NAVY)}</g>`;
+    o += ov('JUST A SECTION OF THE TAX CODE', 0, 520, W, 30, '#CBD5E1', clamp((T - C('w6') - 0.8) / 0.4), 'font-weight:800');
+  }
+  return [g, o];
+};
+
+S.match = (T) => {
+  let [g, o] = section('THE MATCH', 'THE EMPLOYER MATCH', T, 'match');
+  const h = pop(T, C('m1') + 0.2, 0.5) * fout(T, 'm2');
+  if (h > 0) g += `<g transform="${scaleAt(640, 340, h)}">${giftBox(640, 470, 0.8, 0.3)}${text(640, 196, 'FREE MONEY', 54, GOLD)}</g>`;
+  const a = fin(T, 'm2');
+  if (a > 0) {
+    const drain = 1 - P(T, C('m7') + 0.3, 1.0);
+    const jf = lerp(0.04, 0.6, P(T, C('m4') + 0.5, 1.5)) * drain, cf = lerp(0.02, 0.3, P(T, C('m5') + 0.2, 1.5)) * drain;
+    g += jar(400, 520, jf, 'JAKE', a, GOLD) + jar(880, 520, cf, 'COMPANY', a, GREEN);
+    g += `<g opacity="${a * fout(T, 'm7')}">${building(830, 150, 100, 150, '#475569')}</g>`;
+    const r3 = fin(T, 'm3');
+    if (r3 > 0) o += ov('50&cent; FOR EVERY $1 &middot; UP TO <span class="y">6%</span> OF PAY', 250, 104, 780, 30, WHITE, r3,
+        'border:3px solid #EAB308;border-radius:16px;padding:12px 0;background:rgba(30,41,59,0.9)');
+    const r4 = fin(T, 'm4') * fout(T, 'm7');
+    if (r4 > 0) g += text(400, 318, '6% of $60,000', 24, '#CBD5E1', 800, 'middle', `opacity="${r4}"`) + text(400, 288, '$3,600/yr', 40, GOLD, 900, 'middle', `opacity="${r4}"`);
+    const r5 = fin(T, 'm5') * fout(T, 'm7');
+    if (r5 > 0) g += text(1060, 420, '+$1,800/yr', 40, GREEN, 900, 'middle', `opacity="${r5}"`) + text(1060, 452, 'FREE', 24, '#CBD5E1', 800, 'middle', `opacity="${r5}"`);
+    if (T > C('m4') + 0.5 && T < C('m7')) for (let i = 0; i < 2; i++) { const k = ((T - C('m4') - i * 0.55) % 1.1) / 1.1; g += coin(400, lerp(335, 470 - jf * 150, easeOut(k)), 15, a * (1 - k)); }
+    if (T > C('m5') + 0.2 && T < C('m7')) { const k = ((T - C('m5')) % 1.1) / 1.1; g += coin(880, lerp(335, 490 - cf * 150, easeOut(k)), 15, a * (1 - k)); }
+    const r6 = pop(T, C('m6'), 0.5) * fout(T, 'm7');
+    if (r6 > 0) g += `<g transform="${scaleAt(640, 420, r6)}"><circle cx="640" cy="420" r="92" fill="${GREEN}"/>${text(640, 418, '+50%', 46, NAVY)}${text(640, 450, 'INSTANT', 20, NAVY)}</g>`;
+    const r7 = fin(T, 'm7');
+    if (r7 > 0) { g += cross(640, 420, 46, RED, 14, r7);
+      g += text(400, 300, '$0', 46, GREY, 900, 'middle', `opacity="${r7}"`) + text(880, 300, '$0', 46, GREY, 900, 'middle', `opacity="${r7}"`);
+      o += ov('NO CONTRIBUTION = <span class="r">NO MATCH</span>', 0, 196, W, 34, WHITE, clamp((T - C('m7') - 0.6) / 0.4)); }
+  }
+  return [g, o];
+};
+
+S.cost = (T) => {
+  let [g, o] = section('THE COST', '', T, 'cost', RED);
+  const q = pop(T, C('c1'), 0.5) * fout(T, 'c2');
+  if (q > 0) o += ov('WHAT DOES SKIPPING<br>THE MATCH <span class="r">COST?</span>', 0, 220, W, 66 * Math.max(q, 0.01), WHITE, clamp(q));
+  const a2 = fin(T, 'c2') * fout(T, 'c3');
+  if (a2 > 0) o += ov('<span class="g">$1,800</span>/year<br>= <span class="y">$150</span>/month', 0, 210, W, 80, WHITE, a2);
+  const a3 = fin(T, 'c3');
+  if (a3 > 0) {
+    const age = lerp(25, 65, P(T, C('c3') + 0.4, D('c3') - 0.2)), x0 = 200, x1 = 1060, y0 = 520, y1 = 170, ymax = 400000;
+    const X = v => x0 + (v - 25) / 40 * (x1 - x0), Y = v => y0 - v / ymax * (y0 - y1);
+    const dm = 1 - 0.7 * fin(T, 'c4');
+    g += `<g opacity="${a3 * dm}">`;
+    for (const v of [0, 100000, 200000, 300000, 400000]) g += `<line x1="${x0}" y1="${Y(v)}" x2="${x1}" y2="${Y(v)}" stroke="#334155" stroke-width="2" stroke-dasharray="${v ? '6 8' : ''}"/>${text(x0 - 14, Y(v) + 7, v ? '$' + v / 1000 + 'K' : '$0', 19, '#94A3B8', 800, 'end')}`;
+    for (const a of [25, 35, 45, 55, 65]) g += text(X(a), y0 + 34, a, 20, '#94A3B8', 800);
+    let d = ''; for (let a = 25; a <= age + 1e-6; a += 0.25) d += (d ? ' L' : 'M') + X(a).toFixed(1) + ' ' + Y(matchAt(a)).toFixed(1);
+    d += ' L' + X(age).toFixed(1) + ' ' + Y(matchAt(age)).toFixed(1);
+    g += `<path d="M${X(25)} ${y0} ${d.slice(1).replace(/^/, 'L')} L${X(age)} ${y0}Z" fill="${GREEN}" opacity="0.15"/>`;
+    g += `<path d="${d}" stroke="${GREEN}" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="${X(age)}" cy="${Y(matchAt(age))}" r="10" fill="${GREEN}" stroke="${NAVY}" stroke-width="3"/></g>`;
+    o += ov(money(matchAt(age)), 220, 96, 600, 64, GREEN, a3 * dm, 'text-align:left');
+    o += ov('JUST THE MATCH &middot; AGE ' + Math.floor(age), 220, 168, 600, 22, '#94A3B8', a3 * dm, 'text-align:left;font-weight:800');
+  }
+  const a4 = fin(T, 'c4');
+  if (a4 > 0) {
+    g += formCard(420, 350, 0.7 * pop(T, C('c4'), 0.5));
+    o += ov('ONE FORM<br><span class="y">&asymp; $394,000</span>', 600, 250, 600, 64, WHITE, clamp((T - C('c4') - 0.5) / 0.4));
+  }
+  return [g, o];
+};
+
+S.tax = (T) => {
+  let [g, o] = section('TAXES', 'THE TAX BONUS', T, 'tax');
+  const out5 = fout(T, 't5');
+  const a2 = fin(T, 't2') * out5;
+  if (a2 > 0) {
+    const x0 = 160, w = 960, y = 200, kw = w * 3600 / 60000, s = P(T, C('t2') + 1.2, 0.8);
+    g += `<g opacity="${a2}">${text(x0, y - 18, 'JAKE&rsquo;S PAY: $60,000', 24, '#CBD5E1', 800, 'start')}
+      <rect x="${x0 + kw + 4}" y="${y}" width="${w - kw - 4}" height="70" rx="14" fill="#475569"/>
+      <g transform="translate(0,${s * 90})"><rect x="${x0}" y="${y}" width="${kw}" height="70" rx="14" fill="${GREEN}"/>
+      ${text(x0 + kw + 18, y + 44, '401(k): $3,600 &middot; not taxed now', 24, GREEN, 900, 'start', `opacity="${s}"`)}</g>
+      ${text(x0 + kw + (w - kw) / 2, y + 46, 'TAXED ON $56,400', 30, WHITE, 900, 'middle', `opacity="${s}"`)}</g>`;
+  }
+  const a3 = pop(T, C('t3') + 0.6, 0.5) * out5;
+  if (a3 > 0) { g += badge('12% FEDERAL BRACKET', 470, 462, '#334155', WHITE, 22, clamp(a3));
+    g += `<g transform="${scaleAt(860, 445, a3)}">${text(860, 468, '&minus;$432 TAX', 52, GREEN)}</g>`; }
+  const a4 = fin(T, 't4') * out5;
+  if (a4 > 0) {
+    const p = P(T, C('t4'), 1.2);
+    g += `<g opacity="${a4}"><line x1="300" y1="530" x2="${300 + 540 * p}" y2="530" stroke="${GOLD}" stroke-width="6" stroke-dasharray="14 10"/>
+      <path d="M${296 + 540 * p} 516 L${322 + 540 * p} 530 L${296 + 540 * p} 544Z" fill="${GOLD}"/>
+      ${text(270, 538, 'NOW', 24, WHITE, 900, 'end')}${text(866, 538, 'TAXED IN RETIREMENT', 22, GOLD, 900, 'start', `opacity="${clamp(p * 2 - 1)}"`)}</g>`;
+  }
+  const a5 = fin(T, 't5');
+  if (a5 > 0) {
+    const card = (x, title, l1, l2, col, k) => { const p = pop(T, C('t5') + k, 0.45); if (p <= 0) return '';
+      return `<g transform="${scaleAt(x + 210, 330, p)}"><rect x="${x}" y="170" width="420" height="300" rx="22" fill="${SLATE}" stroke="${col}" stroke-width="4"/>
+        ${text(x + 210, 235, title, 36, col)}${text(x + 210, 318, l1, 28, WHITE, 800)}${text(x + 210, 372, l2, 28, WHITE, 800)}</g>`; };
+    g += card(170, 'TRADITIONAL', 'Tax break NOW', 'Taxed LATER', GOLD, 0.1);
+    g += card(690, 'ROTH 401(k)', 'Taxed NOW', 'Tax-free LATER*', GREEN, 1.6);
+    g += text(900, 500, '*qualified withdrawals', 18, '#94A3B8', 800, 'middle', `opacity="${clamp((T - C('t5') - 2) / 0.4)}"`);
+    const a6 = pop(T, C('t6'), 0.5);
+    if (a6 > 0) g += `<g transform="${scaleAt(640, 548, a6)}">${badge('EITHER WAY, GET THE MATCH', 640, 556, GREEN, NAVY, 26)}</g>`;
+  }
+  return [g, o];
+};
+
+S.rules = (T) => {
+  let [g, o] = section('4 RULES', '4 RULES TO KNOW', T, 'rules');
+  const keys = ['r2', 'r3', 'r4', 'r5'];
+  const big = pop(T, C('r1'), 0.5) * fout(T, 'r2');
+  if (big > 0) for (let i = 0; i < 4; i++) { const p = pop(T, C('r1') + 0.2 + i * 0.15, 0.4);
+    if (p > 0) g += `<g transform="${scaleAt(340 + i * 200, 340, p)}" opacity="${clamp(big)}"><circle cx="${340 + i * 200}" cy="340" r="70" fill="${GOLD}"/>${text(340 + i * 200, 372, i + 1, 90, NAVY)}</g>`; }
+  keys.forEach((k, i) => {
+    const a = fin(T, k) * (i < 3 ? fout(T, keys[i + 1]) : 1); if (a <= 0) return;
+    const p = pop(T, C(k), 0.5);
+    g += `<g transform="${scaleAt(320, 340, p)}" opacity="${a}">${tile(150, 150, 340, 380)}`;
+    if (i === 0) g += text(320, 300, '$24,500', 58, GOLD) + text(320, 345, '2026 LIMIT', 24, '#CBD5E1', 800) + text(320, 420, '+ catch-up', 26, GREEN, 900) + text(320, 452, 'if 50 or older', 22, '#CBD5E1', 800);
+    if (i === 1) g += `<path d="M270 300 L270 255 Q270 205 320 205 Q370 205 370 255 L370 300" stroke="#CBD5E1" stroke-width="18" fill="none"/>
+        <rect x="240" y="295" width="160" height="140" rx="18" fill="${GOLD}"/>${text(320, 385, '59&frac12;', 46, NAVY)}`;
+    if (i === 2) { [0, 20, 40, 60, 80, 100].forEach((v, j) => { const hh = 30 + j * 40, bx = 180 + j * 48;
+        g += `<rect x="${bx}" y="${450 - hh}" width="40" height="${hh}" rx="6" fill="${j === 5 ? GREEN : '#64748B'}"/>${text(bx + 20, 478, 'Y' + (j + 1), 16, '#94A3B8', 800)}`; });
+        g += text(320, 210, 'VESTING', 30, WHITE); }
+    if (i === 3) g += `${building(185, 300, 90, 150, '#475569')}${building(365, 270, 90, 180, '#475569')}
+        <path d="M245 260 Q320 190 395 240" stroke="${GOLD}" stroke-width="7" fill="none"/><path d="M386 226 L404 246 L380 252Z" fill="${GOLD}"/>
+        <rect x="290" y="190" width="56" height="44" rx="6" fill="${GREEN}"/>${text(318, 220, '$', 26, NAVY)}`;
+    g += '</g>';
+    const titles = ['CONTRIBUTION LIMIT', 'IT&rsquo;S FOR RETIREMENT', 'VESTING', 'CHANGING JOBS'];
+    const bodies = ['In 2026: up to <span class="y">$24,500</span> of your own money. More if you&rsquo;re 50+.',
+      'Take it out before <span class="y">59&frac12;</span> &rarr; usually a <span class="r">10% penalty</span> + income tax.',
+      'Your own money is always yours. The <span class="y">match</span> may take a few years to fully vest.',
+      'Your 401(k) comes with you. <span class="g">Roll it over</span> to the new plan or an IRA. <span class="r">Don&rsquo;t cash out.</span>'];
+    const cx = 540 + (1 - easeOut(clamp((T - C(k)) / 0.5))) * 60;
+    o += `<div style="position:absolute;left:${cx}px;top:170px;width:600px;opacity:${a};text-align:left">
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:22px"><span style="display:inline-flex;width:54px;height:54px;border-radius:50%;background:#EAB308;color:#0F172A;font-weight:900;font-size:30px;align-items:center;justify-content:center">${i + 1}</span>
+      <span style="font-weight:900;font-size:38px">${titles[i]}</span></div>
+      <div style="font-weight:800;font-size:34px;line-height:1.3;color:#E2E8F0">${bodies[i]}</div></div>`;
+  });
+  return [g, o];
+};
+
+S.start = (T) => {
+  let [g, o] = section('HOW TO START', 'DO THIS THIS WEEK', T, 'start', GREEN);
+  const ticks = ['s2', 's3', 's4', 's5'].filter(k => T > C(k) + 0.6).length;
+  g += floorLine(600);
+  g += person('jake', 230, 600, 1.0, { clip: true, ticks, t: T, wave: T > C('s1') && T < C('s1') + 1.2 });
+  const a = clamp((T - SCENES.start.start - 0.2) / 0.4);
+  g += `<rect x="420" y="150" width="800" height="400" rx="26" fill="${SLATE}" stroke="#334155" stroke-width="4" opacity="${a}"/>`;
+  const steps = [['s2', 'Ask HR: the match + vesting'], ['s3', 'Contribute enough for the <span class="y">full match</span>'],
+                 ['s4', 'Pick a low-cost <span class="g">target-date fund</span>'], ['s5', 'Turn on <span class="y">+1%</span> auto-increase']];
+  steps.forEach(([k, s], i) => {
+    const y = 180 + i * 90, ap = fin(T, k), ck = clamp((T - C(k) - 0.6) / 0.35);
+    g += `<g opacity="${a}"><rect x="455" y="${y}" width="54" height="54" rx="11" fill="${ck > 0.3 ? GREEN : 'none'}" stroke="${ck > 0.3 ? GREEN : '#64748B'}" stroke-width="4"/>
+          ${ck > 0 ? check(482, y + 28, 1.5, WHITE, ck, 7) : ''}</g>`;
+    o += ov(s, 530, y + 10, 670, 29, ap > 0 ? WHITE : '#64748B', a * (0.35 + 0.65 * ap), 'text-align:left;font-weight:800');
+  });
+  const w6 = pop(T, C('s6') + 0.2, 0.5);
+  if (w6 > 0) g += `<g transform="${scaleAt(820, 110, w6)}">${badge('AUTO-ENROLLED AT 3%? CHECK THE MATCH', 820, 118, RED, WHITE, 22)}</g>`;
+  return [g, o];
+};
+
+S.end = (T) => {
+  let g = '', o = '';
+  if (T < C('e2')) {
+    for (let i = 0; i < 18; i++) { const sp = 0.5 + (i * 7 % 5) * 0.12, k = ((T - C('e1')) * sp + i * 0.37) % 1;
+      if (T > C('e1')) g += coin(80 + (i * 211) % 1120, -30 + k * 700, 16 + (i % 3) * 4, 0.85); }
+    g += floorLine() + person('jake', 360, 600, 1.1, { clip: true, ticks: 4, color: GREEN });
+    o += ov('ONE FORM.<br><span class="y">&asymp; $394K</span> OF MATCH.', 580, 220, 640, 56, WHITE, fin(T, 'e1', 0.5), 'background:rgba(15,23,42,0.9);padding:26px 0;border-radius:24px');
+    return [g, o];
+  }
+  const a = fin(T, 'e2', 0.6);
+  o += ov('THANKS FOR WATCHING', 0, 90, W, 40, '#94A3B8', a, 'font-weight:800;letter-spacing:4px');
+  g += `<g opacity="${a}"><rect x="500" y="200" width="280" height="76" rx="14" fill="${RED}"/>${text(640, 250, 'SUBSCRIBE', 36, WHITE)}</g>`;
+  g += `<g opacity="${a}"><rect x="140" y="340" width="460" height="260" rx="18" fill="#1E293B" stroke="#334155" stroke-width="3" stroke-dasharray="10 10"/>
+        <rect x="680" y="340" width="460" height="260" rx="18" fill="#1E293B" stroke="#334155" stroke-width="3" stroke-dasharray="10 10"/></g>`;
+  o += ov('NEXT:<br><span class="y">Why the Milk Is<br>Always at the Back</span>', 140, 400, 460, 36, WHITE, a);
+  o += ov('WATCH:<br><span class="g">5 Money Moves<br>Before Dec 31</span>', 680, 400, 460, 36, WHITE, a);
+  return [g, o];
+};
+
+/* ---------- frame renderer ---------- */
+function captionHTML(T) {
+  for (const k in CUE) {
+    const c = CUE[k];
+    if (T >= c.start - 0.05 && T <= c.end + 0.3) {
+      const s = c.text.replace(/(401\(k\)|\$[\d,]+(?:\.\d+)?|\d+%|\b\d{2,}\b)/g, '<span class="hl">$1</span>');
+      return `<div class="cap"><span class="box">${s}</span></div>`;
+    }
+  }
+  return '';
+}
+
+window.render = function (T) {
+  let svg = '', html = '';
+  for (const name of ORDER) {
+    const sc = SCENES[name];
+    if (T < sc.start - 0.01 || T > sc.end + 0.01) continue;
+    const fade = Math.min(1, (T - sc.start) / 0.45, (sc.end - T) / 0.45);
+    if (fade <= 0) continue;
+    const [g, o] = S[name](T);
+    svg += `<g opacity="${fade.toFixed(3)}">${g}</g>`;
+    html += `<div style="opacity:${fade.toFixed(3)}">${o}</div>`;
+  }
+  const disc = T < C('e2') ? 'Example numbers &middot; 2026 rules &middot; Not financial advice' : '';
+  const bg = `<rect width="${W}" height="${H}" fill="${NAVY}"/><circle cx="640" cy="320" r="620" fill="#1E293B" opacity="0.35"/>`;
+  document.getElementById('stage').innerHTML =
+    `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${bg}${svg}</svg>` + html +
+    (disc ? `<div class="ov" style="left:20px;top:8px;font-size:15px;font-weight:800;color:#64748B;text-align:left">${disc}</div>` : '') +
+    captionHTML(T);
+};
+window.CUE_LIST = () => Object.entries(CUE).map(([k, c]) => ({ key: k, start: c.start, end: c.end, text: c.text }));
+window.render(0);
+</script>
+</body>
+</html>

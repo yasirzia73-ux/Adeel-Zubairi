@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Two Friends Earn $60K - 3D animated video</title>
+<style>
+  @font-face { font-family: "Montserrat"; font-weight: 900; src: local("Montserrat Black"), url("fonts/Montserrat-Black.ttf"); }
+  @font-face { font-family: "Montserrat"; font-weight: 800; src: local("Montserrat ExtraBold"), url("fonts/Montserrat-ExtraBold.ttf"); }
+  html, body { margin: 0; padding: 0; background: #050914; overflow: hidden; }
+  #wrap { position: relative; width: 1280px; height: 720px; overflow: hidden; font-family: "Montserrat", sans-serif; color: #F8FAFC; }
+  canvas#gl { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; }
+  #ui { position: absolute; inset: 0; pointer-events: none; }
+  .ov { position: absolute; text-align: center; font-weight: 900; line-height: 1.08; }
+  .lbl { position: absolute; transform: translate(-50%, -100%); white-space: nowrap; font-weight: 900; text-align: center; }
+  .glass { background: linear-gradient(180deg, rgba(51,65,85,0.62), rgba(15,23,42,0.72)); border: 1.5px solid rgba(148,163,184,0.35);
+           border-radius: 18px; box-shadow: 0 18px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.12); }
+  .pill { display: inline-block; border-radius: 999px; padding: 8px 22px; box-shadow: 0 6px 0 rgba(0,0,0,0.35), 0 14px 28px rgba(0,0,0,0.45); }
+  .cap { position: absolute; left: 90px; width: 1100px; bottom: 24px; text-align: center; }
+  .cap span.box { display: inline-block; background: rgba(2,6,23,0.74); border: 1px solid rgba(255,255,255,0.10); border-radius: 14px;
+                  padding: 10px 22px; font-weight: 800; font-size: 32px; line-height: 1.25; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
+  .hl { color: #FACC15; }
+  /* extruded 3D text */
+  .w3 { color: #F8FAFC; text-shadow: 0 1px 0 #cbd5e1, 0 2px 0 #b6c2d2, 0 3px 0 #a3b1c4, 0 4px 0 #8d9cb2, 0 5px 0 #7a8aa3, 0 6px 0 #66768f, 0 8px 6px rgba(0,0,0,.35), 0 14px 24px rgba(0,0,0,.55); }
+  .g3 { color: #FACC15; text-shadow: 0 1px 0 #e0b20c, 0 2px 0 #c99c08, 0 3px 0 #b38906, 0 4px 0 #9c7604, 0 5px 0 #866303, 0 6px 0 #705202, 0 8px 6px rgba(0,0,0,.35), 0 14px 24px rgba(0,0,0,.55); }
+  .gr3 { color: #4ADE80; text-shadow: 0 1px 0 #31c768, 0 2px 0 #26b05a, 0 3px 0 #1d994d, 0 4px 0 #168241, 0 5px 0 #106b35, 0 6px 0 #0b5529, 0 8px 6px rgba(0,0,0,.35), 0 14px 24px rgba(0,0,0,.55); }
+  .r3 { color: #F87171; text-shadow: 0 1px 0 #e35b5b, 0 2px 0 #cc4a4a, 0 3px 0 #b53c3c, 0 4px 0 #9e3030, 0 5px 0 #872525, 0 6px 0 #701b1b, 0 8px 6px rgba(0,0,0,.35), 0 14px 24px rgba(0,0,0,.55); }
+  .s3 { color: #CBD5E1; text-shadow: 0 1px 0 #aab6c6, 0 2px 0 #94a1b4, 0 3px 0 #7f8da2, 0 4px 0 #6a7890, 0 6px 6px rgba(0,0,0,.35), 0 12px 20px rgba(0,0,0,.5); }
+  #fade { position: absolute; inset: 0; background: #000; }
+</style>
+<script type="importmap">
+{ "imports": { "three": "./vendor/three.module.min.js", "three/addons/": "./vendor/addons/" } }
+</script>
+</head>
+<body>
+<div id="wrap"><canvas id="gl"></canvas><div id="ui"></div><div id="fade"></div></div>
+<script type="module">
+import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+
+const W = 1280, H = 720;
+const PR = parseFloat(new URLSearchParams(location.search).get('pr') || '1.5');
+
+/* ---------- narration cues (captions) ---------- */
+const CUES = [
+ // HOOK
+ ['hook','h1','Maya invested $48,000.'],
+ ['hook','h2','Jake invested almost four times that.'],
+ ['hook','h3','Same salary. Same investment.'],
+ ['hook','h4','At 65, Maya is richer. And Jake never catches up.'],
+ // MEET
+ ['meet','m1','This is Maya. This is Jake.'],
+ ['meet','m2','They graduate the same year, start the same kind of job,'],
+ ['meet','m3','and both earn $60,000 a year.'],
+ ['meet','m4',"They're fictional, but every number in this video is real math you can check yourself."],
+ ['meet','m5','At 22, Maya makes one decision.'],
+ ['meet','m6',"She takes $400 from every month's pay, about 8% of her salary,"],
+ ['meet','m7','and puts it into a simple index fund. Then she ignores it.'],
+ ['meet','m8','Jake? Jake has other plans. A new car. A nicer apartment.'],
+ ['meet','m9','"I\'ll start investing when I\'m older," he says. "When I actually make money."'],
+ ['meet','m10',"But here's the twist: Maya is only going to do this for ten years."],
+ // STOP
+ ['stop','s1','Maya invests $400 a month for exactly ten years.'],
+ ['stop','s2',"By 32, she's put in $48,000, and her account has grown to about $69,000."],
+ ['stop','s3','Then life happens. Kids. A mortgage.'],
+ ['stop','s4','She stops investing. Completely. Not one more dollar, ever.'],
+ ['stop','s5','And at that exact moment, Jake finally wakes up.'],
+ ['stop','s6',"He's 32, he's earning more, and he starts investing the same $400 a month."],
+ ['stop','s7',"But Jake doesn't stop. He invests every single month for 33 years, all the way to 65."],
+ ['stop','s8','In total, he puts in $190,000. Almost four times what Maya invested.'],
+ ['stop','s9','So who ends up with more money?'],
+ // RACE
+ ['race','r1',"Let's fast-forward."],
+ ['race','r2','At 45, Jake has been investing for 13 years. He has about $101,000. Not bad.'],
+ ['race','r3',"But Maya, who hasn't added a single dollar in 13 years, has about $172,000."],
+ ['race','r4','At 55, Jake has about $273,000. Maya: $345,000.'],
+ ['race','r5','And at 65, retirement day:'],
+ ['race','r6','Jake has about $618,000. Maya has about $693,000.'],
+ ['race','r7','Jake invested $142,000 more than Maya, and still ended up with less.'],
+ ['race','r8',"So how is this possible? It comes down to one thing that doesn't care how hard you work."],
+ // WHY
+ ['why','w1',"It's called compound growth."],
+ ['why','w2','Your money earns returns, and then those returns earn returns.'],
+ ['why','w3','Think of it like a snowball rolling downhill.'],
+ ['why','w4',"In year one, Maya's snowball is tiny. But every year it picks up more snow,"],
+ ['why','w5','and the bigger it gets, the faster it grows.'],
+ ['why','w6','At 7% a year, money roughly doubles about every ten years.'],
+ ['why','w7',"Maya's first dollars had 43 years to grow. That's more than four doublings."],
+ ['why','w8','A single dollar she invested at 22 turned into about $20 by 65.'],
+ ['why','w9',"Jake's first dollars only had 33 years. About $10 each."],
+ ['why','w10','And the dollars he invested at 60? They barely had time to grow at all.'],
+ ['why','w11',"Maya didn't win because she saved more. She won because she gave her money more time."],
+ ['why','w12',"In investing, time is the one ingredient you can't buy back."],
+ ['why','w13',"One quick note: we're assuming 7% a year, roughly the US stock market's long-run average after inflation."],
+ ['why','w14','Some years are much better, some are much worse, and nothing is guaranteed.'],
+ ['why','w15','But over decades, the pattern stays the same: earlier beats bigger.'],
+ // BONUS
+ ['bonus','b1','But wait. What if Maya never stopped?'],
+ ['bonus','b2','Same $400 a month, from 22 all the way to 65.'],
+ ['bonus','b3',"She'd retire with about $1.3 million."],
+ ['bonus','b4',"For Jake to catch that, starting at 32, he'd need to invest about $850 a month."],
+ ['bonus','b5',"More than double. That's the real cost of waiting ten years."],
+ // TIPS
+ ['tips','t1','Now, if you\'re thinking, "Great, I\'m already Jake," don\'t worry.'],
+ ['tips','t2','Jake still retired with over $600,000. Starting late beats never starting.'],
+ ['tips','t3',"Here's how to be more like Maya, starting this month."],
+ ['tips','t4','One: if your job offers a 401(k) match, take all of it.'],
+ ['tips','t5','A match is part of your pay you only get if you contribute.'],
+ ['tips','t6','Two: start with any amount. Even $50 a month builds the habit.'],
+ ['tips','t7','Three: automate it, so it comes out before you see your paycheck.'],
+ ['tips','t8','Four: keep it simple. A low-cost, broad index fund owns a slice of the whole market.'],
+ ['tips','t9',"Five: don't panic when the market drops. Maya's money went through crashes too."],
+ ['tips','t10',"She just didn't sell."],
+ // END
+ ['end','e1','Maya and Jake earned the same salary.'],
+ ['end','e2',"They weren't different in talent or luck. The difference was one decision about time."],
+ ['end','e3','The best day to start was ten years ago. The second-best day is today.'],
+ ['end','e4',"Subscribe so you don't miss the next one: how to budget a $2,500 paycheck, step by step."],
+];
+
+/* timing: ~2.45 spoken words/sec; numbers count as ~3 spoken words */
+function spokenWords(s) {
+  return s.split(/\s+/).filter(Boolean)
+          .reduce((n, w) => n + (/\d/.test(w) ? 3 : 1), 0);
+}
+const CUE = {}; const SCENES = {}; const ORDER = [];
+(function buildTimeline() {
+  let t = 0.4, prevScene = null;
+  for (const [scene, key, text] of CUES) {
+    if (scene !== prevScene) {
+      if (prevScene) { SCENES[prevScene].end = t + 0.5; t += 0.9; }
+      SCENES[scene] = { start: t - 0.2 }; ORDER.push(scene); prevScene = scene;
+    }
+    const d = Math.max(1.9, spokenWords(text) / 2.45);
+    CUE[key] = { start: t, end: t + d, text };
+    t += d + 0.35;
+  }
+  SCENES[prevScene].end = t + 15;          // 15 s end-screen hold
+  window.TOTAL = SCENES[prevScene].end;
+})();
+const C = k => CUE[k].start, E = k => CUE[k].end;
+
+/* ---------- math ---------- */
+const R = 0.07 / 12;
+const MAYA = [0], JAKE = [0], FOREVER = [0];
+for (let k = 1; k <= 516; k++) {
+  MAYA.push(MAYA[k-1] * (1+R) + (k <= 120 ? 400 : 0));
+  JAKE.push(JAKE[k-1] * (1+R) + (k > 120 ? 400 : 0));
+  FOREVER.push(FOREVER[k-1] * (1+R) + 400);
+}
+const balAt = (arr, age) => { const m = Math.max(0, Math.min(516, (age - 22) * 12));
+  const i = Math.floor(m), f = m - i; return i >= 516 ? arr[516] : arr[i] * (1-f) + arr[i+1] * f; };
+
+
+
+/* ---------- helpers ---------- */
+const clamp = (x, a=0, b=1) => Math.max(a, Math.min(b, x));
+const ease = x => { x = clamp(x); return x < .5 ? 4*x*x*x : 1 - Math.pow(-2*x+2, 3)/2; };
+const easeOut = x => 1 - Math.pow(1 - clamp(x), 3);
+const easeIn = x => Math.pow(clamp(x), 2.2);
+const easeBack = x => { x = clamp(x); const c1 = 1.70158, c3 = c1 + 1; return 1 + c3*Math.pow(x-1,3) + c1*Math.pow(x-1,2); };
+const P = (t, a, d) => ease((t - a) / d);
+const lerp = (a, b, p) => a + (b - a) * p;
+const money = n => '$' + Math.round(n).toLocaleString('en-US');
+const moneyK = n => n >= 1e6 ? '$' + (n/1e6).toFixed(2) + 'M' : '$' + Math.round(n/1000) + 'K';
+function rng(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+  t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+
+/* ---------- renderer ---------- */
+const canvas = document.getElementById('gl');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(PR); renderer.setSize(W, H, false);
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 0.92;
+renderer.localClippingEnabled = true;
+
+const scene = new THREE.Scene();
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+scene.environmentIntensity = 0.38;
+const camera = new THREE.PerspectiveCamera(35, W / H, 0.1, 200);
+
+function gradTex(stops) {
+  const c = document.createElement('canvas'); c.width = 16; c.height = 512; const g = c.getContext('2d');
+  const gr = g.createLinearGradient(0, 0, 0, 512); stops.forEach(([o, col]) => gr.addColorStop(o, col));
+  g.fillStyle = gr; g.fillRect(0, 0, 16, 512); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+const BG_NIGHT = gradTex([[0, '#0B1430'], [0.55, '#0B1226'], [1, '#05080F']]);
+const BG_SUNSET = gradTex([[0, '#1E1B4B'], [0.35, '#6D28D9'], [0.62, '#EA580C'], [0.8, '#F59E0B'], [1, '#FDE68A']]);
+const BG_END = gradTex([[0, '#0A1024'], [1, '#03050B']]);
+scene.background = BG_NIGHT;
+scene.fog = new THREE.Fog(0x070C1A, 16, 42);
+
+const hemi = new THREE.HemisphereLight(0xbfd4ff, 0x0b1120, 0.55); scene.add(hemi);
+const key = new THREE.DirectionalLight(0xffffff, 2.0);
+key.position.set(5, 10, 7); key.castShadow = true; key.shadow.mapSize.set(1536, 1536);
+Object.assign(key.shadow.camera, { left: -13, right: 13, top: 13, bottom: -13, near: 1, far: 40 });
+key.shadow.bias = -0.0004; key.shadow.normalBias = 0.02; key.shadow.radius = 5; scene.add(key);
+const rim = new THREE.DirectionalLight(0x60A5FA, 1.6); rim.position.set(-7, 5, -6); scene.add(rim);
+const fillL = new THREE.DirectionalLight(0xFDE68A, 0.35); fillL.position.set(-4, 3, 8); scene.add(fillL);
+
+const floorMat = new THREE.MeshStandardMaterial({ color: 0x0A1122, roughness: 0.5, metalness: 0.0 });
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(120, 120), floorMat);
+floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
+
+/* floating gold dust */
+const DUST = 420, dr = rng(7), dustPos = new Float32Array(DUST * 3), dustBase = [];
+for (let i = 0; i < DUST; i++) dustBase.push([dr()*28-14, dr()*9, dr()*16-12, dr()*0.3+0.08, dr()*6.28]);
+const dustGeo = new THREE.BufferGeometry(); dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
+const dust = new THREE.Points(dustGeo, new THREE.PointsMaterial({ color: 0xFACC15, size: 0.06, transparent: true, opacity: 0.55,
+  blending: THREE.AdditiveBlending, depthWrite: false }));
+scene.add(dust);
+
+/* post-processing */
+const rt = new THREE.WebGLRenderTarget(W * PR, H * PR, { type: THREE.HalfFloatType, samples: 4 });
+const composer = new EffectComposer(renderer, rt);
+composer.setPixelRatio(PR); composer.setSize(W, H);
+composer.addPass(new RenderPass(scene, camera));
+const bloom = new UnrealBloomPass(new THREE.Vector2(W, H), 0.32, 0.45, 0.96); composer.addPass(bloom);
+composer.addPass(new OutputPass());
+
+/* ---------- materials ---------- */
+const std = (c, r=0.6, m=0, extra={}) => new THREE.MeshStandardMaterial(Object.assign({ color: c, roughness: r, metalness: m }, extra));
+function coinFaceTex() {
+  const c = document.createElement('canvas'); c.width = c.height = 256; const g = c.getContext('2d');
+  const gr = g.createRadialGradient(110, 100, 10, 128, 128, 128); gr.addColorStop(0, '#FFE58A'); gr.addColorStop(0.7, '#F5B700'); gr.addColorStop(1, '#B98500');
+  g.fillStyle = gr; g.fillRect(0, 0, 256, 256);
+  g.strokeStyle = '#A16207'; g.lineWidth = 12; g.beginPath(); g.arc(128, 128, 100, 0, Math.PI * 2); g.stroke();
+  g.fillStyle = '#9A6A00'; g.font = '900 150px Montserrat'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('$', 128, 136);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t;
+}
+let goldSide, goldFace, coinMats, goldMat;
+const coinGeo = new THREE.CylinderGeometry(0.34, 0.34, 0.07, 48);
+function initMats() {
+  goldSide = std(0xF5B700, 0.28, 1.0, { envMapIntensity: 2.6 });
+  goldFace = std(0xffffff, 0.3, 0.85, { map: coinFaceTex(), envMapIntensity: 2.4 });
+  coinMats = [goldSide, goldFace, goldFace];
+  goldMat = std(0xF5B700, 0.25, 1.0, { envMapIntensity: 2.6 });
+}
+function textTex(lines, w, h, bg, fg, font, border) {
+  const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d');
+  if (bg) { g.fillStyle = bg; g.fillRect(0, 0, w, h); }
+  if (border) { g.strokeStyle = border[0]; g.lineWidth = border[1]; g.strokeRect(border[1]/2, border[1]/2, w - border[1], h - border[1]); }
+  g.fillStyle = fg; g.font = font; g.textAlign = 'center'; g.textBaseline = 'middle';
+  lines.forEach((s, i) => g.fillText(s, w / 2, h / 2 + (i - (lines.length - 1) / 2) * parseInt(font.match(/(\d+)px/)[1]) * 1.1));
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t;
+}
+const shadowAll = o => { o.traverse(m => { if (m.isMesh) { m.castShadow = true; m.receiveShadow = true; } }); return o; };
+
+/* ---------- builders ---------- */
+function makePerson(kind) {
+  const maya = kind === 'maya';
+  const g = new THREE.Group(), root = new THREE.Group(); g.add(root);
+  const mats = { skin: std(maya ? 0xC68642 : 0xF1C27D, 0.55), top: std(maya ? 0x22C55E : 0x94A3B8, 0.8), pants: std(0x1E293B, 0.85),
+    shoe: std(0x0B1120, 0.45), hair: std(maya ? 0x2B1B17 : 0x6B4423, 0.75), eye: std(0x0F172A, 0.25), cap: std(0x0B1120, 0.6),
+    hood: std(0x64748B, 0.8), cheek: std(0xF472B6, 0.7, 0, { transparent: true, opacity: 0.35 }) };
+  const base = {}; for (const k in mats) base[k] = mats[k].color.clone();
+  const parts = {};
+  for (const side of [-1, 1]) {
+    const hip = new THREE.Group(); hip.position.set(side * 0.18, 0.74, 0); root.add(hip);
+    const leg = new THREE.Mesh(new THREE.CapsuleGeometry(0.135, 0.42, 6, 14), mats.pants); leg.position.y = -0.33; hip.add(leg);
+    const shoe = new THREE.Mesh(new THREE.SphereGeometry(1, 20, 14), mats.shoe); shoe.scale.set(0.17, 0.1, 0.26); shoe.position.set(0, -0.67, 0.07); hip.add(shoe);
+    parts[side < 0 ? 'legL' : 'legR'] = hip;
+  }
+  const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.42, 0.5, 8, 24), mats.top); body.position.y = 1.32; body.scale.z = 0.82; root.add(body);
+  for (const side of [-1, 1]) {
+    const sh = new THREE.Group(); sh.position.set(side * 0.5, 1.8, 0); root.add(sh);
+    const arm = new THREE.Mesh(new THREE.CapsuleGeometry(0.11, 0.5, 6, 12), mats.top); arm.position.y = -0.34; arm.rotation.z = side * 0.1; sh.add(arm);
+    const hand = new THREE.Mesh(new THREE.SphereGeometry(0.13, 16, 12), mats.skin); hand.position.set(side * 0.06, -0.72, 0); sh.add(hand);
+    parts[side < 0 ? 'armL' : 'armR'] = sh;
+  }
+  if (!maya) { const hood = new THREE.Mesh(new THREE.TorusGeometry(0.33, 0.1, 12, 28), mats.hood); hood.rotation.x = Math.PI / 2; hood.position.y = 1.98; root.add(hood); }
+  const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.13, 0.22, 16), mats.skin); neck.position.y = 2.02; root.add(neck);
+  const head = new THREE.Group(); head.position.y = 2.46; root.add(head); parts.head = head;
+  head.add(new THREE.Mesh(new THREE.SphereGeometry(0.45, 40, 30), mats.skin));
+  for (const s of [-1, 1]) {
+    const e = new THREE.Mesh(new THREE.SphereGeometry(0.058, 14, 10), mats.eye); e.position.set(s * 0.155, 0.05, 0.41); e.scale.z = 0.6; head.add(e);
+    const ch = new THREE.Mesh(new THREE.SphereGeometry(0.075, 12, 10), mats.cheek); ch.position.set(s * 0.25, -0.08, 0.36); ch.scale.z = 0.4; head.add(ch);
+  }
+  const nose = new THREE.Mesh(new THREE.SphereGeometry(0.055, 12, 10), mats.skin); nose.position.set(0, -0.02, 0.45); head.add(nose);
+  const smile = new THREE.Mesh(new THREE.TorusGeometry(0.13, 0.026, 8, 24, Math.PI), mats.eye); smile.position.set(0, -0.13, 0.415); head.add(smile); parts.smile = smile;
+  const hairG = new THREE.Group(); head.add(hairG);
+  if (maya) {
+    const pts = [[-0.33,0.2,0.02,0.2],[-0.18,0.36,0.08,0.2],[0,0.42,0.06,0.21],[0.18,0.36,0.08,0.2],[0.33,0.2,0.02,0.2],[-0.42,-0.04,-0.1,0.19],[0.42,-0.04,-0.1,0.19],
+      [-0.26,0.26,-0.26,0.22],[0.26,0.26,-0.26,0.22],[0,0.32,-0.3,0.23],[-0.4,-0.26,-0.18,0.19],[0.4,-0.26,-0.18,0.19],[0,0.02,-0.42,0.24],
+      [-0.22,-0.2,-0.36,0.22],[0.22,-0.2,-0.36,0.22],[-0.3,-0.45,-0.2,0.17],[0.3,-0.45,-0.2,0.17],[0,-0.32,-0.38,0.2]];
+    for (const [x, y, z, r] of pts) { const m = new THREE.Mesh(new THREE.SphereGeometry(r, 16, 12), mats.hair); m.position.set(x, y, z); hairG.add(m); }
+  } else {
+    const cap = new THREE.Mesh(new THREE.SphereGeometry(0.475, 32, 16, 0, Math.PI * 2, 0, Math.PI * 0.42), mats.hair);
+    cap.rotation.x = -0.32; cap.position.set(0, 0.02, -0.03); hairG.add(cap);
+    const fr = new THREE.Mesh(new THREE.SphereGeometry(0.16, 16, 10), mats.hair); fr.position.set(0.12, 0.36, 0.3); fr.scale.set(1.6, 0.6, 0.8); hairG.add(fr);
+  }
+  const gcap = new THREE.Group(); head.add(gcap); parts.gcap = gcap;
+  const board = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.05, 1.0), mats.cap); board.position.y = 0.5; board.rotation.y = Math.PI / 4; gcap.add(board);
+  const cb = new THREE.Mesh(new THREE.CylinderGeometry(0.33, 0.36, 0.2, 24), mats.cap); cb.position.y = 0.4; gcap.add(cb);
+  const tas = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 0.35, 6), goldMat); tas.position.set(0.5, 0.36, 0.2); gcap.add(tas);
+  const tb = new THREE.Mesh(new THREE.SphereGeometry(0.05, 10, 8), goldMat); tb.position.set(0.5, 0.18, 0.2); gcap.add(tb);
+  shadowAll(g);
+  const P = {
+    group: g, root, parts, mats,
+    setOld(old) { mats.hair.color.set(old ? 0xD1D5DB : base.hair); base.hair = mats.hair.color.clone(); },
+    setTop(hex) { base.top = new THREE.Color(hex); },
+    setDim(d) { for (const k in mats) mats[k].color.copy(base[k]).multiplyScalar(1 - 0.65 * d); },
+    pose(t, o = {}) {
+      const walk = o.walk || 0, s = Math.sin(t * 9);
+      parts.legL.rotation.x = s * 0.55 * walk; parts.legR.rotation.x = -s * 0.55 * walk;
+      parts.armL.rotation.x = -s * 0.45 * walk; parts.armR.rotation.x = s * 0.45 * walk;
+      parts.armL.rotation.z = -0.08; parts.armR.rotation.z = 0.08;
+      root.position.y = Math.abs(Math.cos(t * 9)) * 0.07 * walk + Math.sin(t * 2.2 + (maya ? 0 : 1.3)) * 0.012;
+      parts.head.rotation.y = (o.look || 0) + Math.sin(t * 0.9 + (maya ? 0 : 2)) * 0.06;
+      parts.head.rotation.z = Math.sin(t * 1.3) * 0.03;
+      if (o.wave) { parts.armR.rotation.z = 2.5 + Math.sin(t * 10) * 0.28 * o.wave; parts.armR.rotation.x = 0; }
+      if (o.reach) { parts.armR.rotation.z = 1.2 * o.reach; }
+      if (o.sit) { parts.legL.rotation.x = parts.legR.rotation.x = -Math.PI / 2 + 0.15; }
+      parts.smile.rotation.z = o.sad ? 0 : Math.PI; parts.smile.position.y = o.sad ? -0.2 : -0.13;
+      parts.gcap.visible = !!o.cap;
+      this.setDim(o.dim || 0);
+    }
+  };
+  return P;
+}
+
+function makeTower(n = 80) {
+  const im = new THREE.InstancedMesh(coinGeo, coinMats, n); im.castShadow = true; im.receiveShadow = true;
+  const r = rng(n * 13 + 5); im.userData.j = Array.from({ length: n }, () => [r() * 0.03 - 0.015, r() * 0.03 - 0.015, r() * 6.28]);
+  im.count = 0; return im;
+}
+const dummy = new THREE.Object3D();
+function setTower(im, c, baseY = 0, drop = 2.4) {
+  const n = Math.floor(c), f = c - n, j = im.userData.j, max = j.length;
+  let k = 0;
+  for (let i = 0; i < Math.min(n, max); i++, k++) {
+    dummy.position.set(j[i][0], baseY + 0.036 + i * 0.072, j[i][1]); dummy.rotation.set(0, j[i][2], 0); dummy.scale.set(1, 1, 1);
+    dummy.updateMatrix(); im.setMatrixAt(k, dummy.matrix);
+  }
+  if (f > 0.001 && n < max) {
+    dummy.position.set(0, baseY + 0.036 + n * 0.072 + (1 - easeIn(f)) * drop, 0); dummy.rotation.set((1 - f) * 2.5, j[n][2] + (1 - f) * 4, 0);
+    dummy.updateMatrix(); im.setMatrixAt(k++, dummy.matrix);
+  }
+  im.count = k; im.instanceMatrix.needsUpdate = true;
+}
+
+function makeJar() {
+  const g = new THREE.Group();
+  const glass = new THREE.Mesh(new THREE.CylinderGeometry(0.62, 0.6, 1.5, 48, 1, true),
+    std(0xD6ECFF, 0.04, 0.0, { transparent: true, opacity: 0.2, side: THREE.DoubleSide, depthWrite: false, envMapIntensity: 2.2 }));
+  glass.position.y = 0.75; g.add(glass);
+  const bottom = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.6, 0.05, 48), std(0xD6ECFF, 0.05, 0, { transparent: true, opacity: 0.35 }));
+  bottom.position.y = 0.025; g.add(bottom);
+  const rimM = new THREE.Mesh(new THREE.TorusGeometry(0.62, 0.05, 12, 48), std(0xCBD5E1, 0.2, 1)); rimM.rotation.x = Math.PI / 2; rimM.position.y = 1.5; g.add(rimM);
+  const coins = new THREE.InstancedMesh(coinGeo, coinMats, 90); coins.castShadow = true; coins.count = 0; g.add(coins);
+  const r = rng(99); const slots = [];
+  for (let layer = 0; layer < 30; layer++) for (let i = 0; i < 3; i++) {
+    const a = r() * 6.28, rad = r() * 0.22;
+    slots.push([Math.cos(a) * rad, 0.06 + layer * 0.048 + r() * 0.02, Math.sin(a) * rad, r() * 0.5 - 0.25, r() * 6.28, r() * 0.5 - 0.25]);
+  }
+  shadowAll(g); glass.castShadow = false;
+  return { group: g, setFill(c) {
+    const n = Math.min(90, Math.floor(c)), f = c - Math.floor(c); let k = 0;
+    for (let i = 0; i < n; i++, k++) { const s = slots[i]; dummy.position.set(s[0], s[1], s[2]); dummy.rotation.set(s[3], s[4], s[5]); dummy.scale.set(0.82, 0.82, 0.82); dummy.updateMatrix(); coins.setMatrixAt(k, dummy.matrix); }
+    if (f > 0.01 && n < 90) { const s = slots[n]; dummy.position.set(s[0], s[1] + (1 - easeIn(f)) * 1.6, s[2]); dummy.rotation.set(s[3] + (1 - f) * 3, s[4], s[5]); dummy.updateMatrix(); coins.setMatrixAt(k++, dummy.matrix); }
+    coins.count = k; coins.instanceMatrix.needsUpdate = true; } };
+}
+
+function makeStopSign() {
+  const g = new THREE.Group();
+  const tex = textTex(['STOP'], 512, 512, '#DC2626', '#FFFFFF', '900 150px Montserrat');
+  const edge = new THREE.Mesh(new THREE.CylinderGeometry(0.64, 0.64, 0.08, 8), std(0xF8FAFC, 0.4));
+  edge.rotation.x = Math.PI / 2; edge.rotation.y = Math.PI / 8; g.add(edge);
+  const face = new THREE.Mesh(new THREE.CircleGeometry(0.58, 8, Math.PI / 8), std(0xffffff, 0.35, 0, { map: tex })); face.position.z = 0.045; g.add(face);
+  const back = new THREE.Mesh(new THREE.CircleGeometry(0.58, 8, Math.PI / 8), std(0xB91C1C, 0.5)); back.position.z = -0.045; back.rotation.y = Math.PI; g.add(back);
+  const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 1.2, 10), std(0x94A3B8, 0.3, 1)); pole.position.y = -0.95; g.add(pole);
+  return shadowAll(g);
+}
+function makeHouse() {
+  const g = new THREE.Group();
+  const b = new THREE.Mesh(new RoundedBoxGeometry(1.4, 1.0, 1.2, 3, 0.05), std(0xCBD5E1, 0.7)); b.position.y = 0.5; g.add(b);
+  const roof = new THREE.Mesh(new THREE.ConeGeometry(1.15, 0.75, 4), std(0xEF4444, 0.6)); roof.position.y = 1.37; roof.rotation.y = Math.PI / 4; g.add(roof);
+  const door = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.5, 0.05), std(0x1E3A8A, 0.5)); door.position.set(0, 0.25, 0.61); g.add(door);
+  for (const x of [-0.42, 0.42]) { const w = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.24, 0.05), std(0xFDE68A, 0.3, 0, { emissive: 0xF59E0B, emissiveIntensity: 0.8 })); w.position.set(x, 0.6, 0.61); g.add(w); }
+  return shadowAll(g);
+}
+function makeStroller() {
+  const g = new THREE.Group();
+  const body = new THREE.Mesh(new RoundedBoxGeometry(0.8, 0.42, 0.5, 3, 0.12), std(0xF472B6, 0.6)); body.position.y = 0.55; g.add(body);
+  const hood = new THREE.Mesh(new THREE.SphereGeometry(0.36, 20, 12, 0, Math.PI, 0, Math.PI / 2), std(0xDB2777, 0.6)); hood.position.set(-0.2, 0.75, 0); hood.rotation.y = Math.PI / 2; hood.rotation.z = 0; g.add(hood);
+  for (const x of [-0.28, 0.28]) for (const z of [-0.22, 0.22]) { const w = new THREE.Mesh(new THREE.TorusGeometry(0.12, 0.04, 8, 20), std(0x1E293B, 0.5)); w.position.set(x, 0.14, z); g.add(w); }
+  const h = new THREE.Mesh(new THREE.TorusGeometry(0.2, 0.025, 8, 16, Math.PI), std(0x94A3B8, 0.3, 1)); h.position.set(0.5, 0.85, 0); h.rotation.z = -0.6; g.add(h);
+  return shadowAll(g);
+}
+function makeCar() {
+  const g = new THREE.Group(); const red = std(0xEF4444, 0.25, 0.4);
+  const b = new THREE.Mesh(new RoundedBoxGeometry(1.6, 0.4, 0.8, 3, 0.12), red); b.position.y = 0.38; g.add(b);
+  const c = new THREE.Mesh(new RoundedBoxGeometry(0.9, 0.36, 0.72, 3, 0.12), red); c.position.set(-0.1, 0.72, 0); g.add(c);
+  const win = new THREE.Mesh(new RoundedBoxGeometry(0.92, 0.24, 0.74, 2, 0.06), std(0x93C5FD, 0.05, 0.3)); win.position.set(-0.1, 0.74, 0); win.scale.set(0.98, 1, 1.01); g.add(win);
+  for (const x of [-0.5, 0.5]) for (const z of [-0.38, 0.38]) { const w = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.17, 0.12, 20), std(0x0B1120, 0.6)); w.rotation.x = Math.PI / 2; w.position.set(x, 0.18, z); g.add(w); }
+  return shadowAll(g);
+}
+function makeTower2() {
+  const g = new THREE.Group();
+  const b = new THREE.Mesh(new RoundedBoxGeometry(0.9, 1.9, 0.9, 3, 0.04), std(0x475569, 0.4, 0.4)); b.position.y = 0.95; g.add(b);
+  for (let r = 0; r < 6; r++) for (let c = 0; c < 3; c++) { const w = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.14, 0.02), std(0xFDE68A, 0.3, 0, { emissive: 0xFACC15, emissiveIntensity: 1.4 }));
+    w.position.set(-0.26 + c * 0.26, 0.3 + r * 0.27, 0.46); g.add(w); }
+  return shadowAll(g);
+}
+function makeCloud() {
+  const g = new THREE.Group(); const m = std(0xE2E8F0, 0.95, 0, { transparent: true, opacity: 0.92 });
+  for (const [x, y, z, r] of [[0,0,0,0.9],[1.0,0.1,0,0.75],[-1.0,0.05,0,0.75],[0.5,0.55,0,0.7],[-0.5,0.5,0,0.7],[1.7,-0.2,0,0.5],[-1.7,-0.2,0,0.5]]) {
+    const s = new THREE.Mesh(new THREE.SphereGeometry(r, 24, 16), m); s.position.set(x, y, z - 0.6); s.scale.z = 0.5; g.add(s); }
+  for (const [x, y, r] of [[1.4, -1.1, 0.22], [1.85, -1.6, 0.13]]) { const s = new THREE.Mesh(new THREE.SphereGeometry(r, 16, 12), m); s.position.set(x, y, -0.4); g.add(s); }
+  return g;
+}
+function pedestal(color, w = 1.7) {
+  const g = new THREE.Group();
+  const top = new THREE.Mesh(new RoundedBoxGeometry(w, 0.36, w, 4, 0.08), std(0x1E293B, 0.35, 0.6)); top.position.y = 0.18; g.add(top);
+  const ring = new THREE.Mesh(new RoundedBoxGeometry(w + 0.04, 0.06, w + 0.04, 2, 0.03), std(color, 0.3, 0.2, { emissive: color, emissiveIntensity: 0.6 }));
+  ring.position.y = 0.3; ring.material.emissiveIntensity = 0.35; g.add(ring); g.userData.ring = ring;
+  return shadowAll(g);
+}
+
+/* ---------- 3D chart ---------- */
+const CX = a => -5 + (a - 22) / 43 * 10;
+function makeChart(series, ymax) {
+  const g = new THREE.Group(), CY = v => v / ymax * 4.2;
+  const back = new THREE.Mesh(new THREE.PlaneGeometry(11.6, 5.2), std(0x0B1226, 0.9, 0, { transparent: true, opacity: 0.55 }));
+  back.position.set(0, 2.5, -1.3); back.receiveShadow = true; g.add(back);
+  const lineM = new THREE.LineBasicMaterial({ color: 0x334155, transparent: true, opacity: 0.8 });
+  const gridVals = ymax > 1e6 ? [0, 500000, 1000000] : [0, 250000, 500000, 750000];
+  for (const v of gridVals) { const geo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-5.6, CY(v), -1.28), new THREE.Vector3(5.6, CY(v), -1.28)]); g.add(new THREE.Line(geo, lineM)); }
+  for (const a of [22, 32, 45, 55, 65]) { const geo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(CX(a), 0, -1.28), new THREE.Vector3(CX(a), 4.9, -1.28)]); g.add(new THREE.Line(geo, lineM)); }
+  const out = { group: g, CY, gridVals, items: [] };
+  for (const s of series) {
+    const plane = new THREE.Plane(new THREE.Vector3(-1, 0, 0), -5);
+    const pts = [], from = s.from || 22;
+    for (let a = from; a <= 65.001; a += 0.25) pts.push(new THREE.Vector3(CX(a), CY(balAt(s.data, a)), s.z));
+    const shape = new THREE.Shape(); shape.moveTo(CX(from), 0); pts.forEach(p => shape.lineTo(p.x, p.y)); shape.lineTo(CX(65), 0); shape.closePath();
+    const wall = new THREE.Mesh(new THREE.ExtrudeGeometry(shape, { depth: 0.34, bevelEnabled: false, curveSegments: 1 }),
+      std(s.color, 0.35, 0.1, { transparent: true, opacity: s.faint ? 0.18 : 0.5, emissive: s.color, emissiveIntensity: 0.18, clippingPlanes: [plane], side: THREE.DoubleSide, depthWrite: false }));
+    wall.position.z = s.z - 0.17; g.add(wall);
+    const tube = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 700, 0.06, 10),
+      std(s.color, 0.3, 0.2, { emissive: s.color, emissiveIntensity: s.faint ? 0.3 : 1.3, clippingPlanes: [plane], transparent: !!s.faint, opacity: s.faint ? 0.4 : 1 }));
+    tube.position.z = 0.17; tube.castShadow = true; g.add(tube);
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.16, 24, 16), std(s.color, 0.2, 0.2, { emissive: s.color, emissiveIntensity: 2.2 }));
+    g.add(head); head.visible = !s.faint;
+    out.items.push({ s, plane, head, from });
+  }
+  const cursor = new THREE.Mesh(new THREE.BoxGeometry(0.03, 4.9, 0.03), std(0xffffff, 0.5, 0, { emissive: 0xffffff, emissiveIntensity: 0.6, transparent: true, opacity: 0.35 }));
+  cursor.position.y = 2.45; g.add(cursor); out.cursor = cursor;
+  out.update = (age) => {
+    for (const it of out.items) {
+      const end = Math.max(it.from, Math.min(65, age)); it.plane.constant = CX(end) + 0.001;
+      const v = balAt(it.s.data, end); it.head.position.set(CX(end), CY(v), it.s.z + 0.17);
+      it.head.visible = !it.s.faint && age > it.from + 0.05; it.head.scale.setScalar(1 + 0.15 * Math.sin(age * 9));
+    }
+    cursor.position.x = CX(Math.min(65, age));
+  };
+  return out;
+}
+
+/* ---------- scene graph ---------- */
+const G = {};
+let maya1, jake1, meetJar, flyCoin, cloud, maya2, jake2, jarM, jarJ, stopS, house, stroller,
+    chartA, chartB, snowball, slope, barsC = [], barsD = [], hourglass, burst, bonusBars, maya3, jake3, mayaOld, jakeOld, sun, endCoins, hookTowers;
+const SNOW_A = 0.27;
+
+function build() {
+  initMats();
+  for (const k of ['hook','meet','stop','race','whyA','whyB','whyC','whyD','whyE','whyF','whyG','bonusA','bonusB','bonusC','tips','end','endCard']) { G[k] = new THREE.Group(); scene.add(G[k]); }
+  // HOOK
+  const pm = pedestal(0x22C55E), pj = pedestal(0x94A3B8); pm.position.x = -2.3; pj.position.x = 2.3; G.hook.add(pm, pj);
+  const tm = makeTower(80), tj = makeTower(80); tm.position.x = -2.3; tj.position.x = 2.3; G.hook.add(tm, tj);
+  const glow = new THREE.PointLight(0x22C55E, 0, 9, 1.6); glow.position.set(-2.3, 2.5, 1.6); G.hook.add(glow);
+  hookTowers = { pm, pj, tm, tj, glow };
+  // MEET
+  maya1 = makePerson('maya'); jake1 = makePerson('jake'); G.meet.add(maya1.group, jake1.group);
+  meetJar = makeJar(); meetJar.group.position.set(0.1, 0, 0.4); G.meet.add(meetJar.group);
+  flyCoin = new THREE.Mesh(coinGeo, coinMats); flyCoin.castShadow = true; G.meet.add(flyCoin);
+  cloud = makeCloud(); const car = makeCar(), bld = makeTower2(); car.scale.setScalar(0.75); car.position.set(-0.7, -0.35, 0); bld.scale.setScalar(0.6); bld.position.set(0.8, -0.6, 0);
+  cloud.add(car, bld); cloud.userData = { car, bld }; G.meet.add(cloud);
+  // STOP
+  maya2 = makePerson('maya'); jake2 = makePerson('jake'); maya2.group.position.set(-4.0, 0, 0); jake2.group.position.set(1.7, 0, 0); G.stop.add(maya2.group, jake2.group);
+  jarM = makeJar(); jarM.group.position.set(-2.2, 0, 0.5); jarJ = makeJar(); jarJ.group.position.set(3.5, 0, 0.5); G.stop.add(jarM.group, jarJ.group);
+  stopS = makeStopSign(); G.stop.add(stopS);
+  house = makeHouse(); house.position.set(-6.2, 0, -2.6); stroller = makeStroller(); stroller.position.set(-5.4, 0, 1.0); G.stop.add(house, stroller);
+  
+  // RACE / BONUS charts
+  chartA = makeChart([{ data: MAYA, color: 0x22C55E, z: -0.45 }, { data: JAKE, color: 0x94A3B8, z: 0.45, from: 32 }], 750000); G.race.add(chartA.group);
+  chartB = makeChart([{ data: MAYA, color: 0x22C55E, z: -0.45, faint: true }, { data: FOREVER, color: 0x22C55E, z: 0.45 }], 1400000); G.bonusB.add(chartB.group);
+  // WHY A: coins multiplying
+  G.whyA.userData.clusters = [];
+  [[[0,0,0]], [[0,0,0],[0.5,0,0.2]], [[0,0,0],[0.5,0,0.2],[-0.45,0,0.25],[0.05,0.5,0]],
+   [[0,0,0],[0.5,0,0.2],[-0.45,0,0.25],[0.05,0.5,0],[0.6,0.5,0.1],[-0.55,0.5,0.1],[0.0,1.0,0.05],[0.95,0.05,0.5]]].forEach((cs, i) => {
+    const grp = new THREE.Group(); grp.position.set(-4.5 + i * 3, 1.6, 0);
+    cs.forEach(([x, y, z]) => { const c = new THREE.Mesh(coinGeo, coinMats); c.scale.setScalar(1.25); c.rotation.x = Math.PI / 2; c.position.set(x, y, z); c.castShadow = true; grp.add(c); });
+    G.whyA.add(grp); G.whyA.userData.clusters.push(grp);
+  });
+  // WHY B: snowball on slope
+  slope = new THREE.Group(); slope.rotation.z = -SNOW_A; slope.position.set(0, 3, 0); G.whyB.add(slope);
+  const sp = new THREE.Mesh(new THREE.PlaneGeometry(60, 18, 1, 1), std(0x9AA9C0, 0.95)); sp.rotation.x = -Math.PI / 2; sp.receiveShadow = true; slope.add(sp);
+  const sg = new THREE.IcosahedronGeometry(1, 5); const pos = sg.attributes.position, rr = rng(3);
+  for (let i = 0; i < pos.count; i++) { const v = new THREE.Vector3().fromBufferAttribute(pos, i); const n = 1 + (Math.sin(v.x * 9) * Math.cos(v.y * 7) * Math.sin(v.z * 8)) * 0.035 + rr() * 0.02; v.multiplyScalar(n); pos.setXYZ(i, v.x, v.y, v.z); }
+  sg.computeVertexNormals();
+  snowball = new THREE.Mesh(sg, std(0xF8FAFC, 0.85)); snowball.castShadow = true; G.whyB.add(snowball);
+  const sbc = new THREE.Mesh(coinGeo, coinMats); sbc.rotation.x = Math.PI / 2; sbc.position.z = 0.98; sbc.scale.setScalar(0.9); snowball.add(sbc);
+  // WHY C: doubling bars
+  const hs = [0.35, 0.6, 1.0, 1.6, 2.6, 3.3];
+  hs.forEach((h, i) => { const m = new THREE.Mesh(new RoundedBoxGeometry(1.1, 1, 1.1, 3, 0.08), i === 5 ? std(0x22C55E, 0.3, 0.3, { emissive: 0x22C55E, emissiveIntensity: 0.35 }) : goldMat);
+    m.position.x = -5 + i * 2; m.castShadow = true; m.receiveShadow = true; m.userData.h = h; G.whyC.add(m); barsC.push(m); });
+  // WHY D: horizontal bars
+  [[22, 0x22C55E, 3.1], [32, 0x94A3B8, 2.0], [60, 0x64748B, 0.9]].forEach(([from, col, y]) => {
+    const len = CX(65) - CX(from); const m = new THREE.Mesh(new RoundedBoxGeometry(1, 0.55, 0.7, 3, 0.1), std(col, 0.35, 0.3, { emissive: col, emissiveIntensity: 0.25 }));
+    m.position.y = y; m.castShadow = true; m.userData = { from, len }; G.whyD.add(m); barsD.push(m); });
+  // WHY E: hourglass
+  hourglass = new THREE.Group(); hourglass.position.set(3.2, 2.0, 0); G.whyE.add(hourglass);
+  const glassM = std(0xD6ECFF, 0.03, 0, { transparent: true, opacity: 0.18, side: THREE.DoubleSide, depthWrite: false, envMapIntensity: 2.5 });
+  const top = new THREE.Mesh(new THREE.CylinderGeometry(0.95, 0.08, 1.5, 40, 1, true), glassM); top.position.y = 0.75;
+  const bot = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.95, 1.5, 40, 1, true), glassM); bot.position.y = -0.75;
+  const wood = std(0x92400E, 0.6); const capT = new THREE.Mesh(new THREE.CylinderGeometry(1.15, 1.15, 0.18, 40), wood); capT.position.y = 1.58;
+  const capB = capT.clone(); capB.position.y = -1.58;
+  const sandM = std(0xFACC15, 0.6, 0.2, { emissive: 0xF59E0B, emissiveIntensity: 0.25 });
+  const sandT = new THREE.Mesh(new THREE.ConeGeometry(0.85, 1.3, 40), sandM); sandT.rotation.x = Math.PI; sandT.position.y = 0.72;
+  const sandB = new THREE.Mesh(new THREE.ConeGeometry(0.85, 1.0, 40), sandM); sandB.position.y = -1.0;
+  const stream = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 1.4, 8), sandM); stream.position.y = -0.7;
+  for (const x of [-1, 1]) for (const z of [-1, 1]) { const p = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 3.2, 10), wood); p.position.set(x * 0.95 * 0.75, 0, z * 0.95 * 0.75); hourglass.add(p); }
+  hourglass.add(top, bot, capT, capB, sandT, sandB, stream); hourglass.userData = { sandT, sandB }; shadowAll(hourglass);
+  // WHY F / G: floating coins + burst
+  for (let i = 0; i < 3; i++) { const c = new THREE.Mesh(coinGeo, coinMats); c.scale.setScalar(2.4); c.position.set([-6.6, 6.8, 5.6][i], [3.4, 1.5, 4.6][i], -2 - i); c.castShadow = true; G.whyF.add(c); }
+  burst = new THREE.InstancedMesh(coinGeo, coinMats, 70); G.whyG.add(burst);
+  // BONUS C bars
+  const b1 = new THREE.Mesh(new RoundedBoxGeometry(1.5, 1, 1.5, 3, 0.1), std(0x94A3B8, 0.35, 0.4));
+  const b2 = new THREE.Mesh(new RoundedBoxGeometry(1.5, 1, 1.5, 3, 0.1), std(0xEF4444, 0.3, 0.3, { emissive: 0xEF4444, emissiveIntensity: 0.35 }));
+  b1.position.x = -1.6; b2.position.x = 1.6; shadowAll(b1); shadowAll(b2); G.bonusC.add(b1, b2); bonusBars = [b1, b2];
+  const pb1 = pedestal(0x94A3B8, 2.0), pb2 = pedestal(0xEF4444, 2.0); pb1.position.x = -1.6; pb2.position.x = 1.6; G.bonusC.add(pb1, pb2);
+  // BONUS A: rewind coins ring
+  for (let i = 0; i < 10; i++) { const c = new THREE.Mesh(coinGeo, coinMats); c.rotation.x = Math.PI / 2; c.scale.setScalar(1.3); G.bonusA.add(c); }
+  // TIPS
+  maya3 = makePerson('maya'); jake3 = makePerson('jake'); G.tips.add(maya3.group, jake3.group);
+  
+  // END
+  mayaOld = makePerson('maya'); jakeOld = makePerson('jake'); mayaOld.setOld(true); jakeOld.setOld(true); G.end.add(mayaOld.group, jakeOld.group);
+  const benchW = std(0xB45309, 0.55), benchMetal = std(0x1F2937, 0.4, 0.8);
+  const seat = new THREE.Mesh(new RoundedBoxGeometry(3.4, 0.14, 0.9, 2, 0.04), benchW); seat.position.set(0, 0.78, 0);
+  const backr = new THREE.Mesh(new RoundedBoxGeometry(3.4, 0.6, 0.1, 2, 0.04), benchW); backr.position.set(0, 1.35, -0.42); backr.rotation.x = -0.12;
+  G.end.add(seat, backr);
+  for (const x of [-1.5, 1.5]) for (const z of [-0.35, 0.35]) { const l = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.78, 0.1), benchMetal); l.position.set(x, 0.39, z); G.end.add(l); }
+  for (const [x, z, s] of [[-6, -4, 1.3], [6.5, -5, 1.6], [-9, -9, 1.8], [10, -10, 2], [-3.5, -12, 1.4], [3.8, -13, 1.5]]) {
+    const tr = new THREE.Group(); const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.22, 1.6, 10), std(0x713F12, 0.8)); trunk.position.y = 0.8;
+    const can = new THREE.Mesh(new THREE.IcosahedronGeometry(1.1, 1), std(0x15803D, 0.8)); can.position.y = 2.2; can.scale.set(1, 1.1, 1);
+    const can2 = new THREE.Mesh(new THREE.IcosahedronGeometry(0.8, 1), std(0x166534, 0.8)); can2.position.set(0.5, 2.9, 0.1);
+    tr.add(trunk, can, can2); tr.position.set(x, 0, z); tr.scale.setScalar(s); shadowAll(tr); G.end.add(tr); }
+  sun = new THREE.Mesh(new THREE.SphereGeometry(3.2, 32, 24), new THREE.MeshBasicMaterial({ color: 0xFFD27A })); sun.position.set(2, 3.0, -38); G.end.add(sun);
+  shadowAll(seat); shadowAll(backr);
+  endCoins = new THREE.InstancedMesh(coinGeo, coinMats, 40); G.endCard.add(endCoins);
+}
+
+/* ---------- overlay helpers ---------- */
+const v3 = new THREE.Vector3();
+function scr(x, y, z) { v3.set(x, y, z).project(camera); return [(v3.x + 1) / 2 * W, (1 - v3.y) / 2 * H]; }
+function lbl(x, y, z, html, style = '', dy = 0) { const [sx, sy] = scr(x, y, z); return `<div class="lbl" style="left:${sx.toFixed(1)}px;top:${(sy + dy).toFixed(1)}px;${style}">${html}</div>`; }
+function ov(html, x, y, w, size, cls = 'w3', op = 1, extra = '') {
+  return `<div class="ov ${cls}" style="left:${x}px;top:${y}px;width:${w}px;font-size:${size}px;opacity:${op};${extra}">${html}</div>`; }
+function pill(s, bg, fg, size = 24) { return `<span class="pill" style="background:${bg};color:${fg};font-size:${size}px">${s}</span>`; }
+function ageCard(age, op = 1) {
+  return `<div class="glass" style="position:absolute;right:26px;top:24px;width:200px;height:68px;opacity:${op};display:flex;align-items:center;justify-content:space-between;padding:0 22px;box-sizing:border-box">
+    <span style="font-weight:800;font-size:20px;color:#94A3B8;letter-spacing:2px">AGE</span><span class="g3" style="font-weight:900;font-size:44px">${Math.floor(age)}</span></div>`;
+}
+function setCam(px, py, pz, lx, ly, lz) { camera.position.set(px, py, pz); camera.lookAt(lx, ly, lz); camera.updateMatrixWorld(); }
+
+/* ---------- scenes ---------- */
+const S = {};
+S.hook = (T) => {
+  G.hook.visible = true; let o = '';
+  const p4 = P(T, C('h4'), 2.0), a1 = clamp((T - C('h1')) / 1.4), a2 = clamp((T - C('h2')) / 1.8);
+  setCam(Math.sin(T * 0.25) * 0.6, lerp(2.0, 2.9, p4), lerp(9.2, 12.6, p4), 0, lerp(1.0, 2.0, p4), 0);
+  const mc = p4 > 0 ? lerp(3.2, 46.2, p4) : 3.2 * a1, jc = p4 > 0 ? lerp(12.7, 41.2, p4) : 12.7 * a2;
+  setTower(hookTowers.tm, mc, 0.36); setTower(hookTowers.tj, jc, 0.36);
+  hookTowers.pm.userData.ring.material.emissiveIntensity = 0.35 + 1.4 * p4; hookTowers.glow.intensity = 6 * p4;
+  const topM = 0.36 + Math.floor(mc) * 0.072 + 0.15, topJ = 0.36 + Math.floor(jc) * 0.072 + 0.15;
+  const won = p4 > 0.55;
+  if (a1 > 0) o += lbl(-2.3, topM, 0, won ? `<span class="gr3" style="font-size:54px">${moneyK(lerp(48000, 692826, p4))}</span>` : `<span class="w3" style="font-size:30px">PUT IN <span class="g3">$48K</span></span>`, `opacity:${a1}`, -10);
+  if (a2 > 0) o += lbl(2.3, topJ, 0, won ? `<span class="s3" style="font-size:54px">${moneyK(lerp(190080, 617625, p4))}</span>` : `<span class="w3" style="font-size:30px">PUT IN <span class="g3">$190K</span></span>`, `opacity:${a2}`, -10);
+  o += lbl(-2.3, 0, 1.1, `<span class="gr3" style="font-size:34px">MAYA</span>`, '', 46) + lbl(2.3, 0, 1.1, `<span class="s3" style="font-size:34px">JAKE</span>`, '', 46);
+  const p3 = clamp((T - C('h3')) / 0.5);
+  if (p3 > 0 && p4 < 0.3) o += ov('SAME SALARY. SAME <span class="g3">$400/MONTH.</span>', 0, 56, W, 46, 'w3', p3 * (1 - p4 / 0.3));
+  if (won) o += ov('AT 65: <span class="gr3">MAYA WINS</span>', 0, 46, W, 58, 'w3', clamp((p4 - 0.55) * 2.2));
+  return o;
+};
+
+S.meet = (T) => {
+  G.meet.visible = true; let o = '';
+  const p1 = P(T, C('m1'), 2.2), walk = Math.pow(Math.sin(Math.PI * clamp((T - C('m1')) / 2.2)), 0.6);
+  const fM = clamp((T - C('m5')) / 0.8) * (1 - clamp((T - C('m8')) / 0.8)), fJ = clamp((T - C('m8')) / 0.8) * (1 - clamp((T - C('m10')) / 0.8));
+  const mx = lerp(-7.5, -1.6, p1) - 1.1 * fM, jx = lerp(7.5, 1.6, p1) + 1.6 * fM;
+  maya1.group.position.set(mx, 0, 0); jake1.group.position.set(jx, 0, 0);
+  maya1.group.rotation.y = walk * 1.2; jake1.group.rotation.y = -walk * 1.2;
+  const throwing = T > C('m6') && T < E('m7') ? 0.5 + 0.5 * Math.sin(((T - C('m6')) % 0.9) / 0.9 * Math.PI) : 0;
+  maya1.pose(T, { walk, cap: T < C('m5'), dim: 0.6 * fJ, look: fM * 0.5, reach: throwing });
+  jake1.pose(T + 0.4, { walk, cap: T < C('m5'), dim: 0.65 * fM, look: fJ * -0.3 });
+  meetJar.group.visible = fM > 0.01; meetJar.group.scale.setScalar(Math.max(0.001, easeBack(fM)));
+  const jf = clamp((T - C('m6')) / (E('m7') - C('m6'))) * 16; meetJar.setFill(jf);
+  meetJar.group.position.x = mx + 2.0;
+  flyCoin.visible = T > C('m6') && T < E('m7') && fM > 0.5;
+  if (flyCoin.visible) { const ct = ((T - C('m6')) % 0.9) / 0.9; const sx = mx + 0.75, ex = mx + 2.0;
+    flyCoin.position.set(lerp(sx, ex, ct), lerp(1.3, 1.25, ct) + Math.sin(Math.PI * ct) * 1.1, lerp(0.2, 0.4, ct)); flyCoin.rotation.set(ct * 8, ct * 3, 0); }
+  cloud.visible = fJ > 0.01; cloud.scale.setScalar(Math.max(0.001, easeBack(fJ)) * 0.95);
+  cloud.position.set(jx - 1.9, 4.2 + Math.sin(T * 1.5) * 0.08, -0.2);
+  cloud.userData.car.rotation.y = T * 0.9; cloud.userData.bld.rotation.y = -T * 0.6;
+  const lx = lerp(0, -0.6, fM) + lerp(0, 0.4, fJ);
+  setCam(lx + Math.sin(T * 0.2) * 0.3, lerp(2.1, 2.6, fJ), lerp(10.5, 8.6, Math.max(fM, fJ)), lx, lerp(1.5, 2.4, fJ), 0);
+  const pt = clamp((T - C('m3')) / 0.5) * (1 - clamp((T - C('m5')) / 0.4));
+  if (pt > 0) o += lbl(mx, 3.45, 0, pill('$60,000/yr', '#FACC15', '#0F172A', 26), `opacity:${pt}`) + lbl(jx, 3.45, 0, pill('$60,000/yr', '#FACC15', '#0F172A', 26), `opacity:${pt}`);
+  const pf = clamp((T - C('m4')) / 0.4) * (1 - clamp((T - C('m5')) / 0.4));
+  if (pf > 0) o += ov('FICTIONAL PEOPLE &middot; <span class="g3">REAL MATH</span>', 0, 62, W, 42, 'w3', pf);
+  if (fM > 0) { o += ov('<span class="g3">$400/month</span> &asymp; 8% of salary', 0, 62, W, 46, 'w3', clamp((T - C('m6')) / 0.5) * fM);
+    o += lbl(mx + 2.0, 0, 1.2, `<span class="w3" style="font-size:22px;font-weight:800">INDEX FUND</span>`, `opacity:${fM}`, 36); }
+  const q = clamp((T - C('m9')) / 0.4) * fJ;
+  if (q > 0) o += ov('&ldquo;I&rsquo;ll start when I&rsquo;m older.&rdquo;', 840, 300, 420, 38, 'w3', q, 'font-style:italic;font-weight:800');
+  const pt10 = clamp((T - C('m10')) / 0.5);
+  if (pt10 > 0) o += ov('MAYA ONLY INVESTS FOR <span class="g3">10 YEARS</span>', 0, 62, W, 50, 'w3', pt10);
+  return o;
+};
+
+S.stop = (T) => {
+  G.stop.visible = true; let o = '';
+  const aM = lerp(22, 32, clamp((T - C('s1')) / (E('s2') - C('s1'))));
+  const age = T < C('s5') ? aM : 32;
+  const mBal = balAt(MAYA, aM), mIn = (aM - 22) * 12 * 400;
+  const jp = clamp((T - C('s6')) / (E('s8') - C('s6'))), jIn = lerp(0, 190080, jp);
+  setCam(-1.0 + Math.sin(T * 0.2) * 0.4, 2.6, 12.6, -1.0, 1.5, 0);
+  maya2.pose(T, { look: 0.3 }); jake2.pose(T + 1, { dim: T < C('s5') ? 0.55 : 0, sad: T < C('s5'), wave: T > C('s5') && T < C('s6') ? 1 : 0 });
+  jarM.setFill(mBal / 69234 * 34); jarJ.setFill(jp > 0 ? 2 + jp * 54 : 0);
+  const life = easeBack(clamp((T - C('s3')) / 0.7));
+  house.visible = stroller.visible = life > 0.01; house.scale.setScalar(Math.max(0.001, life)); stroller.scale.setScalar(Math.max(0.001, life));
+  const sx = clamp((T - C('s4')) / 0.7);
+  stopS.visible = sx > 0; stopS.position.set(-2.2, 2.3 + (1 - easeBack(sx)) * 5, 0.95); stopS.rotation.z = (1 - sx) * 1.2;
+  o += ageCard(age);
+  o += lbl(-2.2, 3.4, 0.5, `<div class="gr3" style="font-size:44px">${money(mBal)}</div><div class="w3" style="font-size:20px;font-weight:800">put in ${money(mIn)}</div>`);
+  if (T > C('s6')) {
+    const l2 = T > C('s8') - 0.1 ? 'put in ' + money(jIn) : (T > C('s7') ? 'every month &middot; 33 years' : 'starting at 32');
+    o += lbl(3.5, 2.4, 0.5, `<div class="s3" style="font-size:40px">$400/mo</div><div class="w3" style="font-size:20px;font-weight:800">${l2}</div>`, '', -10);
+  }
+  const ex = clamp((T - C('s5')) / 0.4) * (1 - clamp((T - E('s6')) / 0.4));
+  if (ex > 0) o += lbl(1.7, 3.3, 0, `<span class="g3" style="font-size:${90 * easeBack(ex)}px">!</span>`);
+  const q = clamp((T - C('s9')) / 0.4);
+  if (q > 0) o += ov('WHO ENDS UP WITH <span class="g3">MORE?</span>', 0, 110, W, 58, 'w3', q, 'background:rgba(5,9,20,0.6);padding:18px 0');
+  return o;
+};
+
+function chartOverlay(ch, labels, age, op = 1) {
+  let o = '';
+  for (const v of ch.gridVals) o += lbl(-5.75, ch.CY(v), -1.28, `<span style="font-size:17px;font-weight:800;color:#94A3B8">${v === 0 ? '$0' : moneyK(v)}</span>`, `opacity:${op};transform:translate(-100%,-50%)`);
+  for (const a of [22, 32, 45, 55, 65]) o += lbl(CX(a), 0, 1.3, `<span style="font-size:19px;font-weight:800;color:#94A3B8">${a}</span>`, `opacity:${op}`, 30);
+  for (const L of labels) { if (age <= (L.from || 22) + 0.05) continue; const end = Math.min(65, age), v = balAt(L.data, end);
+    o += lbl(CX(end), ch.CY(v), L.z + 0.17, `<span class="${L.cls}" style="font-size:26px">${L.name} ${moneyK(v)}</span>`, `opacity:${op};transform:translate(14px,-50%)`, L.dy || 0); }
+  return o;
+}
+
+S.race = (T) => {
+  G.race.visible = true; let o = '';
+  let age;
+  if (T < C('r2')) age = lerp(22, 45, P(T, C('r1') - 0.2, C('r2') - C('r1') + 0.2));
+  else if (T < C('r4')) age = 45;
+  else if (T < C('r5')) age = lerp(45, 55, P(T, C('r4'), 2.2));
+  else age = lerp(55, 65, P(T, C('r5'), E('r5') - C('r5') + 0.8));
+  chartA.update(age);
+  const sc = SCENES.race, u = clamp((T - sc.start) / (sc.end - sc.start));
+  const ang = lerp(-0.42, 0.22, u), rad = lerp(14.5, 12.6, u);
+  setCam(Math.sin(ang) * rad + 0.3, 3.3, Math.cos(ang) * rad, 0.3, 2.0, 0);
+  const dim = 1 - 0.7 * clamp((T - C('r8')) / 0.6);
+  o += ageCard(age, dim);
+  o += chartOverlay(chartA, [{ data: MAYA, name: 'MAYA', cls: 'gr3', z: -0.45, dy: -16 }, { data: JAKE, name: 'JAKE', cls: 's3', z: 0.45, from: 32, dy: 18 }], age, dim);
+  const sb = (name, v, col, cls) => `<div class="glass" style="width:330px;height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;box-sizing:border-box;margin-bottom:10px;border-color:${col}">
+     <span class="${cls}" style="font-size:26px;font-weight:900">${name}</span><span class="w3" style="font-size:30px;font-weight:900">${money(v)}</span></div>`;
+  o += `<div style="position:absolute;left:40px;top:28px;opacity:${dim}">${sb('MAYA', balAt(MAYA, age), '#22C55E', 'gr3')}${sb('JAKE', balAt(JAKE, age), '#94A3B8', 's3')}</div>`;
+  const b = clamp((T - C('r7')) / 0.4) * (1 - clamp((T - C('r8')) / 0.4));
+  if (b > 0) o += ov('JAKE PUT IN <span class="r3">$142,080 MORE</span><br><span class="s3" style="font-size:34px">and still ended up with less</span>', 0, 230, W, 50, 'w3', b, 'background:rgba(5,9,20,0.78);padding:20px 0');
+  const h = clamp((T - C('r8')) / 0.5);
+  if (h > 0) o += `<div style="position:absolute;inset:0;background:rgba(5,9,20,${0.55 * h})"></div>` + ov('HOW?', 0, 220, W, 170 * (0.8 + 0.2 * easeBack(h)), 'g3', h);
+  return o;
+};
+
+S.why = (T) => {
+  let o = '';
+  const seg = T < C('w3') ? 'A' : T < C('w6') ? 'B' : T < C('w9') ? 'C' : T < C('w11') ? 'D' : T < C('w13') ? 'E' : T < C('w15') ? 'F' : 'G';
+  G['why' + seg].visible = true;
+  if (seg === 'A') {
+    setCam(Math.sin(T * 0.3) * 0.8, 2.6, 11, 0, 1.8, 0);
+    o += ov('COMPOUND GROWTH', 0, 70, W, 74, 'g3', clamp((T - C('w1')) / 0.5));
+    const p = T - C('w2');
+    G.whyA.userData.clusters.forEach((grp, i) => { const a = clamp((p - i * 0.9) / 0.5); grp.visible = a > 0; grp.scale.setScalar(Math.max(0.001, easeBack(a)));
+      grp.rotation.y = Math.sin(T * 1.2 + i) * 0.5; grp.position.y = 1.6 + Math.sin(T * 1.6 + i) * 0.08;
+      if (i < 3) o += lbl(-3 + i * 3, 1.9, 0, `<span class="s3" style="font-size:54px">&rarr;</span>`, `opacity:${clamp((p - (i + 1) * 0.9) / 0.4)};transform:translate(-50%,-50%)`); });
+    o += ov('returns earn returns', 0, 520, W, 36, 's3', clamp((p - 1.2) / 0.5), 'font-weight:800');
+  }
+  if (seg === 'B') {
+    const p = clamp((T - C('w3')) / (E('w5') - C('w3'))), r = lerp(0.25, 1.9, Math.pow(p, 1.6));
+    const d = lerp(-12, 10, p); const ca = Math.cos(SNOW_A), sa = Math.sin(SNOW_A);
+    const px = d * ca + sa * r, py = 3 - d * sa + ca * r;
+    snowball.position.set(px, py, 0.6); snowball.scale.setScalar(r); snowball.rotation.z = -(d * 1.0) / Math.max(r, 0.3) * 0.6;
+    setCam(px - 1.5, py + 1.2 + r * 0.9, 7.5 + r * 3.2, px + 1.2, py - 0.2, 0.6);
+    o += ov('THE SNOWBALL EFFECT', 0, 62, W, 58, 'w3', clamp((T - C('w3')) / 0.5));
+  }
+  if (seg === 'C') {
+    setCam(Math.sin(T * 0.25) * 1.5, 3.4, 13.5, 0, 1.7, 0);
+    o += ov('7% A YEAR &asymp; DOUBLES EVERY ~10 YEARS', 0, 56, W, 44, 'w3', clamp((T - C('w6')) / 0.5));
+    const vals = [['22', '$1'], ['32', '$2'], ['42', '$4'], ['52', '$8'], ['62', '$16'], ['65', '~$20']];
+    barsC.forEach((m, i) => { const a = easeOut(clamp((T - C('w6') - 0.5 - i * 0.55) / 0.6)); const h = m.userData.h * Math.max(a, 0.001);
+      m.scale.y = h; m.position.y = h / 2; m.visible = a > 0.001;
+      if (a > 0.05) { o += lbl(m.position.x, h + 0.15, 0, `<span class="${i === 5 ? 'gr3' : 'w3'}" style="font-size:36px">${vals[i][1]}</span>`, `opacity:${a}`);
+        o += lbl(m.position.x, 0, 0.8, `<span style="font-size:20px;font-weight:800;color:#94A3B8">age ${vals[i][0]}</span>`, `opacity:${a}`, 30); } });
+    const q = clamp((T - C('w8')) / 0.5);
+    if (q > 0) o += `<div class="ov" style="left:0;top:130px;width:${W}px;opacity:${q}">${pill('$1 at 22 &rarr; about $20 at 65', '#22C55E', '#052e16', 30)}</div>`;
+  }
+  if (seg === 'D') {
+    setCam(0.9, 3.0, 13.8, 0.9, 2.0, 0);
+    o += ov('$1 INVESTED AT...', 0, 52, W, 52, 'w3', 1);
+    const info = [['MAYA 22', '~$20', 'gr3', C('w9') - 1.5], ['JAKE 32', '~$10', 's3', C('w9')], ['JAKE 60', '~$1.42', 's3', C('w10')]];
+    barsD.forEach((m, i) => { const a = easeOut(clamp((T - info[i][3]) / 0.9)); const len = m.userData.len * Math.max(a, 0.001);
+      m.scale.x = len; m.position.x = CX(m.userData.from) + len / 2; m.visible = a > 0.001;
+      if (a > 0) { o += lbl(CX(m.userData.from) - 0.2, m.position.y, 0, `<span class="${info[i][2]}" style="font-size:24px">${info[i][0]}</span>`, `opacity:${a};transform:translate(-100%,-50%)`);
+        o += lbl(CX(65) + 0.3, m.position.y, 0, `<span class="w3" style="font-size:34px">${info[i][1]}</span>`, `opacity:${a};transform:translate(0,-50%)`);
+        o += lbl(CX(m.userData.from) + 0.2, m.position.y, 0.36, `<span style="font-size:18px;font-weight:900;color:#0F172A">${65 - m.userData.from} yrs</span>`, `opacity:${a};transform:translate(0,-50%)`); } });
+    for (const a of [22, 32, 45, 55, 65]) o += lbl(CX(a), 0, 0.5, `<span style="font-size:19px;font-weight:800;color:#94A3B8">${a}</span>`, '', 28);
+  }
+  if (seg === 'E') {
+    const u = clamp((T - C('w11')) / (E('w12') - C('w11')));
+    hourglass.rotation.y = T * 0.5; hourglass.userData.sandT.scale.setScalar(lerp(1, 0.35, u)); hourglass.userData.sandT.position.y = lerp(0.72, 0.45, u);
+    hourglass.userData.sandB.scale.set(lerp(0.4, 1, u), lerp(0.4, 1, u), lerp(0.4, 1, u)); hourglass.userData.sandB.position.y = lerp(-1.3, -1.0, u);
+    setCam(0.8, 2.4, 10.5, 0.8, 2.0, 0);
+    o += ov('Maya didn&rsquo;t save more.', 70, 220, 640, 50, 's3', clamp((T - C('w11')) / 0.5), 'text-align:left');
+    o += ov('She gave her money<br>more <span class="g3">TIME</span>.', 70, 300, 640, 66, 'w3', clamp((T - C('w11') - 2.2) / 0.5), 'text-align:left');
+  }
+  if (seg === 'F') {
+    G.whyF.children.forEach((c, i) => { c.rotation.set(Math.PI / 2 + Math.sin(T * 0.7 + i) * 0.4, T * (0.4 + i * 0.15), 0); c.position.y = [3.4, 1.5, 4.4][i] + Math.sin(T + i) * 0.15; });
+    setCam(0, 2.6, 11, 0, 2.4, 0);
+    const a = clamp((T - C('w13')) / 0.5);
+    o += `<div class="glass" style="position:absolute;left:200px;top:130px;width:880px;padding:34px 30px;box-sizing:border-box;opacity:${a};text-align:center;background:rgba(15,23,42,0.9)">
+      <div class="g3" style="font-size:30px;font-weight:900;margin-bottom:18px">QUICK NOTE</div>
+      <div class="w3" style="font-size:35px;font-weight:800;line-height:1.3">Assumes <span class="g3">7% average annual return</span> &mdash; roughly the US stock market&rsquo;s long-run average after inflation.</div>
+      <div class="s3" style="font-size:31px;font-weight:800;line-height:1.3;margin-top:22px">Real returns vary. Nothing is guaranteed.<br>Not financial advice.</div></div>`;
+  }
+  if (seg === 'G') {
+    const p = clamp((T - C('w15')) / (E('w15') - C('w15') + 0.6)); const r = rng(11); let k = 0;
+    for (let i = 0; i < 70; i++) { const th = r() * 6.28, ph = r() * 3.14, sp = 3 + r() * 6; const d = easeOut(p) * sp;
+      dummy.position.set(Math.cos(th) * Math.sin(ph) * d, 2.4 + Math.cos(ph) * d * 0.7, Math.sin(th) * Math.sin(ph) * d * 0.5 - 2);
+      dummy.rotation.set(r() * 6 + T * 3, r() * 6 + T * 2, 0); dummy.scale.setScalar(0.9); dummy.updateMatrix(); burst.setMatrixAt(k++, dummy.matrix); }
+    burst.count = k; burst.instanceMatrix.needsUpdate = true;
+    setCam(0, 2.4, 11, 0, 2.4, 0);
+    const a = easeBack(clamp((T - C('w15')) / 0.6));
+    o += ov('EARLIER <span class="g3">&gt;</span> BIGGER', 0, 250, W, 124 * Math.max(a, 0.01), 'gr3', clamp(a));
+  }
+  return o;
+};
+
+S.bonus = (T) => {
+  let o = '';
+  if (T < C('b2')) {
+    G.bonusA.visible = true; const a = clamp((T - C('b1')) / 0.4);
+    G.bonusA.children.forEach((c, i) => { const th = i / 10 * 6.28 - T * 2.2; c.position.set(Math.cos(th) * 3.2, 2.4 + Math.sin(th) * 3.2 * 0.35, Math.sin(th) * 2); c.rotation.z = T * 3; });
+    setCam(0, 2.6, 11, 0, 2.3, 0);
+    o += ov('WHAT IF MAYA <span class="g3">NEVER STOPPED?</span>', 0, 70, W, 58, 'w3', a);
+    o += ov('&#9664;&#9664;', 0, 300, W, 110, 'g3', a);
+    return o;
+  }
+  if (T < C('b4')) {
+    G.bonusB.visible = true;
+    const age = lerp(22, 65, P(T, C('b2'), E('b3') - C('b2')));
+    chartB.update(age);
+    const u = clamp((T - C('b2')) / (C('b4') - C('b2')));
+    const ang = lerp(0.35, -0.2, u); setCam(Math.sin(ang) * 13.5 + 0.3, 3.4, Math.cos(ang) * 13.5, 0.3, 2.1, 0);
+    o += ageCard(age);
+    o += chartOverlay(chartB, [{ data: FOREVER, name: 'MAYA', cls: 'gr3', z: 0.45, dy: 0 }], age);
+    const big = clamp((T - C('b3')) / 0.5);
+    if (big > 0) o += ov(money(balAt(FOREVER, age)), 60, 40, 700, 84, 'gr3', big, 'text-align:left');
+    return o;
+  }
+  G.bonusC.visible = true;
+  const a = P(T, C('b4'), 1.6), hs = [400 / 849 * 2.5, 2.5];
+  bonusBars.forEach((m, i) => { const h = Math.max(0.001, hs[i] * a); m.scale.y = h; m.position.y = 0.36 + h / 2; });
+  setCam(Math.sin(T * 0.3) * 1.2, 3.0, 11.5, 0, 2.0, 0);
+  o += ov('TO MATCH THAT, STARTING AT 32:', 0, 50, W, 44, 'w3', clamp((T - C('b4')) / 0.4));
+  o += lbl(-1.6, 0.36 + hs[0] * a + 0.2, 0, `<span class="s3" style="font-size:40px">$400/mo</span>`, `opacity:${a}`);
+  o += lbl(1.6, 0.36 + hs[1] * a + 0.2, 0, `<span class="r3" style="font-size:46px">$849/mo</span>`, `opacity:${a}`);
+  o += lbl(-1.6, 0, 1.2, `<span style="font-size:21px;font-weight:800;color:#CBD5E1">what Jake invests</span>`, '', 34);
+  o += lbl(1.6, 0, 1.2, `<span style="font-size:21px;font-weight:800;color:#CBD5E1">what Jake would need</span>`, '', 34);
+  const q = clamp((T - C('b5')) / 0.5);
+  if (q > 0) o += `<div class="ov" style="left:0;top:120px;width:${W}px;opacity:${q}">${pill('THE COST OF WAITING 10 YEARS', '#EF4444', '#fff', 30)}</div>`;
+  return o;
+};
+
+S.tips = (T) => {
+  G.tips.visible = true; let o = '';
+  const c = clamp((T - C('t2')) / 1.2), side = P(T, C('t3'), 1.4);
+  const col = new THREE.Color(0x94A3B8).lerp(new THREE.Color(0x22C55E), c);
+  jake3.setTop(col.getHex()); jake3.group.position.set(-0.7 + 0.7 * side, 0, 0);
+  jake3.pose(T, { sad: c < 0.5, wave: c > 0.5 && T < C('t3') + 1 ? 1 : 0 });
+  const ma = easeBack(clamp((T - C('t3')) / 0.8));
+  maya3.group.visible = ma > 0.01; maya3.group.scale.setScalar(Math.max(0.001, ma)); maya3.group.position.set(-1.6, 0, 0); maya3.pose(T, { wave: T > C('t10') ? 1 : 0 });
+  const lx = lerp(-0.6, 2.6, side);
+  setCam(lx + Math.sin(T * 0.25) * 0.3, 2.3, lerp(8.5, 10.5, side), lx, 1.7, 0);
+  if (T < C('t3') + 0.6) {
+    const f = 1 - clamp((T - C('t3')) / 0.6);
+    o += ov('&ldquo;I&rsquo;m already Jake...&rdquo;', 0, 62, W, 46, 's3', clamp((T - C('t1')) / 0.4) * (1 - c) * f, 'font-style:italic;font-weight:800');
+    o += ov('LATE <span class="g3">&gt;</span> NEVER', 0, 56, W, 76, 'gr3', c * f);
+    if (c > 0) o += `<div class="ov" style="left:0;top:160px;width:${W}px;opacity:${c * f}">${pill('Jake at 65: $617,625', '#FACC15', '#0F172A', 28)}</div>`;
+    return o;
+  }
+  o += ov('BE MORE LIKE <span class="gr3">MAYA</span>', 470, 46, 780, 54, 'w3', clamp((T - C('t3')) / 0.4));
+  const items = [['t4', 'Get the full 401(k) match'], ['t6', 'Start small &mdash; even $50/month'], ['t7', 'Automate it'], ['t8', 'Use a low-cost, broad index fund'], ['t9', 'Don&rsquo;t panic-sell when markets drop']];
+  items.forEach(([k, s], i) => { const a = clamp((T - C(k)) / 0.5); if (!a) return; const x = 500 + (1 - easeOut(a)) * 80;
+    o += `<div class="glass" style="position:absolute;left:${x}px;top:${140 + i * 86}px;width:720px;height:70px;opacity:${a};display:flex;align-items:center;box-sizing:border-box;padding-left:16px">
+      <span style="display:inline-flex;width:46px;height:46px;border-radius:50%;background:#22C55E;color:#052e16;font-weight:900;font-size:26px;align-items:center;justify-content:center;box-shadow:0 4px 0 #15803D">${i + 1}</span>
+      <span class="w3" style="font-size:30px;font-weight:800;margin-left:20px">${s}</span></div>`; });
+  return o;
+};
+
+S.end = (T) => {
+  let o = '';
+  if (T < C('e4')) {
+    G.end.visible = true;
+    mayaOld.group.position.set(-0.65, 0.12, 0.1); jakeOld.group.position.set(0.65, 0.12, 0.1);
+    mayaOld.pose(T, { sit: true, look: 0.25 }); jakeOld.pose(T + 1, { sit: true, look: -0.25 });
+    const u = clamp((T - SCENES.end.start) / (C('e4') - SCENES.end.start));
+    setCam(lerp(-1.2, 0.4, u), lerp(2.6, 2.3, u), lerp(11.5, 9.6, u), 0, 2.0, 0);
+    const q = clamp((T - C('e3')) / 0.6);
+    o += ov('SAME SALARY. <span class="g3">ONE DECISION.</span>', 0, 56, W, 52, 'w3', clamp((T - C('e1')) / 0.5) * (1 - q));
+    if (q > 0) o += ov('The best time to start was 10 years ago.<br><span class="g3">The second-best is today.</span>', 0, 34, W, 46, 'w3', q, 'background:rgba(5,9,20,0.45);padding:16px 0');
+    return o;
+  }
+  G.endCard.visible = true;
+  const r = rng(21); let k = 0;
+  for (let i = 0; i < 40; i++) { const x = r() * 20 - 10, y = (r() * 9 + T * (0.3 + r() * 0.4)) % 9 - 0.5, z = -3 - r() * 8;
+    dummy.position.set(x, y, z); dummy.rotation.set(T * (0.5 + r()), T * (0.3 + r()), r() * 6); dummy.scale.setScalar(1.2); dummy.updateMatrix(); endCoins.setMatrixAt(k++, dummy.matrix); }
+  endCoins.count = k; endCoins.instanceMatrix.needsUpdate = true;
+  setCam(0, 3, 12, 0, 3, -3);
+  const a = clamp((T - C('e4')) / 0.6);
+  o += ov('THANKS FOR WATCHING', 0, 80, W, 40, 's3', a, 'font-weight:800;letter-spacing:4px');
+  o += `<div class="ov" style="left:0;top:165px;width:${W}px;opacity:${a}">${pill('&#9654; SUBSCRIBE', '#EF4444', '#fff', 36)}</div>`;
+  o += `<div class="glass" style="position:absolute;left:140px;top:330px;width:460px;height:260px;opacity:${a};border-style:dashed"></div>
+        <div class="glass" style="position:absolute;left:680px;top:330px;width:460px;height:260px;opacity:${a};border-style:dashed"></div>`;
+  o += ov('NEXT:<br><span class="g3">How to Budget<br>a $2,500 Paycheck</span>', 140, 400, 460, 36, 'w3', a);
+  o += ov('Start Here:<br><span class="gr3">Money Basics</span>', 680, 420, 460, 36, 'w3', a);
+  return o;
+};
+
+/* ---------- frame ---------- */
+function captionHTML(T) {
+  for (const k in CUE) { const c = CUE[k];
+    if (T >= c.start - 0.05 && T <= c.end + 0.3) {
+      const s = c.text.replace(/(\$[\d,.]+(?:\s?million)?|\d+%|\b\d{2,}\b|401\(k\))/g, '<span class="hl">$1</span>');
+      return `<div class="cap"><span class="box">${s}</span></div>`; } }
+  return '';
+}
+function setLook(sunset, endCard) {
+  scene.background = sunset ? BG_SUNSET : (endCard ? BG_END : BG_NIGHT);
+  scene.fog.color.set(sunset ? 0xC2410C : 0x070C1A); scene.fog.near = sunset ? 20 : 16; scene.fog.far = sunset ? 60 : 42;
+  floorMat.color.set(sunset ? 0x1F4D2B : 0x0E1629); floorMat.roughness = sunset ? 0.9 : 0.32; floorMat.metalness = sunset ? 0 : 0.25;
+  key.color.set(sunset ? 0xFFC58A : 0xffffff); key.intensity = sunset ? 2.6 : 2.4; key.position.set(sunset ? -4 : 5, sunset ? 6 : 10, sunset ? -6 : 7);
+  rim.color.set(sunset ? 0xF97316 : 0x60A5FA); hemi.color.set(sunset ? 0xFFD6A5 : 0xbfd4ff); hemi.intensity = sunset ? 0.8 : 0.55;
+  floor.visible = !endCard; dust.material.color.set(sunset ? 0xFFE4B5 : 0xFACC15);
+}
+let ready = false;
+window.render = function (T) {
+  if (!ready) return;
+  for (const k in G) G[k].visible = false;
+  let active = null;
+  for (const name of ORDER) { const sc = SCENES[name]; if (T >= sc.start - 0.01 && T <= sc.end + 0.01) { active = name; break; } }
+  let fade = 0, html = '';
+  setLook(active === 'end' && T < C('e4'), active === 'end' && T >= C('e4'));
+  // dust
+  for (let i = 0; i < DUST; i++) { const b = dustBase[i]; dustPos[i*3] = b[0] + Math.sin(T * 0.3 + b[4]) * 0.3; dustPos[i*3+1] = (b[1] + T * b[3]) % 9; dustPos[i*3+2] = b[2]; }
+  dustGeo.attributes.position.needsUpdate = true;
+  if (active) { const sc = SCENES[active]; fade = Math.min(1, (T - sc.start) / 0.45, (sc.end - T) / 0.45); html = S[active](T); }
+  composer.render();
+  const disc = active && ORDER.indexOf(active) < ORDER.indexOf('why') ? 'Fictional characters &middot; Real math &middot; 7% assumed return &middot; Not financial advice' : '';
+  document.getElementById('ui').innerHTML = html +
+    (disc ? `<div style="position:absolute;left:18px;top:${active === 'race' ? 690 : 12}px;font-size:14px;font-weight:800;color:rgba(148,163,184,0.75)">${disc}</div>` : '') + captionHTML(T);
+  document.getElementById('fade').style.opacity = (1 - clamp(fade)).toFixed(3);
+};
+window.CUE_LIST = () => Object.entries(CUE).map(([k, c]) => ({ key: k, start: c.start, end: c.end, text: c.text }));
+(async () => {
+  await document.fonts.load('900 64px Montserrat'); await document.fonts.load('800 64px Montserrat');
+  build(); ready = true; window.render(0.5); window.READY = true;
+})();
+</script>
+</body>
+</html>

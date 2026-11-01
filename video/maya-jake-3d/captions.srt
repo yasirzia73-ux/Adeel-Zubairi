@@ -1,0 +1,259 @@
+1
+00:00:00,400 --> 00:00:02,741
+Maya invested $48,000.
+
+2
+00:00:02,791 --> 00:00:05,540
+Jake invested almost four times that.
+
+3
+00:00:05,590 --> 00:00:07,790
+Same salary. Same investment.
+
+4
+00:00:07,840 --> 00:00:13,038
+At 65, Maya is richer. And Jake never catches up.
+
+5
+00:00:13,988 --> 00:00:16,737
+This is Maya. This is Jake.
+
+6
+00:00:16,787 --> 00:00:21,577
+They graduate the same year, start the same kind of job,
+
+7
+00:00:21,627 --> 00:00:25,192
+and both earn $60,000 a year.
+
+8
+00:00:25,242 --> 00:00:31,664
+They're fictional, but every number in this video is real math you can check yourself.
+
+9
+00:00:31,714 --> 00:00:35,280
+At 22, Maya makes one decision.
+
+10
+00:00:35,330 --> 00:00:42,160
+She takes $400 from every month's pay, about 8% of her salary,
+
+11
+00:00:42,210 --> 00:00:47,408
+and puts it into a simple index fund. Then she ignores it.
+
+12
+00:00:47,458 --> 00:00:52,248
+Jake? Jake has other plans. A new car. A nicer apartment.
+
+13
+00:00:52,298 --> 00:00:57,904
+"I'll start investing when I'm older," he says. "When I actually make money."
+
+14
+00:00:57,954 --> 00:01:03,968
+But here's the twist: Maya is only going to do this for ten years.
+
+15
+00:01:04,918 --> 00:01:09,708
+Maya invests $400 a month for exactly ten years.
+
+16
+00:01:09,758 --> 00:01:18,221
+By 32, she's put in $48,000, and her account has grown to about $69,000.
+
+17
+00:01:18,271 --> 00:01:21,020
+Then life happens. Kids. A mortgage.
+
+18
+00:01:21,070 --> 00:01:25,044
+She stops investing. Completely. Not one more dollar, ever.
+
+19
+00:01:25,094 --> 00:01:29,067
+And at that exact moment, Jake finally wakes up.
+
+20
+00:01:29,117 --> 00:01:36,764
+He's 32, he's earning more, and he starts investing the same $400 a month.
+
+21
+00:01:36,814 --> 00:01:45,686
+But Jake doesn't stop. He invests every single month for 33 years, all the way to 65.
+
+22
+00:01:45,736 --> 00:01:51,750
+In total, he puts in $190,000. Almost four times what Maya invested.
+
+23
+00:01:51,800 --> 00:01:54,957
+So who ends up with more money?
+
+24
+00:01:55,907 --> 00:01:58,107
+Let's fast-forward.
+
+25
+00:01:58,157 --> 00:02:07,029
+At 45, Jake has been investing for 13 years. He has about $101,000. Not bad.
+
+26
+00:02:07,079 --> 00:02:14,726
+But Maya, who hasn't added a single dollar in 13 years, has about $172,000.
+
+27
+00:02:14,776 --> 00:02:20,790
+At 55, Jake has about $273,000. Maya: $345,000.
+
+28
+00:02:20,840 --> 00:02:23,997
+And at 65, retirement day:
+
+29
+00:02:24,047 --> 00:02:29,245
+Jake has about $618,000. Maya has about $693,000.
+
+30
+00:02:29,295 --> 00:02:35,309
+Jake invested $142,000 more than Maya, and still ended up with less.
+
+31
+00:02:35,359 --> 00:02:43,006
+So how is this possible? It comes down to one thing that doesn't care how hard you work.
+
+32
+00:02:43,956 --> 00:02:46,156
+It's called compound growth.
+
+33
+00:02:46,206 --> 00:02:50,588
+Your money earns returns, and then those returns earn returns.
+
+34
+00:02:50,638 --> 00:02:54,203
+Think of it like a snowball rolling downhill.
+
+35
+00:02:54,253 --> 00:03:00,676
+In year one, Maya's snowball is tiny. But every year it picks up more snow,
+
+36
+00:03:00,726 --> 00:03:04,699
+and the bigger it gets, the faster it grows.
+
+37
+00:03:04,749 --> 00:03:10,355
+At 7% a year, money roughly doubles about every ten years.
+
+38
+00:03:10,405 --> 00:03:16,828
+Maya's first dollars had 43 years to grow. That's more than four doublings.
+
+39
+00:03:16,878 --> 00:03:24,933
+A single dollar she invested at 22 turned into about $20 by 65.
+
+40
+00:03:24,983 --> 00:03:30,997
+Jake's first dollars only had 33 years. About $10 each.
+
+41
+00:03:31,047 --> 00:03:38,286
+And the dollars he invested at 60? They barely had time to grow at all.
+
+42
+00:03:38,336 --> 00:03:45,166
+Maya didn't win because she saved more. She won because she gave her money more time.
+
+43
+00:03:45,216 --> 00:03:50,006
+In investing, time is the one ingredient you can't buy back.
+
+44
+00:03:50,056 --> 00:03:58,111
+One quick note: we're assuming 7% a year, roughly the US stock market's long-run average after inflation.
+
+45
+00:03:58,161 --> 00:04:03,767
+Some years are much better, some are much worse, and nothing is guaranteed.
+
+46
+00:04:03,817 --> 00:04:08,607
+But over decades, the pattern stays the same: earlier beats bigger.
+
+47
+00:04:09,557 --> 00:04:12,714
+But wait. What if Maya never stopped?
+
+48
+00:04:12,764 --> 00:04:20,003
+Same $400 a month, from 22 all the way to 65.
+
+49
+00:04:20,053 --> 00:04:23,618
+She'd retire with about $1.3 million.
+
+50
+00:04:23,668 --> 00:04:32,132
+For Jake to catch that, starting at 32, he'd need to invest about $850 a month.
+
+51
+00:04:32,182 --> 00:04:36,971
+More than double. That's the real cost of waiting ten years.
+
+52
+00:04:37,921 --> 00:04:42,303
+Now, if you're thinking, "Great, I'm already Jake," don't worry.
+
+53
+00:04:42,353 --> 00:04:47,959
+Jake still retired with over $600,000. Starting late beats never starting.
+
+54
+00:04:48,009 --> 00:04:52,391
+Here's how to be more like Maya, starting this month.
+
+55
+00:04:52,441 --> 00:04:58,455
+One: if your job offers a 401(k) match, take all of it.
+
+56
+00:04:58,505 --> 00:05:04,111
+A match is part of your pay you only get if you contribute.
+
+57
+00:05:04,161 --> 00:05:10,176
+Two: start with any amount. Even $50 a month builds the habit.
+
+58
+00:05:10,226 --> 00:05:15,423
+Three: automate it, so it comes out before you see your paycheck.
+
+59
+00:05:15,473 --> 00:05:22,304
+Four: keep it simple. A low-cost, broad index fund owns a slice of the whole market.
+
+60
+00:05:22,354 --> 00:05:27,960
+Five: don't panic when the market drops. Maya's money went through crashes too.
+
+61
+00:05:28,010 --> 00:05:30,210
+She just didn't sell.
+
+62
+00:05:31,160 --> 00:05:34,317
+Maya and Jake earned the same salary.
+
+63
+00:05:34,367 --> 00:05:40,382
+They weren't different in talent or luck. The difference was one decision about time.
+
+64
+00:05:40,432 --> 00:05:46,446
+The best day to start was ten years ago. The second-best day is today.
+
+65
+00:05:46,496 --> 00:05:54,551
+Subscribe so you don't miss the next one: how to budget a $2,500 paycheck, step by step.

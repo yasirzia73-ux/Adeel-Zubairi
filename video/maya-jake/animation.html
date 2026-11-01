@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Two Friends Earn $60K - animated video</title>
+<style>
+  html, body { margin: 0; padding: 0; background: #0F172A; overflow: hidden; }
+  #stage { position: relative; width: 1280px; height: 720px; overflow: hidden;
+           font-family: "Montserrat", sans-serif; color: #F8FAFC; }
+  #stage svg { position: absolute; left: 0; top: 0; }
+  .ov { position: absolute; text-align: center; font-weight: 900; line-height: 1.05; }
+  .cap { position: absolute; left: 90px; width: 1100px; bottom: 26px; text-align: center; }
+  .cap span.box { display: inline-block; background: rgba(2,6,23,0.82); border-radius: 14px;
+                  padding: 10px 22px; font-weight: 800; font-size: 33px; line-height: 1.25; }
+  .hl { color: #EAB308; }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<script>
+/* ============================================================
+   Deterministic animation: render(t) draws the frame at time t (s).
+   ============================================================ */
+const W = 1280, H = 720;
+const GREEN = '#22C55E', GREY = '#94A3B8', GOLD = '#EAB308', RED = '#EF4444',
+      NAVY = '#0F172A', WHITE = '#F8FAFC', SLATE = '#1E293B';
+
+/* ---------- narration cues (captions) ---------- */
+const CUES = [
+ // HOOK
+ ['hook','h1','Maya invested $48,000.'],
+ ['hook','h2','Jake invested almost four times that.'],
+ ['hook','h3','Same salary. Same investment.'],
+ ['hook','h4','At 65, Maya is richer. And Jake never catches up.'],
+ // MEET
+ ['meet','m1','This is Maya. This is Jake.'],
+ ['meet','m2','They graduate the same year, start the same kind of job,'],
+ ['meet','m3','and both earn $60,000 a year.'],
+ ['meet','m4',"They're fictional, but every number in this video is real math you can check yourself."],
+ ['meet','m5','At 22, Maya makes one decision.'],
+ ['meet','m6',"She takes $400 from every month's pay, about 8% of her salary,"],
+ ['meet','m7','and puts it into a simple index fund. Then she ignores it.'],
+ ['meet','m8','Jake? Jake has other plans. A new car. A nicer apartment.'],
+ ['meet','m9','"I\'ll start investing when I\'m older," he says. "When I actually make money."'],
+ ['meet','m10',"But here's the twist: Maya is only going to do this for ten years."],
+ // STOP
+ ['stop','s1','Maya invests $400 a month for exactly ten years.'],
+ ['stop','s2',"By 32, she's put in $48,000, and her account has grown to about $69,000."],
+ ['stop','s3','Then life happens. Kids. A mortgage.'],
+ ['stop','s4','She stops investing. Completely. Not one more dollar, ever.'],
+ ['stop','s5','And at that exact moment, Jake finally wakes up.'],
+ ['stop','s6',"He's 32, he's earning more, and he starts investing the same $400 a month."],
+ ['stop','s7',"But Jake doesn't stop. He invests every single month for 33 years, all the way to 65."],
+ ['stop','s8','In total, he puts in $190,000. Almost four times what Maya invested.'],
+ ['stop','s9','So who ends up with more money?'],
+ // RACE
+ ['race','r1',"Let's fast-forward."],
+ ['race','r2','At 45, Jake has been investing for 13 years. He has about $101,000. Not bad.'],
+ ['race','r3',"But Maya, who hasn't added a single dollar in 13 years, has about $172,000."],
+ ['race','r4','At 55, Jake has about $273,000. Maya: $345,000.'],
+ ['race','r5','And at 65, retirement day:'],
+ ['race','r6','Jake has about $618,000. Maya has about $693,000.'],
+ ['race','r7','Jake invested $142,000 more than Maya, and still ended up with less.'],
+ ['race','r8',"So how is this possible? It comes down to one thing that doesn't care how hard you work."],
+ // WHY
+ ['why','w1',"It's called compound growth."],
+ ['why','w2','Your money earns returns, and then those returns earn returns.'],
+ ['why','w3','Think of it like a snowball rolling downhill.'],
+ ['why','w4',"In year one, Maya's snowball is tiny. But every year it picks up more snow,"],
+ ['why','w5','and the bigger it gets, the faster it grows.'],
+ ['why','w6','At 7% a year, money roughly doubles about every ten years.'],
+ ['why','w7',"Maya's first dollars had 43 years to grow. That's more than four doublings."],
+ ['why','w8','A single dollar she invested at 22 turned into about $20 by 65.'],
+ ['why','w9',"Jake's first dollars only had 33 years. About $10 each."],
+ ['why','w10','And the dollars he invested at 60? They barely had time to grow at all.'],
+ ['why','w11',"Maya didn't win because she saved more. She won because she gave her money more time."],
+ ['why','w12',"In investing, time is the one ingredient you can't buy back."],
+ ['why','w13',"One quick note: we're assuming 7% a year, roughly the US stock market's long-run average after inflation."],
+ ['why','w14','Some years are much better, some are much worse, and nothing is guaranteed.'],
+ ['why','w15','But over decades, the pattern stays the same: earlier beats bigger.'],
+ // BONUS
+ ['bonus','b1','But wait. What if Maya never stopped?'],
+ ['bonus','b2','Same $400 a month, from 22 all the way to 65.'],
+ ['bonus','b3',"She'd retire with about $1.3 million."],
+ ['bonus','b4',"For Jake to catch that, starting at 32, he'd need to invest about $850 a month."],
+ ['bonus','b5',"More than double. That's the real cost of waiting ten years."],
+ // TIPS
+ ['tips','t1','Now, if you\'re thinking, "Great, I\'m already Jake," don\'t worry.'],
+ ['tips','t2','Jake still retired with over $600,000. Starting late beats never starting.'],
+ ['tips','t3',"Here's how to be more like Maya, starting this month."],
+ ['tips','t4','One: if your job offers a 401(k) match, take all of it.'],
+ ['tips','t5','A match is part of your pay you only get if you contribute.'],
+ ['tips','t6','Two: start with any amount. Even $50 a month builds the habit.'],
+ ['tips','t7','Three: automate it, so it comes out before you see your paycheck.'],
+ ['tips','t8','Four: keep it simple. A low-cost, broad index fund owns a slice of the whole market.'],
+ ['tips','t9',"Five: don't panic when the market drops. Maya's money went through crashes too."],
+ ['tips','t10',"She just didn't sell."],
+ // END
+ ['end','e1','Maya and Jake earned the same salary.'],
+ ['end','e2',"They weren't different in talent or luck. The difference was one decision about time."],
+ ['end','e3','The best day to start was ten years ago. The second-best day is today.'],
+ ['end','e4',"Subscribe so you don't miss the next one: how to budget a $2,500 paycheck, step by step."],
+];
+
+/* timing: ~2.45 spoken words/sec; numbers count as ~3 spoken words */
+function spokenWords(s) {
+  return s.split(/\s+/).filter(Boolean)
+          .reduce((n, w) => n + (/\d/.test(w) ? 3 : 1), 0);
+}
+const CUE = {}; const SCENES = {}; const ORDER = [];
+(function buildTimeline() {
+  let t = 0.4, prevScene = null;
+  for (const [scene, key, text] of CUES) {
+    if (scene !== prevScene) {
+      if (prevScene) { SCENES[prevScene].end = t + 0.5; t += 0.9; }
+      SCENES[scene] = { start: t - 0.2 }; ORDER.push(scene); prevScene = scene;
+    }
+    const d = Math.max(1.9, spokenWords(text) / 2.45);
+    CUE[key] = { start: t, end: t + d, text };
+    t += d + 0.35;
+  }
+  SCENES[prevScene].end = t + 15;          // 15 s end-screen hold
+  window.TOTAL = SCENES[prevScene].end;
+})();
+const C = k => CUE[k].start, E = k => CUE[k].end;
+
+/* ---------- math ---------- */
+const R = 0.07 / 12;
+const MAYA = [0], JAKE = [0], FOREVER = [0];
+for (let k = 1; k <= 516; k++) {
+  MAYA.push(MAYA[k-1] * (1+R) + (k <= 120 ? 400 : 0));
+  JAKE.push(JAKE[k-1] * (1+R) + (k > 120 ? 400 : 0));
+  FOREVER.push(FOREVER[k-1] * (1+R) + 400);
+}
+const balAt = (arr, age) => { const m = Math.max(0, Math.min(516, (age - 22) * 12));
+  const i = Math.floor(m), f = m - i; return i >= 516 ? arr[516] : arr[i] * (1-f) + arr[i+1] * f; };
+
+/* ---------- helpers ---------- */
+const clamp = (x, a=0, b=1) => Math.max(a, Math.min(b, x));
+const ease = x => { x = clamp(x); return x < .5 ? 4*x*x*x : 1 - Math.pow(-2*x+2, 3)/2; };
+const easeOut = x => 1 - Math.pow(1 - clamp(x), 3);
+const P = (t, a, d) => ease((t - a) / d);           // eased progress
+const lerp = (a, b, p) => a + (b - a) * p;
+const money = n => '$' + Math.round(n).toLocaleString('en-US');
+const moneyK = n => n >= 1e6 ? '$' + (n/1e6).toFixed(2) + 'M' : '$' + Math.round(n/1000) + 'K';
+const pop = (t, a, d=0.45) => { const x = clamp((t - a) / d); return x === 0 ? 0 : 1 + 0.25*Math.sin(x*Math.PI) * (1 - x) + (easeOut(x) - 1); };
+
+function text(x, y, s, size, color=WHITE, weight=900, anchor='middle', extra='') {
+  return `<text x="${x}" y="${y}" font-family="Montserrat" font-weight="${weight}" font-size="${size}"
+           fill="${color}" text-anchor="${anchor}" ${extra}>${s}</text>`;
+}
+function ov(html, x, y, w, size, color=WHITE, opacity=1, extra='') {
+  return `<div class="ov" style="left:${x}px;top:${y}px;width:${w}px;font-size:${size}px;color:${color};opacity:${opacity};${extra}">${html}</div>`;
+}
+
+/* ---------- characters ---------- */
+function person(kind, x, y, s=1, o={}) {
+  const maya = kind === 'maya';
+  const skin = maya ? '#C68642' : '#F1C27D';
+  const hair = o.old ? '#CBD5E1' : (maya ? '#2B1B17' : '#6B4423');
+  const top = o.color || (maya ? GREEN : GREY);
+  const op = o.opacity == null ? 1 : o.opacity;
+  let g = `<g transform="translate(${x},${y}) scale(${s})" opacity="${op}">`;
+  g += `<ellipse cx="0" cy="0" rx="48" ry="8" fill="#020617" opacity="0.5"/>`;
+  g += `<rect x="-22" y="-72" width="17" height="70" rx="6" fill="${SLATE}"/><rect x="5" y="-72" width="17" height="70" rx="6" fill="${SLATE}"/>`;
+  g += `<ellipse cx="-15" cy="-3" rx="15" ry="7" fill="#0B1120"/><ellipse cx="15" cy="-3" rx="15" ry="7" fill="#0B1120"/>`;
+  if (maya && !o.old) { // back hair
+    g += `<circle cx="-30" cy="-196" r="15" fill="${hair}"/><circle cx="30" cy="-196" r="15" fill="${hair}"/>`;
+  }
+  g += `<rect x="-41" y="-178" width="82" height="112" rx="30" fill="${top}"/>`;
+  const armA = o.wave ? -40 : 0;
+  g += `<g transform="rotate(${armA} -45 -165)"><rect x="-56" y="-168" width="19" height="84" rx="9" fill="${top}"/><circle cx="-46" cy="-84" r="10" fill="${skin}"/></g>`;
+  g += `<rect x="37" y="-168" width="19" height="84" rx="9" fill="${top}"/><circle cx="46" cy="-84" r="10" fill="${skin}"/>`;
+  if (!maya) g += `<path d="M-30 -176 Q 0 -150 30 -176" stroke="#64748B" stroke-width="7" fill="none"/>`;
+  g += `<rect x="-9" y="-194" width="18" height="22" fill="${skin}"/>`;
+  g += `<circle cx="0" cy="-226" r="37" fill="${skin}"/>`;
+  if (maya) {
+    for (const [cx, cy, r] of [[-30,-244,16],[-17,-259,16],[0,-265,17],[17,-259,16],[30,-244,16],[-37,-222,13],[37,-222,13]])
+      g += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${hair}"/>`;
+  } else {
+    g += `<path d="M-37 -230 Q -36 -272 0 -268 Q 36 -272 37 -230 Q 22 -250 0 -248 Q -22 -250 -37 -230Z" fill="${hair}"/>`;
+  }
+  g += `<circle cx="-12" cy="-224" r="4.5" fill="${NAVY}"/><circle cx="12" cy="-224" r="4.5" fill="${NAVY}"/>`;
+  g += o.sad ? `<path d="M-11 -204 Q 0 -212 11 -204" stroke="${NAVY}" stroke-width="3.5" fill="none" stroke-linecap="round"/>`
+             : `<path d="M-12 -209 Q 0 -198 12 -209" stroke="${NAVY}" stroke-width="3.5" fill="none" stroke-linecap="round"/>`;
+  if (o.cap) {
+    g += `<path d="M-50 -266 L0 -286 L50 -266 L0 -248 Z" fill="#0B1120"/><rect x="-24" y="-266" width="48" height="16" fill="#0B1120"/>`;
+    g += `<path d="M0 -267 L38 -260 L40 -238" stroke="${GOLD}" stroke-width="3" fill="none"/>`;
+  }
+  return g + '</g>';
+}
+
+function jar(x, y, fill, label, opacity=1) {   // x center, y bottom
+  const h = 170, w = 130, fh = clamp(fill) * (h - 14);
+  let g = `<g opacity="${opacity}">`;
+  g += `<rect x="${x-w/2}" y="${y-h}" width="${w}" height="${h}" rx="22" fill="#1E293B" opacity="0.55"/>`;
+  g += `<rect x="${x-w/2+7}" y="${y-7-fh}" width="${w-14}" height="${fh}" rx="14" fill="${GOLD}"/>`;
+  for (let yy = y - 7 - 14; yy > y - 7 - fh + 4; yy -= 14)
+    g += `<line x1="${x-w/2+12}" y1="${yy}" x2="${x+w/2-12}" y2="${yy}" stroke="#A16207" stroke-width="2" opacity="0.6"/>`;
+  g += `<rect x="${x-w/2}" y="${y-h}" width="${w}" height="${h}" rx="22" fill="none" stroke="#CBD5E1" stroke-width="5"/>`;
+  g += `<rect x="${x-w/2-8}" y="${y-h-16}" width="${w+16}" height="20" rx="8" fill="#64748B"/>`;
+  if (label) g += text(x, y + 34, label, 20, '#CBD5E1', 800);
+  return g + '</g>';
+}
+function coin(x, y, r=13, op=1) {
+  return `<g opacity="${op}"><circle cx="${x}" cy="${y}" r="${r}" fill="${GOLD}" stroke="#A16207" stroke-width="3"/>
+          ${text(x, y + r*0.42, '$', r*1.15, '#854D0E', 900)}</g>`;
+}
+function stopSign(x, y, s) {
+  let pts = []; for (let i = 0; i < 8; i++) { const a = Math.PI/8 + i*Math.PI/4; pts.push(`${x+70*s*Math.cos(a)},${y+70*s*Math.sin(a)}`); }
+  return `<polygon points="${pts.join(' ')}" fill="${RED}" stroke="${WHITE}" stroke-width="${6*s}"/>` + text(x, y + 14*s, 'STOP', 40*s, WHITE, 900);
+}
+function ageBox(age, op=1) {
+  return `<g opacity="${op}"><rect x="1040" y="26" width="214" height="70" rx="16" fill="#1E293B" stroke="#334155" stroke-width="3"/>
+    ${text(1070, 70, 'AGE', 22, '#94A3B8', 800, 'start')}${text(1232, 75, Math.floor(age), 44, GOLD, 900, 'end')}</g>`;
+}
+function badge(s, x, y, color=GOLD, fg=NAVY, size=24, op=1) {
+  const w = s.length * size * 0.66 + 40;
+  return `<g opacity="${op}"><rect x="${x - w/2}" y="${y - size - 8}" width="${w}" height="${size + 26}" rx="${(size+26)/2}" fill="${color}"/>
+          ${text(x, y + 5, s, size, fg, 900)}</g>`;
+}
+
+/* ---------- line chart ---------- */
+function chart(T, opts) {
+  const { x0=150, x1=1040, y0=500, y1=170, ymax=750000, lines, upto, grid=[0,250000,500000], op=1 } = opts;
+  const X = a => x0 + (a - 22) / 43 * (x1 - x0), Y = v => y0 - v / ymax * (y0 - y1);
+  let g = `<g opacity="${op}">`;
+  for (const v of grid) {
+    g += `<line x1="${x0}" y1="${Y(v)}" x2="${x1}" y2="${Y(v)}" stroke="#334155" stroke-width="2" stroke-dasharray="${v ? '6 8' : ''}"/>`;
+    g += text(x0 - 14, Y(v) + 7, v === 0 ? '$0' : moneyK(v), 19, '#94A3B8', 800, 'end');
+  }
+  for (const a of [22, 32, 45, 55, 65]) g += text(X(a), y0 + 34, a, 20, '#94A3B8', 800);
+  for (const L of lines) {
+    const end = Math.min(upto, L.to || 65); if (end <= (L.from || 22)) continue;
+    let d = ''; const st = L.from || 22;
+    for (let a = st; a <= end + 1e-6; a += 0.25) d += (d ? ' L' : 'M') + X(a).toFixed(1) + ' ' + Y(balAt(L.data, a)).toFixed(1);
+    d += ' L' + X(end).toFixed(1) + ' ' + Y(balAt(L.data, end)).toFixed(1);
+    g += `<path d="${d}" stroke="${L.color}" stroke-width="${L.w || 7}" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="${L.op == null ? 1 : L.op}"/>`;
+    if (L.dot !== false) {
+      const v = balAt(L.data, end);
+      g += `<circle cx="${X(end)}" cy="${Y(v)}" r="10" fill="${L.color}" stroke="${NAVY}" stroke-width="3"/>`;
+      if (L.label) g += text(X(end) + (L.lx || 0), Y(v) + (L.ly || -20), L.label + ' ' + moneyK(v), 22, L.color, 900, L.anchor || 'middle');
+    }
+  }
+  return g + '</g>';
+}
+
+/* ---------- scenes ---------- */
+const S = {};
+
+S.hook = (T) => {
+  let g = '', o = '';
+  const base = 540, maxH = 330;
+  const p4 = P(T, C('h4'), 1.6);
+  const mh = lerp(48000, 692826, p4) / 692826 * maxH * (p4 > 0 ? 1 : 1);
+  const jh = lerp(190080, 617625, p4) / 692826 * maxH;
+  const a1 = easeOut((T - C('h1')) / 0.8), a2 = easeOut((T - C('h2')) / 1.0);
+  const stack = (x, h, a, col) => {
+    const hh = h * a; let s = `<rect x="${x-80}" y="${base-hh}" width="160" height="${hh}" rx="10" fill="${GOLD}"/>`;
+    for (let yy = base - 16; yy > base - hh + 6; yy -= 16) s += `<line x1="${x-74}" y1="${yy}" x2="${x+74}" y2="${yy}" stroke="#A16207" stroke-width="2.5"/>`;
+    return s + `<rect x="${x-80}" y="${base-hh}" width="160" height="${hh}" rx="10" fill="none" stroke="${col}" stroke-width="5"/>`;
+  };
+  if (p4 > 0) g += `<circle cx="420" cy="${base - mh/2}" r="${260*p4}" fill="${GREEN}" opacity="${0.12*p4}"/>`;
+  g += stack(420, mh, a1, GREEN) + stack(860, jh, a2, GREY);
+  g += `<line x1="250" y1="${base}" x2="1030" y2="${base}" stroke="#334155" stroke-width="4"/>`;
+  g += text(420, base + 46, 'MAYA', 34, GREEN) + text(860, base + 46, 'JAKE', 34, GREY);
+  if (a1 > 0) g += text(420, base - mh * a1 - 22, p4 > 0.5 ? moneyK(lerp(48000, 692826, p4)) : 'PUT IN $48K', p4 > 0.5 ? 46 : 30, p4 > 0.5 ? GREEN : WHITE, 900, 'middle', `opacity="${a1}"`);
+  if (a2 > 0) g += text(860, base - jh * a2 - 22, p4 > 0.5 ? moneyK(lerp(190080, 617625, p4)) : 'PUT IN $190K', p4 > 0.5 ? 46 : 30, p4 > 0.5 ? GREY : WHITE, 900, 'middle', `opacity="${a2}"`);
+  const p3 = clamp((T - C('h3')) / 0.5);
+  if (p3 > 0 && p4 < 0.3) o += ov('SAME SALARY. SAME $400/MONTH.', 0, 60, W, 46, WHITE, p3 * (1 - p4 / 0.3));
+  if (p4 > 0.5) o += ov('AT 65: <span style="color:#22C55E">MAYA WINS</span>', 0, 56, W, 54, WHITE, clamp((p4 - 0.5) * 2));
+  return [g, o];
+};
+
+S.meet = (T) => {
+  let g = '', o = '';
+  const p1 = P(T, C('m1'), 1.4);
+  const focusMaya = clamp((T - C('m5')) / 0.6) * (1 - clamp((T - C('m8')) / 0.6));
+  const focusJake = clamp((T - C('m8')) / 0.6) * (1 - clamp((T - C('m10')) / 0.6));
+  const mx = lerp(-120, 430, p1) - 90 * focusMaya, jx = lerp(1400, 850, p1) + 60 * focusMaya;
+  g += `<line x1="80" y1="600" x2="1200" y2="600" stroke="#334155" stroke-width="4"/>`;
+  // jar for Maya
+  if (focusMaya > 0) {
+    const jf = clamp((T - C('m6')) / (E('m7') - C('m6'))) * 0.35;
+    g += jar(560, 600, jf, 'INDEX FUND', focusMaya);
+    const ct = (T - C('m6')) % 0.9;
+    if (T > C('m6') && T < E('m7')) g += coin(560, lerp(330, 600 - 20 - jf * 156, easeOut(ct / 0.9)), 15, focusMaya);
+  }
+  g += person('maya', mx, 600, 1.05, { cap: T < C('m5'), opacity: 1 - 0.55 * focusJake });
+  g += person('jake', jx, 600, 1.05, { cap: T < C('m5'), opacity: 1 - 0.6 * focusMaya });
+  const pt = clamp((T - C('m3')) / 0.5) * (1 - clamp((T - C('m5')) / 0.4));
+  if (pt > 0) g += badge('$60,000/yr', mx, 300, GOLD, NAVY, 26, pt) + badge('$60,000/yr', jx, 300, GOLD, NAVY, 26, pt);
+  const pf = clamp((T - C('m4')) / 0.4) * (1 - clamp((T - C('m5')) / 0.4));
+  if (pf > 0) o += ov('FICTIONAL PEOPLE &middot; <span class="hl">REAL MATH</span>', 0, 70, W, 40, WHITE, pf);
+  if (focusMaya > 0) o += ov('<span class="hl">$400/month</span> &asymp; 8% of salary', 0, 70, W, 44, WHITE, clamp((T - C('m6')) / 0.5) * focusMaya);
+  if (focusJake > 0) {
+    // thought bubble with car + building
+    const bx = jx - 250, by = 150, a = focusJake;
+    g += `<g opacity="${a}"><ellipse cx="${bx}" cy="${by}" rx="190" ry="95" fill="${WHITE}"/>
+      <circle cx="${jx - 90}" cy="${by + 110}" r="16" fill="${WHITE}"/><circle cx="${jx - 60}" cy="${by + 145}" r="10" fill="${WHITE}"/>
+      <rect x="${bx - 150}" y="${by - 10}" width="140" height="44" rx="16" fill="${RED}"/><path d="M${bx-130} ${by-10} L${bx-105} ${by-40} L${bx-45} ${by-40} L${bx-25} ${by-10}Z" fill="${RED}"/>
+      <circle cx="${bx-118}" cy="${by+36}" r="14" fill="${NAVY}"/><circle cx="${bx-42}" cy="${by+36}" r="14" fill="${NAVY}"/>
+      <rect x="${bx + 30}" y="${by - 70}" width="110" height="120" rx="6" fill="#64748B"/>`;
+    for (let r = 0; r < 4; r++) for (let c = 0; c < 3; c++) g += `<rect x="${bx + 42 + c*33}" y="${by - 58 + r*28}" width="20" height="16" fill="${GOLD}"/>`;
+    g += `</g>`;
+    const q = clamp((T - C('m9')) / 0.4) * a;
+    if (q > 0) o += ov('&ldquo;I&rsquo;ll start when I&rsquo;m older.&rdquo;', 660, 120, 600, 38, WHITE, q, 'font-weight:800;font-style:italic');
+  }
+  const pt10 = clamp((T - C('m10')) / 0.5);
+  if (pt10 > 0) o += ov('MAYA ONLY INVESTS FOR <span style="color:#EAB308">10 YEARS</span>', 0, 70, W, 48, WHITE, pt10);
+  return [g, o];
+};
+
+S.stop = (T) => {
+  let g = '', o = '';
+  const aMaya = lerp(22, 32, clamp((T - C('s1')) / (E('s2') - C('s1'))));
+  const age = T < C('s5') ? aMaya : 32;
+  g += ageBox(age);
+  g += `<line x1="80" y1="600" x2="1200" y2="600" stroke="#334155" stroke-width="4"/>`;
+  g += `<line x1="640" y1="150" x2="640" y2="590" stroke="#334155" stroke-width="3" stroke-dasharray="8 10"/>`;
+  const mBal = balAt(MAYA, aMaya), mIn = (aMaya - 22) * 12 * 400;
+  const jStart = C('s6'), jp = clamp((T - jStart) / (E('s8') - jStart));
+  const jIn = lerp(0, 190080, jp);
+  g += person('maya', 230, 600, 0.95, {});
+  g += jar(420, 600, mBal / 230000, '', 1);
+  g += text(420, 330, money(mBal), 40, GREEN) + text(420, 362, 'put in ' + money(mIn), 22, '#CBD5E1', 800);
+  const sStop = pop(T, C('s4'), 0.5);
+  if (sStop > 0) g += stopSign(420, 500, sStop);
+  const life = clamp((T - C('s3')) / 0.5);
+  if (life > 0) { // stroller + house
+    g += `<g opacity="${life}"><path d="M70 470 L120 470 L130 420 L70 420 Z" fill="#F472B6"/><path d="M70 420 Q 70 380 110 385 L120 420Z" fill="#DB2777"/>
+      <circle cx="80" cy="480" r="10" fill="${SLATE}"/><circle cx="118" cy="480" r="10" fill="${SLATE}"/>
+      <rect x="120" y="170" width="120" height="90" fill="#64748B"/><path d="M110 175 L180 120 L250 175Z" fill="${RED}"/><rect x="168" y="215" width="26" height="45" fill="${NAVY}"/></g>`;
+  }
+  const jop = T < C('s5') ? 0.45 : 1;
+  g += person('jake', 840, 600, 0.95, { opacity: jop, sad: T < C('s5') });
+  const ex = pop(T, C('s5'), 0.5);
+  if (ex > 0 && T < E('s6')) g += text(840, 300, '!', 90 * ex, GOLD);
+  const jBal = balAt(JAKE, lerp(32, 65, jp));
+  g += jar(1030, 600, jp > 0 ? 0.08 + jp * 0.85 : 0, '', jop);
+  if (T > C('s6')) {
+    const l2 = T > C('s8') - 0.1 ? 'put in ' + money(jIn) : (T > C('s7') ? 'every month · 33 years' : 'starting at 32');
+    g += text(1030, 330, '$400/mo', 38, GREY) + text(1030, 362, l2, 22, '#CBD5E1', 800);
+  }
+  const q = clamp((T - C('s9')) / 0.4);
+  if (q > 0) o += ov('WHO ENDS UP WITH <span class="hl">MORE?</span>', 0, 120, W, 54, WHITE, q,
+       'background:rgba(15,23,42,0.85);padding:18px 0');
+  return [g, o];
+};
+
+S.race = (T) => {
+  let g = '', o = '';
+  let age;
+  if (T < C('r2')) age = lerp(22, 45, P(T, C('r1') - 0.2, C('r2') - C('r1') + 0.2));
+  else if (T < C('r4')) age = 45;
+  else if (T < C('r5')) age = lerp(45, 55, P(T, C('r4'), 2.2));
+  else age = lerp(55, 65, P(T, C('r5'), E('r5') - C('r5') + 0.8));
+  const dim = 1 - 0.75 * clamp((T - C('r8')) / 0.6);
+  g += ageBox(age, dim);
+  g += chart(T, { upto: age, op: dim, lines: [
+    { data: MAYA, color: GREEN, label: 'MAYA', lx: 18, ly: -6, anchor: 'start' },
+    { data: JAKE, color: GREY, from: 32, label: 'JAKE', lx: 18, ly: 26, anchor: 'start' },
+  ]});
+  // scoreboard
+  const sb = (y, name, v, col) => `<rect x="190" y="${y}" width="330" height="58" rx="14" fill="#1E293B" stroke="${col}" stroke-width="3"/>
+      ${text(212, y + 39, name, 26, col, 900, 'start')}${text(500, y + 40, money(v), 30, WHITE, 900, 'end')}`;
+  g += `<g opacity="${dim}">${sb(130, 'MAYA', balAt(MAYA, age), GREEN)}${sb(198, 'JAKE', balAt(JAKE, age), GREY)}</g>`;
+  const b = clamp((T - C('r7')) / 0.4) * (1 - clamp((T - C('r8')) / 0.4));
+  if (b > 0) o += ov('JAKE PUT IN <span style="color:#EF4444">$142,080 MORE</span><br><span style="font-size:34px;color:#CBD5E1">and still ended up with less</span>', 0, 40, W, 46, WHITE, b,
+       'background:rgba(15,23,42,0.9);padding:16px 0');
+  const h = clamp((T - C('r8')) / 0.5);
+  if (h > 0) o += ov('HOW?', 0, 250, W, 150, GOLD, h);
+  return [g, o];
+};
+
+S.why = (T) => {
+  let g = '', o = '';
+  const segA = T < C('w3'), segB = T >= C('w3') && T < C('w6'), segC = T >= C('w6') && T < C('w9'),
+        segD = T >= C('w9') && T < C('w11'), segE = T >= C('w11') && T < C('w13'),
+        segF = T >= C('w13') && T < C('w15'), segG = T >= C('w15');
+  if (segA) {
+    o += ov('COMPOUND GROWTH', 0, 90, W, 72, GOLD, clamp((T - C('w1')) / 0.5));
+    const p = (T - C('w2'));
+    if (p > 0) {
+      const st = [0, 0.8, 1.6, 2.4];
+      const groups = [[[0,0]], [[0,0],[34,-10]], [[0,0],[34,-10],[-30,-14],[6,-40]], [[0,0],[34,-10],[-30,-14],[6,-40],[40,-46],[-34,-50],[0,-76],[70,-20]]];
+      groups.forEach((cs, i) => {
+        const a = clamp((p - st[i]) / 0.4); if (!a) return;
+        const cx = 260 + i * 250;
+        cs.forEach(([dx, dy]) => g += coin(cx + dx, 420 + dy, 22, a));
+        if (i < 3) g += text(cx + 125, 410, '→', 54, '#64748B', 900, 'middle', `opacity="${clamp((p - st[i+1]) / 0.3)}"`);
+      });
+      g += text(640, 540, 'returns earn returns', 34, '#CBD5E1', 800, 'middle', `opacity="${clamp((p - 1) / 0.5)}"`);
+    }
+  }
+  if (segB) {
+    const p = clamp((T - C('w3')) / (E('w5') - C('w3')));
+    const sx = lerp(180, 1090, p), sy = lerp(230, 560, p), r = lerp(14, 95, Math.pow(p, 1.5));
+    g += `<path d="M120 ${230 + 14} L1180 ${560 + 95 + 20} L1180 720 L120 720 Z" fill="#E2E8F0" opacity="0.18"/>`;
+    g += `<line x1="120" y1="244" x2="1180" y2="675" stroke="#E2E8F0" stroke-width="4" opacity="0.6"/>`;
+    const ang = -Math.atan2(0, 1);
+    g += `<circle cx="${sx}" cy="${sy + 14 - r + (r - 14) * 0.9}" r="${r}" fill="${WHITE}" stroke="#CBD5E1" stroke-width="4"/>`;
+    g += text(sx, sy + 14 - r + (r - 14) * 0.9 + r * 0.38, '$', r * 1.1, GOLD, 900);
+    o += ov('THE SNOWBALL EFFECT', 0, 70, W, 56, WHITE, clamp((T - C('w3')) / 0.5));
+  }
+  if (segC) {
+    o += ov('7% A YEAR &asymp; DOUBLES EVERY ~10 YEARS', 0, 70, W, 44, WHITE, clamp((T - C('w6')) / 0.5));
+    const vals = [['22', '$1'], ['32', '$2'], ['42', '$4'], ['52', '$8'], ['62', '$16'], ['65', '~$20']];
+    vals.forEach(([age, v], i) => {
+      const a = clamp((T - C('w6') - 0.5 - i * 0.55) / 0.4); if (!a) return;
+      const h = [30, 50, 80, 120, 180, 220][i], x = 190 + i * 180;
+      g += `<g opacity="${a}"><rect x="${x - 55}" y="${515 - h * a}" width="110" height="${h * a}" rx="10" fill="${i === 5 ? GREEN : GOLD}"/>
+        ${text(x, 500 - h * a, v, 34, i === 5 ? GREEN : WHITE, 900)}${text(x, 550, 'age ' + age, 22, '#94A3B8', 800)}</g>`;
+    });
+    const q = clamp((T - C('w8')) / 0.5);
+    if (q > 0) g += badge('$1 at 22 → about $20 at 65', 640, 205, GREEN, NAVY, 30, q);
+  }
+  if (segD) {
+    const bar = (y, from, label, res, col, a) => {
+      const X = v => 200 + (v - 22) / 43 * 880;
+      return `<g opacity="${a}">${text(180, y + 33, label, 26, col, 900, 'end')}
+        <rect x="${X(from)}" y="${y}" width="${(X(65) - X(from)) * a}" height="46" rx="12" fill="${col}"/>
+        ${text(X(from) + 14, y + 32, (65 - from) + ' yrs', 22, NAVY, 900, 'start')}
+        ${text(1100, y + 34, res, 30, WHITE, 900, 'start', `opacity="${a}"`)}</g>`;
+    };
+    o += ov('$1 INVESTED AT...', 0, 70, W, 50, WHITE, 1);
+    g += bar(200, 22, 'MAYA 22', '~$20', GREEN, 1);
+    g += bar(310, 32, 'JAKE 32', '~$10', GREY, clamp((T - C('w9')) / 0.6));
+    g += bar(420, 60, 'JAKE 60', '~$1.42', '#64748B', clamp((T - C('w10')) / 0.6));
+    for (const a of [22, 32, 45, 55, 65]) g += text(200 + (a - 22) / 43 * 880, 520, a, 20, '#94A3B8', 800);
+  }
+  if (segE) {
+    o += ov('Maya didn&rsquo;t save more.', 0, 200, W, 56, '#CBD5E1', clamp((T - C('w11')) / 0.5));
+    o += ov('She gave her money more <span style="color:#EAB308">TIME</span>.', 0, 290, W, 64, WHITE, clamp((T - C('w11') - 2.2) / 0.5));
+  }
+  if (segF) {
+    const a = clamp((T - C('w13')) / 0.5);
+    o += ov('<div style="font-size:30px;color:#EAB308;margin-bottom:18px">QUICK NOTE</div>Assumes <span class="hl">7% average annual return</span> &mdash; roughly the US stock market&rsquo;s long-run average after inflation.<br><br><span style="color:#CBD5E1">Real returns vary. Nothing is guaranteed.<br>Not financial advice.</span>',
+            190, 150, 900, 36, WHITE, a, 'font-weight:800;line-height:1.3;background:#1E293B;border:3px solid #334155;border-radius:24px;padding:36px 30px;box-sizing:border-box');
+  }
+  if (segG) {
+    const a = pop(T, C('w15'), 0.6);
+    o += ov('EARLIER <span style="color:#EAB308">&gt;</span> BIGGER', 0, 250, W, 120 * Math.max(a, 0.01), GREEN, clamp(a));
+  }
+  return [g, o];
+};
+
+S.bonus = (T) => {
+  let g = '', o = '';
+  if (T < C('b2')) {
+    const a = clamp((T - C('b1')) / 0.4);
+    g += `<g opacity="${a}"><polygon points="560,330 640,280 640,380" fill="${GOLD}"/><polygon points="640,330 720,280 720,380" fill="${GOLD}"/></g>`;
+    o += ov('WHAT IF MAYA <span class="hl">NEVER STOPPED?</span>', 0, 140, W, 56, WHITE, a);
+    return [g, o];
+  }
+  if (T < C('b4')) {
+    const age = lerp(22, 65, P(T, C('b2'), E('b3') - C('b2')));
+    g += ageBox(age);
+    g += chart(T, { upto: age, ymax: 1400000, grid: [0, 500000, 1000000], lines: [
+      { data: MAYA, color: GREEN, op: 0.3, w: 5, dot: false, to: 65 },
+      { data: FOREVER, color: GREEN, label: 'MAYA', lx: 18, ly: 8, anchor: 'start' },
+    ]});
+    const big = clamp((T - C('b3')) / 0.5);
+    if (big > 0) o += ov(money(balAt(FOREVER, age)), 160, 150, 600, 76, GREEN, big, 'text-align:left');
+    return [g, o];
+  }
+  const a = P(T, C('b4'), 1.4);
+  o += ov('TO MATCH THAT, STARTING AT 32:', 0, 90, W, 42, WHITE, clamp((T - C('b4')) / 0.4));
+  const barH = v => v / 900 * 230 * a;
+  g += `<rect x="400" y="${510 - barH(400)}" width="180" height="${barH(400)}" rx="12" fill="${GREY}"/>`;
+  g += `<rect x="700" y="${510 - barH(849)}" width="180" height="${barH(849)}" rx="12" fill="${RED}"/>`;
+  g += text(490, 495 - barH(400), '$400/mo', 34, WHITE) + text(790, 495 - barH(849), '$849/mo', 40, RED);
+  g += text(490, 548, 'what Jake invests', 22, '#94A3B8', 800) + text(790, 548, 'what Jake would need', 22, '#94A3B8', 800);
+  g += `<line x1="340" y1="510" x2="940" y2="510" stroke="#334155" stroke-width="4"/>`;
+  const q = clamp((T - C('b5')) / 0.5);
+  if (q > 0) g += badge('THE COST OF WAITING 10 YEARS', 640, 185, RED, WHITE, 30, q);
+  return [g, o];
+};
+
+S.tips = (T) => {
+  let g = '', o = '';
+  if (T < C('t3')) {
+    const c = clamp((T - C('t2')) / 1.2);
+    const mix = (a, b) => { const p = (h) => [1,3,5].map(i => parseInt(h.substr(i, 2), 16));
+      const A = p(a), B = p(b); return '#' + A.map((v, i) => Math.round(v + (B[i] - v) * c).toString(16).padStart(2, '0')).join(''); };
+    g += `<line x1="380" y1="610" x2="900" y2="610" stroke="#334155" stroke-width="4"/>`;
+    g += person('jake', 640, 610, 1.2, { color: mix(GREY, GREEN), sad: c < 0.5, wave: c > 0.5 });
+    o += ov('&ldquo;I&rsquo;m already Jake...&rdquo;', 0, 70, W, 46, '#CBD5E1', clamp((T - C('t1')) / 0.4) * (1 - c), 'font-style:italic;font-weight:800');
+    o += ov('LATE <span style="color:#EAB308">&gt;</span> NEVER', 0, 70, W, 70, GREEN, c);
+    if (c > 0) g += badge('Jake at 65: $617,625', 640, 220, GOLD, NAVY, 28, c);
+    return [g, o];
+  }
+  o += ov('BE MORE LIKE <span style="color:#22C55E">MAYA</span>', 0, 46, W, 54, WHITE, clamp((T - C('t3')) / 0.4));
+  const items = [['t4', 'Get the full 401(k) match'], ['t6', 'Start small &mdash; even $50/month'], ['t7', 'Automate it'],
+                 ['t8', 'Use a low-cost, broad index fund'], ['t9', 'Don&rsquo;t panic-sell when markets drop']];
+  items.forEach(([k, s], i) => {
+    const a = clamp((T - C(k)) / 0.5); if (!a) return;
+    const y = 150 + i * 88, x = 230 + (1 - easeOut(a)) * -60;
+    g += `<g opacity="${a}"><rect x="${x}" y="${y}" width="820" height="70" rx="18" fill="#1E293B" stroke="#334155" stroke-width="3"/>
+      <circle cx="${x + 40}" cy="${y + 35}" r="24" fill="${GREEN}"/>${text(x + 40, y + 45, i + 1, 28, NAVY, 900)}</g>`;
+    o += ov(s, x + 82, y + 17, 720, 32, WHITE, a, 'text-align:left;font-weight:800');
+  });
+  return [g, o];
+};
+
+S.end = (T) => {
+  let g = '', o = '';
+  const endCard = T >= C('e4');
+  if (!endCard) {
+    g += `<defs><linearGradient id="sun" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1E1B4B"/><stop offset="0.6" stop-color="#9A3412"/><stop offset="1" stop-color="#F59E0B"/></linearGradient></defs>
+      <rect x="0" y="0" width="${W}" height="${H}" fill="url(#sun)" opacity="0.75"/>
+      <circle cx="640" cy="560" r="120" fill="#FCD34D" opacity="0.8"/>
+      <rect x="0" y="560" width="${W}" height="160" fill="#14532D"/>
+      <circle cx="160" cy="430" r="90" fill="#166534"/><rect x="150" y="470" width="22" height="100" fill="#713F12"/>
+      <circle cx="1120" cy="420" r="100" fill="#166534"/><rect x="1110" y="470" width="22" height="100" fill="#713F12"/>`;
+    g += `<rect x="440" y="520" width="400" height="22" rx="8" fill="#92400E"/><rect x="460" y="542" width="14" height="40" fill="#78350F"/><rect x="806" y="542" width="14" height="40" fill="#78350F"/>`;
+    g += person('maya', 560, 600, 0.9, { old: true }) + person('jake', 720, 600, 0.9, { old: true });
+    g += `<rect x="440" y="470" width="400" height="18" rx="8" fill="#B45309" opacity="0.9"/>`;
+    const q = clamp((T - C('e3')) / 0.6);
+    o += ov('SAME SALARY. <span style="color:#EAB308">ONE DECISION.</span>', 0, 70, W, 50, WHITE, clamp((T - C('e1')) / 0.5) * (1 - q));
+    if (q > 0) o += ov('The best time to start was 10 years ago.<br><span style="color:#EAB308">The second-best is today.</span>', 0, 90, W, 50, WHITE, q,
+                       'background:rgba(15,23,42,0.75);padding:20px 0');
+    return [g, o];
+  }
+  const a = clamp((T - C('e4')) / 0.6);
+  o += ov('THANKS FOR WATCHING', 0, 90, W, 40, '#94A3B8', a, 'font-weight:800;letter-spacing:4px');
+  g += `<g opacity="${a}"><rect x="500" y="200" width="280" height="76" rx="14" fill="${RED}"/>${text(640, 250, 'SUBSCRIBE', 36, WHITE)}</g>`;
+  // end-screen placeholders for YouTube elements
+  g += `<g opacity="${a}"><rect x="140" y="340" width="460" height="260" rx="18" fill="#1E293B" stroke="#334155" stroke-width="3" stroke-dasharray="10 10"/>
+        <rect x="680" y="340" width="460" height="260" rx="18" fill="#1E293B" stroke="#334155" stroke-width="3" stroke-dasharray="10 10"/></g>`;
+  o += ov('NEXT:<br><span style="color:#EAB308">How to Budget<br>a $2,500 Paycheck</span>', 140, 410, 460, 36, WHITE, a);
+  o += ov('Start Here:<br><span style="color:#22C55E">Money Basics</span>', 680, 425, 460, 36, WHITE, a);
+  return [g, o];
+};
+
+/* ---------- frame renderer ---------- */
+function captionHTML(T) {
+  for (const k in CUE) {
+    const c = CUE[k];
+    if (T >= c.start - 0.05 && T <= c.end + 0.3) {
+      const s = c.text.replace(/(\$[\d,.]+(?:\s?million)?|\d+%|\b\d{2,}\b|401\(k\))/g, '<span class="hl">$1</span>');
+      return `<div class="cap"><span class="box">${s}</span></div>`;
+    }
+  }
+  return '';
+}
+
+window.render = function (T) {
+  let svg = '', html = '';
+  for (const name of ORDER) {
+    const sc = SCENES[name];
+    if (T < sc.start - 0.01 || T > sc.end + 0.01) continue;
+    const fade = Math.min(1, (T - sc.start) / 0.45, (sc.end - T) / 0.45);
+    if (fade <= 0) continue;
+    const [g, o] = S[name](T);
+    svg += `<g opacity="${fade.toFixed(3)}">${g}</g>`;
+    html += `<div style="opacity:${fade.toFixed(3)}">${o}</div>`;
+  }
+  // persistent small disclaimer during the story
+  const disc = T < SCENES.why.start ? 'Fictional characters &middot; Real math &middot; 7% assumed return &middot; Not financial advice' : '';
+  const bg = `<rect width="${W}" height="${H}" fill="${NAVY}"/><circle cx="640" cy="320" r="620" fill="#1E293B" opacity="0.35"/>`;
+  document.getElementById('stage').innerHTML =
+    `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${bg}${svg}</svg>` + html +
+    (disc ? `<div class="ov" style="left:20px;top:14px;font-size:15px;font-weight:800;color:#64748B;text-align:left">${disc}</div>` : '') +
+    captionHTML(T);
+};
+window.CUE_LIST = () => Object.entries(CUE).map(([k, c]) => ({ key: k, start: c.start, end: c.end, text: c.text }));
+window.render(0);
+</script>
+</body>
+</html>

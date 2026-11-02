@@ -176,13 +176,14 @@ function trashCan(cx, by, op=1) {
 }
 
 
-let g=`<defs><radialGradient id="bg" cx="50%" cy="40%" r="65%"><stop offset="0" stop-color="#1E3A5F"/><stop offset="1" stop-color="#0B1222"/></radialGradient></defs>
+let g=`<defs><radialGradient id="bg" cx="50%" cy="38%" r="65%"><stop offset="0" stop-color="#1E3A5F"/><stop offset="1" stop-color="#0B1222"/></radialGradient></defs>
 <rect width="800" height="800" fill="url(#bg)"/>
-<circle cx="400" cy="400" r="330" fill="none" stroke="${GOLD}" stroke-width="10" stroke-dasharray="6 30" stroke-linecap="round" opacity="0.7"/>
-<path d="M150 560 C 250 470 320 640 420 560 S 560 430 650 470" fill="none" stroke="#475569" stroke-width="12" stroke-dasharray="4 26" stroke-linecap="round"/>
-<g transform="translate(400,380) scale(4.4)"><path d="M0 60 C -38 18 -48 -2 -48 -22 A48 48 0 1 1 48 -22 C 48 -2 38 18 0 60Z" fill="${GOLD}"/>
+<circle cx="400" cy="400" r="378" fill="none" stroke="${GOLD}" stroke-width="8" stroke-dasharray="5 22" stroke-linecap="round" opacity="0.75"/>
+<g transform="translate(400,300) scale(2.35)"><path d="M0 60 C -38 18 -48 -2 -48 -22 A48 48 0 1 1 48 -22 C 48 -2 38 18 0 60Z" fill="${GOLD}"/>
 <path d="M0 60 C -38 18 -48 -2 -48 -22 A48 48 0 0 1 0 -70 Z" fill="#FACC15" opacity="0.5"/>
 <circle cx="0" cy="-22" r="31" fill="${NAVY}"/>${text(0,-6,'$',46,GOLD)}</g>
-<ellipse cx="400" cy="672" rx="120" ry="20" fill="#020617" opacity="0.6"/>`;
+${text(400,500,'THE',46,'#CBD5E1',900,'middle','letter-spacing="14"')}
+${text(400,610,'MONEY',122,WHITE,900)}
+${text(400,722,'MAP',122,GOLD,900)}`;
 document.getElementById('s').innerHTML=`<svg width="800" height="800" viewBox="0 0 800 800">${g}</svg>`;
 </script></body></html>

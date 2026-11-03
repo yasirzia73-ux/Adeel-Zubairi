@@ -28,7 +28,21 @@ Since the Iran war began in February, the average American household has lost ab
 4:51 5 ways to keep more of your money
 5:50 Final thoughts
 
-*(These chapters are for the captions-only version. If you add a voiceover, I'll send new times.)*
+*(Chapters above are for the captions-only version.)*
+
+**Chapters for the VOICEOVER version (`iran-war-cost-voiceover.mp4`), the one to upload:**
+```
+0:00 The $2,000 you didn't notice
+0:28 Where it starts: the Strait of Hormuz
+1:08 At the pump: $2.99 → $4.33
+1:38 The ripple: diesel, groceries, heating
+2:12 The hidden cost: interest rates
+3:02 The full $2,000 bill
+3:28 Reality check
+3:47 What happens next: 3 paths
+4:34 5 ways to keep more of your money
+5:26 Final thoughts
+```
 
 Figures are estimates and news reports as of November 3, 2026, and can change. The $2,000 figure is an economist's estimate of average costs, not a bill. Maya is a fictional example. Educational content only, not financial or political advice.
 

@@ -67,3 +67,22 @@ Example: $60K salary, 6% contribution, 50% match, 7% average return over 40 year
 - **Music:** the voice and sound effects are already mixed in. If you want trending music, add it inside the app at **5–10% volume** so the voice stays clear.
 - **Timing:** post each Short 1–2 days after its long video, at the same time of day as your long-form uploads.
 - **Cover frame:** choose a frame where the big headline and the main visual (the stacks, the calendar or the gift box) are both on screen.
+
+---
+
+## Short 4: $6.3 Billion Stolen in One Night (Binance hack)
+
+**File:** `short-4-binance-6-3-billion-stolen.mp4` (0:47). The voice is clipped from your ElevenLabs "Jeremy" voiceover of the full video.
+
+**Title:** $6.3 BILLION Stolen in One Night 😳 (Binance Hack)
+
+**Description:**
+On October 29, 2026, about $6.3 billion was drained from Binance: the biggest crypto theft in history. No masks, no getaway car, just code. And the FBI says North Korea was behind it. 🇰🇵
+▶️ Full story: "How North Korea Stole $6.3 Billion From Binance in One Night" on the channel.
+Based on news reports as of Nov 2, 2026 · details still developing · not financial advice.
+
+**Hashtags:** #shorts #binance #binancehack #crypto #bitcoin #northkorea #lazarusgroup #cryptonews #hack #cybersecurity
+
+**Pinned comment:** Would you still keep your crypto on an exchange after this? 👇
+
+**Tip:** link it to the full Binance video with YouTube's "Related video" field. Post it the same day as the long video, because breaking-news Shorts fade fast.

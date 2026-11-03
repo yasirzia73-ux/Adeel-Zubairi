@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>How North Korea Stole $6.3 Billion From Binance - animated video (voiceover)</title>
+<style>
+  html, body { margin: 0; padding: 0; background: #0F172A; overflow: hidden; }
+  #stage { position: relative; width: 1280px; height: 720px; overflow: hidden;
+           font-family: "Montserrat", sans-serif; color: #F8FAFC; }
+  #stage svg { position: absolute; left: 0; top: 0; }
+  .ov { position: absolute; text-align: center; font-weight: 900; line-height: 1.05; }
+  .cap { position: absolute; left: 90px; width: 1100px; bottom: 26px; text-align: center; }
+  .cap span.box { display: inline-block; background: rgba(2,6,23,0.82); border-radius: 14px;
+                  padding: 10px 22px; font-weight: 800; font-size: 33px; line-height: 1.25; }
+  .hl { color: #EAB308; }
+  .g { color: #22C55E; } .r { color: #EF4444; } .y { color: #EAB308; }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<script>
+/* ============================================================
+   Video 3: "401(k) Explained for Beginners: The Free Money Most People Miss"
+   Deterministic animation: render(t) draws the frame at time t (s).
+   Figures are for the 2026 tax year (IRS Rev. Proc. 2025-32 etc.).
+   ============================================================ */
+const W = 1280, H = 720;
+const GREEN = '#22C55E', GREY = '#94A3B8', GOLD = '#EAB308', RED = '#EF4444',
+      NAVY = '#0F172A', WHITE = '#F8FAFC', SLATE = '#1E293B', BLUE = '#1D4ED8';
+
+/* ---------- narration cues (captions) ---------- */
+const CUES = [
+ // HOOK
+ ['hook','h1','October 29th, 2026. 8:05 PM, universal time.'],
+ ['hook','h2',"Money starts quietly leaving the world's biggest crypto exchange."],
+ ['hook','h3','Not a few dollars. Billions.'],
+ ['hook','h4','By the time it stops, about $6.3 billion is gone.'],
+ ['hook','h4b','No masks. No getaway car. No alarms going off. Just code.'],
+ ['hook','h5',"It's the largest crypto theft in history. More than four times the previous record."],
+ ['hook','h6',"And the FBI says the thieves weren't a lone hacker in a basement. They were working for a country."],
+ ['hook','h7','It all started with one laptop.'],
+ ['hook','h8',"Here's exactly how it happened, and what it means for your money."],
+ // JAKE
+ ['jake','j1',"Meet Jake. He's fictional, but his problem was very real. He keeps about $3,000 in crypto on Binance."],
+ ['jake','j2',"On October 30th, he opens the app and sees a message he's never seen before:"],
+ ['jake','j3','Withdrawals temporarily suspended.'],
+ ['jake','j4',"His money is still on the screen. He just can't move it."],
+ ['jake','j5','Millions of users around the world saw the same thing. So what was going on?'],
+ // BASICS
+ ['basics','b1','First, one quick lesson that explains everything: hot wallets and cold wallets.'],
+ ['basics','b2',"An exchange like Binance holds a huge amount of its customers' crypto. Reports put its total assets at around $171 billion."],
+ ['basics','b3','Most of it sits in cold wallets. Think of a bank vault: offline, locked away, and slow to open.'],
+ ['basics','b4','But people want to withdraw instantly, so some of the money sits in hot wallets.'],
+ ['basics','b5','A hot wallet is like the cash register at the front of a store. Online, connected, always ready to pay out.'],
+ ['basics','b6','Convenient. But if someone takes control of the register, they can empty it.'],
+ // HEIST
+ ['heist','k1','So how did the thieves get to the register?'],
+ ['heist','k2',"According to Binance and early security reports, it started with a single engineer's laptop."],
+ ['heist','k3','Attackers compromised that computer and used it to reach the system that approves hot wallet transactions.'],
+ ['heist','k4',"Binance says no private keys were stolen. The attackers didn't need them."],
+ ['heist','k5','Instead, they got the hot wallets to sign a kind of digital permission slip, using a newer Ethereum feature called EIP-7702.'],
+ ['heist','k6','Think of it like getting the cashier to sign a note that says: from now on, my friend can open this register.'],
+ ['heist','k7',"Security analysts stress the feature itself wasn't broken. The attackers abused the signing process."],
+ ['heist','k8','Once the permission slips were signed, the money started moving. Wallet after wallet, chain after chain.'],
+ ['heist','k9','Reports say 17 hot wallets across nine different blockchains were drained.'],
+ ['heist','k9b','Billions of dollars, moving in a matter of hours, while most of the world was asleep.'],
+ ['heist','k10',"Binance paused withdrawals. That's the message Jake saw."],
+ // WHO
+ ['who','n1','Two days later, the FBI named the group behind it: TraderTraitor.'],
+ ['who','n2',"It's a North Korean state-backed hacking team, also known as the Lazarus Group."],
+ ['who','n3','And they have a track record.'],
+ ['who','n3b','In past warnings, the FBI described one of their favorite tricks: fake job offers sent to employees at crypto companies, with malware hidden inside.'],
+ ['who','n3c','One click on the wrong file, and they are in.'],
+ ['who','n4','In 2022, they took about $625 million from the Ronin network, behind the game Axie Infinity.'],
+ ['who','n5','In 2025, they stole about $1.5 billion from the exchange Bybit.'],
+ ['who','n6','Now, roughly $6.3 billion. Each heist bigger than the last.'],
+ ['who','n7','United Nations experts have reported that North Korea uses stolen crypto to help fund its weapons programs.'],
+ ['who','n8',"So this isn't just a hack. It's one of the ways a sanctioned country raises money."],
+ // FREEZE
+ ['freeze','f1',"But here's where it gets interesting. Stealing crypto is easy compared to spending it."],
+ ['freeze','f2','Every blockchain transaction is public. Investigators can watch the stolen coins move in real time.'],
+ ['freeze','f3','And companies that issue stablecoins, like Tether and Circle, can freeze their tokens on the spot.'],
+ ['freeze','f4','Within days, Tether, Circle, Ripple, Arbitrum and Optimism had frozen roughly $2.85 billion of the stolen assets.'],
+ ['freeze','f5','So the hackers race to swap what is left into Ethereum, then try to wash it through DeFi apps and instant swap services.'],
+ ['freeze','f6','It becomes a chase. And it can go on for months.'],
+ ['freeze','f6b','Some of that money will probably never be recovered.'],
+ // RESPONSE
+ ['response','r1','Meanwhile, Binance had to answer one question: is customer money safe?'],
+ ['response','r2','Co-CEO Richard Teng told users: your assets are safe. Binance would cover the losses with company funds.'],
+ ['response','r2b','Binance has an emergency fund for exactly this, called SAFU, set up in 2018 with $1 billion. This time it needed far more, so the company paid the rest.'],
+ ['response','r3','By November 1st, Binance said it had replaced about 95% of the stolen assets with its own money.'],
+ ['response','r4','Withdrawals reopened in phases, starting with 15 networks, including Bitcoin, Ethereum and Solana.'],
+ ['response','r5',"Then people rushed for the exits. About $4.7 billion flowed out in the first days, roughly 3% of Binance's assets."],
+ ['response','r6','Bitcoin dropped as much as 5%, briefly falling below $76,000.'],
+ ['response','r7','And Jake? He got his $3,000 back. This time.'],
+ // TWIST
+ ['twist','t1',"And that's the part worth thinking about."],
+ ['twist','t2','Jake was fine because Binance happened to have billions of dollars to cover the hole.'],
+ ['twist','t3','Not every exchange can do that.'],
+ ['twist','t4',"When FTX collapsed in 2022, customers waited more than two years to get money back. That wasn't a hack, but the lesson is the same:"],
+ ['twist','t5',"When your crypto sits on an exchange, you don't fully control it. You're trusting the company."],
+ ['twist','t6','Crypto has a saying for this: not your keys, not your coins.'],
+ // LESSONS
+ ['lessons','l1',"So here's how to protect yourself."],
+ ['lessons','l2',"One: don't keep everything on one exchange. Spread out the risk."],
+ ['lessons','l3','Two: for long-term holdings, consider a hardware wallet, where you hold the keys yourself. Just guard your recovery phrase carefully.'],
+ ['lessons','l4','Three: watch out for scams after a big hack. Fake refund emails and fake support calls surge. A real exchange will never ask for your password or recovery phrase.'],
+ ['lessons','l5','Four: use an authenticator app or a passkey for two-factor login, not text messages.'],
+ ['lessons','l6','Five: only put in money you can afford to lose. Crypto can swing hard, hack or no hack.'],
+ // END
+ ['end','e1','The biggest crypto heist in history started with one laptop, and billions were gone in a single night.'],
+ ['end','e2',"The story isn't over. Investigators are still tracking the money, and we'll keep you updated."],
+ ['end','e2b','If you know someone who keeps crypto on an exchange, send them this video.'],
+ ['end','e3','Subscribe to The Money Map, so the next time something like this happens, you already know what to do.'],
+];
+
+/* timing: ~2.45 spoken words/sec; numbers count as ~3 spoken words */
+function spokenWords(s) {
+  return s.split(/\s+/).filter(Boolean).reduce((n, w) => n + (/\d/.test(w) ? 3 : 1), 0);
+}
+const CUE = {}; const SCENES = {}; const ORDER = [];
+(function buildTimeline() {
+  let t = 0.4, prevScene = null;
+  for (const [scene, key, text] of CUES) {
+    if (scene !== prevScene) {
+      if (prevScene) { SCENES[prevScene].end = t + 0.5; t += 0.9; }
+      SCENES[scene] = { start: t - 0.2 }; ORDER.push(scene); prevScene = scene;
+    }
+    const d = Math.max(1.9, spokenWords(text) / 2.45);
+    CUE[key] = { start: t, end: t + d, text };
+    t += d + 0.35;
+  }
+  SCENES[prevScene].end = t + 15;          // 15 s end-screen hold
+  window.TOTAL = SCENES[prevScene].end;
+})();
+/* ---- synced to the ElevenLabs voiceover (forced alignment) ---- */
+const VO_SYNC = {"cues": [{"key": "h1", "start": 0.05, "end": 5.34}, {"key": "h2", "start": 6.05, "end": 9.98}, {"key": "h3", "start": 10.41, "end": 12.78}, {"key": "h4", "start": 13.362, "end": 17.96}, {"key": "h4b", "start": 18.553, "end": 23.59}, {"key": "h5", "start": 24.161, "end": 29.32}, {"key": "h6", "start": 29.771, "end": 35.56}, {"key": "h7", "start": 36.096, "end": 38.23}, {"key": "h8", "start": 38.623, "end": 41.96}, {"key": "j1", "start": 44.069, "end": 51.86}, {"key": "j2", "start": 52.609, "end": 57.68}, {"key": "j3", "start": 58.138, "end": 60.51}, {"key": "j4", "start": 61.066, "end": 64.38}, {"key": "j5", "start": 64.697, "end": 69.92}, {"key": "b1", "start": 73.589, "end": 78.91}, {"key": "b2", "start": 79.355, "end": 88.41}, {"key": "b3", "start": 88.822, "end": 95.754}, {"key": "b4", "start": 95.904, "end": 100.68}, {"key": "b5", "start": 101.113, "end": 107.43}, {"key": "b6", "start": 107.802, "end": 112.89}, {"key": "k1", "start": 114.727, "end": 117.23}, {"key": "k2", "start": 117.674, "end": 123.5}, {"key": "k3", "start": 123.884, "end": 129.78}, {"key": "k4", "start": 130.192, "end": 134.87}, {"key": "k5", "start": 135.219, "end": 144.28}, {"key": "k6", "start": 144.548, "end": 150.93}, {"key": "k7", "start": 151.318, "end": 157.84}, {"key": "k8", "start": 158.31, "end": 165.43}, {"key": "k9", "start": 166.076, "end": 170.82}, {"key": "k9b", "start": 171.417, "end": 176.88}, {"key": "k10", "start": 177.424, "end": 181.39}, {"key": "n1", "start": 183.613, "end": 187.33}, {"key": "n2", "start": 188.704, "end": 193.55}, {"key": "n3", "start": 193.9, "end": 195.54}, {"key": "n3b", "start": 195.928, "end": 205.34}, {"key": "n3c", "start": 205.716, "end": 208.38}, {"key": "n4", "start": 208.918, "end": 215.94}, {"key": "n5", "start": 216.691, "end": 221.91}, {"key": "n6", "start": 222.515, "end": 228.33}, {"key": "n7", "start": 228.54, "end": 234.93}, {"key": "n8", "start": 235.438, "end": 240.68}, {"key": "f1", "start": 242.311, "end": 247.56}, {"key": "f2", "start": 248.014, "end": 254.49}, {"key": "f3", "start": 254.99, "end": 260.76}, {"key": "f4", "start": 261.188, "end": 270.62}, {"key": "f5", "start": 271.07, "end": 278.66}, {"key": "f6", "start": 279.175, "end": 282.75}, {"key": "f6b", "start": 283.16, "end": 286.04}, {"key": "r1", "start": 288.437, "end": 293.43}, {"key": "r2", "start": 293.891, "end": 301.02}, {"key": "r2b", "start": 301.653, "end": 313.63}, {"key": "r3", "start": 314.043, "end": 320.44}, {"key": "r4", "start": 320.822, "end": 326.88}, {"key": "r5", "start": 327.65, "end": 337.19}, {"key": "r6", "start": 337.604, "end": 343.25}, {"key": "r7", "start": 343.681, "end": 347.75}, {"key": "t1", "start": 349.722, "end": 351.76}, {"key": "t2", "start": 352.162, "end": 356.85}, {"key": "t3", "start": 357.327, "end": 359.2}, {"key": "t4", "start": 359.584, "end": 368.63}, {"key": "t5", "start": 369.016, "end": 374.54}, {"key": "t6", "start": 374.915, "end": 379.12}, {"key": "l1", "start": 382.093, "end": 383.97}, {"key": "l2", "start": 384.388, "end": 388.95}, {"key": "l3", "start": 389.249, "end": 397.16}, {"key": "l4", "start": 397.314, "end": 408.1}, {"key": "l5", "start": 409.769, "end": 414.98}, {"key": "l6", "start": 416.368, "end": 422.4}, {"key": "e1", "start": 422.834, "end": 429.02}, {"key": "e2", "start": 429.365, "end": 434.49}, {"key": "e2b", "start": 434.86, "end": 438.7}, {"key": "e3", "start": 438.97, "end": 444.33}], "scenes": {"hook": {"start": -0.2, "end": 42.61}, "jake": {"start": 42.31, "end": 70.57}, "basics": {"start": 70.27, "end": 113.54}, "heist": {"start": 113.24, "end": 182.04}, "who": {"start": 181.74, "end": 241.33}, "freeze": {"start": 241.03, "end": 286.69}, "response": {"start": 286.39, "end": 348.4}, "twist": {"start": 348.1, "end": 379.77}, "lessons": {"start": 379.47, "end": 423.05}, "end": {"start": 422.75, "end": 456.5}}, "total": 456.5};
+for (const o of VO_SYNC.cues) { CUE[o.key].start = o.start; CUE[o.key].end = o.end; }
+for (const k in VO_SYNC.scenes) { SCENES[k].start = VO_SYNC.scenes[k].start; SCENES[k].end = VO_SYNC.scenes[k].end; }
+window.TOTAL = VO_SYNC.total;
+const C = k => CUE[k].start, E = k => CUE[k].end, D = k => CUE[k].end - CUE[k].start;
+
+/* ---------- helpers ---------- */
+const clamp = (x, a=0, b=1) => Math.max(a, Math.min(b, x));
+const ease = x => { x = clamp(x); return x < .5 ? 4*x*x*x : 1 - Math.pow(-2*x+2, 3)/2; };
+const easeOut = x => 1 - Math.pow(1 - clamp(x), 3);
+const P = (t, a, d) => ease((t - a) / d);
+const lerp = (a, b, p) => a + (b - a) * p;
+const money = n => '$' + Math.round(n).toLocaleString('en-US');
+const pop = (t, a, d=0.45) => { const x = clamp((t - a) / d); return x === 0 ? 0 : 1 + 0.25*Math.sin(x*Math.PI) * (1 - x) + (easeOut(x) - 1); };
+const fin = (T, k, d=0.4) => clamp((T - C(k)) / d);             // fade-in at cue k
+const fout = (T, k, d=0.4) => 1 - clamp((T - C(k)) / d);        // fade-out at cue k
+const scaleAt = (cx, cy, s) => `translate(${cx},${cy}) scale(${s}) translate(${-cx},${-cy})`;
+
+function text(x, y, s, size, color=WHITE, weight=900, anchor='middle', extra='') {
+  return `<text x="${x}" y="${y}" font-family="Montserrat" font-weight="${weight}" font-size="${size}"
+           fill="${color}" text-anchor="${anchor}" ${extra}>${s}</text>`;
+}
+function ov(html, x, y, w, size, color=WHITE, opacity=1, extra='') {
+  return `<div class="ov" style="left:${x}px;top:${y}px;width:${w}px;font-size:${size}px;color:${color};opacity:${opacity};${extra}">${html}</div>`;
+}
+function badge(s, x, y, color=GOLD, fg=NAVY, size=24, op=1) {
+  const w = s.length * size * 0.66 + 40;
+  return `<g opacity="${op}"><rect x="${x - w/2}" y="${y - size - 8}" width="${w}" height="${size + 26}" rx="${(size+26)/2}" fill="${color}"/>
+          ${text(x, y + 5, s, size, fg, 900)}</g>`;
+}
+const floorLine = (y=600) => `<line x1="80" y1="${y}" x2="1200" y2="${y}" stroke="#334155" stroke-width="4"/>`;
+const check = (x, y, s, color=WHITE, prog=1, w=4) =>
+  `<path d="M${x-10*s} ${y} L${x-3*s} ${y+7*s} L${x+11*s} ${y-9*s}" stroke="${color}" stroke-width="${w}" fill="none"
+     stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="${40*s}" stroke-dashoffset="${40*s*(1-prog)}"/>`;
+const cross = (x, y, r, color=RED, w=12, op=1) =>
+  `<g opacity="${op}"><line x1="${x-r}" y1="${y-r}" x2="${x+r}" y2="${y+r}" stroke="${color}" stroke-width="${w}" stroke-linecap="round"/>
+   <line x1="${x+r}" y1="${y-r}" x2="${x-r}" y2="${y+r}" stroke="${color}" stroke-width="${w}" stroke-linecap="round"/></g>`;
+
+/* ---------- characters & props ---------- */
+function person(kind, x, y, s=1, o={}) {
+  const maya = kind === 'maya';
+  const skin = maya ? '#C68642' : '#F1C27D';
+  const hair = maya ? '#2B1B17' : '#6B4423';
+  const top = o.color || (maya ? GREEN : GREY);
+  const op = o.opacity == null ? 1 : o.opacity;
+  let g = `<g transform="translate(${x},${y}) scale(${s})" opacity="${op}">`;
+  g += `<ellipse cx="0" cy="0" rx="48" ry="8" fill="#020617" opacity="0.5"/>`;
+  g += `<rect x="-22" y="-72" width="17" height="70" rx="6" fill="${SLATE}"/><rect x="5" y="-72" width="17" height="70" rx="6" fill="${SLATE}"/>`;
+  g += `<ellipse cx="-15" cy="-3" rx="15" ry="7" fill="#0B1120"/><ellipse cx="15" cy="-3" rx="15" ry="7" fill="#0B1120"/>`;
+  if (maya) g += `<circle cx="-30" cy="-196" r="15" fill="${hair}"/><circle cx="30" cy="-196" r="15" fill="${hair}"/>`;
+  g += `<rect x="-41" y="-178" width="82" height="112" rx="30" fill="${top}"/>`;
+  const armA = o.wave ? -40 + Math.sin((o.t || 0) * 9) * 10 : 0;
+  g += `<g transform="rotate(${armA} -45 -165)"><rect x="-56" y="-168" width="19" height="84" rx="9" fill="${top}"/><circle cx="-46" cy="-84" r="10" fill="${skin}"/></g>`;
+  if (o.clip) {
+    g += `<g transform="rotate(-8 60 -120)"><rect x="34" y="-158" width="64" height="84" rx="8" fill="#92400E"/>
+          <rect x="40" y="-148" width="52" height="68" rx="4" fill="${WHITE}"/><rect x="52" y="-164" width="28" height="12" rx="4" fill="#64748B"/>`;
+    for (let i = 0; i < 4; i++) {
+      const done = (o.ticks || 0) > i;
+      g += `<rect x="46" y="${-140 + i*15}" width="9" height="9" rx="2" fill="${done ? GREEN : 'none'}" stroke="${done ? GREEN : '#94A3B8'}" stroke-width="2"/>
+            <rect x="60" y="${-137 + i*15}" width="26" height="4" rx="2" fill="#CBD5E1"/>`;
+    }
+    g += `</g><rect x="37" y="-168" width="19" height="70" rx="9" fill="${top}"/><circle cx="48" cy="-100" r="10" fill="${skin}"/>`;
+  } else {
+    g += `<rect x="37" y="-168" width="19" height="84" rx="9" fill="${top}"/><circle cx="46" cy="-84" r="10" fill="${skin}"/>`;
+  }
+  if (!maya) g += `<path d="M-30 -176 Q 0 -150 30 -176" stroke="#64748B" stroke-width="7" fill="none"/>`;
+  g += `<rect x="-9" y="-194" width="18" height="22" fill="${skin}"/>`;
+  g += `<circle cx="0" cy="-226" r="37" fill="${skin}"/>`;
+  if (maya) {
+    for (const [cx, cy, r] of [[-30,-244,16],[-17,-259,16],[0,-265,17],[17,-259,16],[30,-244,16],[-37,-222,13],[37,-222,13]])
+      g += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${hair}"/>`;
+  } else {
+    g += `<path d="M-37 -230 Q -36 -272 0 -268 Q 36 -272 37 -230 Q 22 -250 0 -248 Q -22 -250 -37 -230Z" fill="${hair}"/>`;
+  }
+  g += `<circle cx="-12" cy="-224" r="4.5" fill="${NAVY}"/><circle cx="12" cy="-224" r="4.5" fill="${NAVY}"/>`;
+  g += o.sad ? `<path d="M-11 -204 Q 0 -212 11 -204" stroke="${NAVY}" stroke-width="3.5" fill="none" stroke-linecap="round"/>`
+             : `<path d="M-12 -209 Q 0 -198 12 -209" stroke="${NAVY}" stroke-width="3.5" fill="none" stroke-linecap="round"/>`;
+  if (o.party) g += `<path d="M-14 -258 L0 -312 L14 -258Z" fill="${GOLD}"/><circle cx="0" cy="-314" r="7" fill="${RED}"/>`;
+  return g + '</g>';
+}
+function coin(x, y, r=13, op=1) {
+  return `<g opacity="${op}"><circle cx="${x}" cy="${y}" r="${r}" fill="${GOLD}" stroke="#A16207" stroke-width="3"/>
+          ${text(x, y + r*0.42, '$', r*1.15, '#854D0E', 900)}</g>`;
+}
+function jar(x, y, fill, label, opacity=1, color=GOLD) {   // x center, y bottom
+  const h = 170, w = 130, fh = clamp(fill) * (h - 14);
+  let g = `<g opacity="${opacity}">`;
+  g += `<rect x="${x-w/2}" y="${y-h}" width="${w}" height="${h}" rx="22" fill="#1E293B" opacity="0.55"/>`;
+  g += `<rect x="${x-w/2+7}" y="${y-7-fh}" width="${w-14}" height="${fh}" rx="14" fill="${color}"/>`;
+  for (let yy = y - 7 - 14; yy > y - 7 - fh + 4; yy -= 14)
+    g += `<line x1="${x-w/2+12}" y1="${yy}" x2="${x+w/2-12}" y2="${yy}" stroke="#000" stroke-width="2" opacity="0.18"/>`;
+  g += `<rect x="${x-w/2}" y="${y-h}" width="${w}" height="${h}" rx="22" fill="none" stroke="#CBD5E1" stroke-width="5"/>`;
+  g += `<rect x="${x-w/2-8}" y="${y-h-16}" width="${w+16}" height="20" rx="8" fill="#64748B"/>`;
+  if (label) g += text(x, y + 40, label, 30, '#E2E8F0', 900);
+  return g + '</g>';
+}
+function calendar(cx, cy, s, month, day, sub='', op=1, sy=1) {
+  return `<g transform="translate(${cx},${cy}) scale(${s},${s*sy})" opacity="${op}">
+   <rect x="-112" y="-115" width="240" height="270" rx="24" fill="#020617" opacity="0.4"/>
+   <rect x="-120" y="-125" width="240" height="270" rx="24" fill="${WHITE}"/>
+   <path d="M-120 -101 Q-120 -125 -96 -125 L96 -125 Q120 -125 120 -101 L120 -50 L-120 -50Z" fill="${RED}"/>
+   ${text(0, -76, month, 30, WHITE)}
+   ${text(0, sub ? 62 : 72, day, 128, NAVY)}
+   ${sub ? text(0, 118, sub, 28, '#64748B', 900) : ''}
+   <rect x="-70" y="-142" width="16" height="36" rx="8" fill="#64748B"/><rect x="54" y="-142" width="16" height="36" rx="8" fill="#64748B"/>
+  </g>`;
+}
+function alarmClock(cx, cy, s, rot=0, ring=false) {
+  let g = `<g transform="translate(${cx},${cy}) rotate(${rot}) scale(${s})">
+   <line x1="-40" y1="50" x2="-58" y2="80" stroke="#475569" stroke-width="10" stroke-linecap="round"/>
+   <line x1="40" y1="50" x2="58" y2="80" stroke="#475569" stroke-width="10" stroke-linecap="round"/>
+   <circle cx="-50" cy="-58" r="26" fill="${GOLD}"/><circle cx="50" cy="-58" r="26" fill="${GOLD}"/>
+   <circle cx="0" cy="0" r="72" fill="${RED}"/><circle cx="0" cy="0" r="56" fill="${WHITE}"/>
+   <line x1="0" y1="0" x2="-5" y2="-30" stroke="${NAVY}" stroke-width="8" stroke-linecap="round"/>
+   <line x1="0" y1="0" x2="-10" y2="-46" stroke="${NAVY}" stroke-width="5" stroke-linecap="round"/>
+   <circle cx="0" cy="0" r="7" fill="${NAVY}"/>`;
+  if (ring) g += `<path d="M-92 -92 L-110 -110 M-104 -60 L-128 -64 M92 -92 L110 -110 M104 -60 L128 -64" stroke="${GOLD}" stroke-width="7" stroke-linecap="round"/>`;
+  return g + '</g>';
+}
+function hourglass(cx, cy, s, u, op=1) {
+  const t = 1 - clamp(u), b = clamp(u), wb = 0.35 + 0.65 * b;
+  let g = `<g transform="translate(${cx},${cy}) scale(${s})" opacity="${op}">
+   <path d="M-56 -92 L56 -92 L8 0 L56 92 L-56 92 L-8 0 Z" fill="#CBD5E1" opacity="0.18" stroke="#CBD5E1" stroke-width="4" stroke-linejoin="round"/>`;
+  if (t > 0.01) g += `<path d="M${-46*t} ${-4-80*t} L${46*t} ${-4-80*t} L0 -4 Z" fill="${GOLD}"/>`;
+  g += `<path d="M${-50*wb} 88 L${50*wb} 88 L0 ${88 - 70*b - 4}Z" fill="${GOLD}"/>`;
+  if (t > 0.01) g += `<line x1="0" y1="-4" x2="0" y2="86" stroke="${GOLD}" stroke-width="4"/>`;
+  g += `<rect x="-72" y="-112" width="144" height="20" rx="7" fill="#92400E"/><rect x="-72" y="92" width="144" height="20" rx="7" fill="#92400E"/>`;
+  return g + '</g>';
+}
+function tile(x, y, w, h, op=1, stroke='#334155') {
+  return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="20" fill="${SLATE}" stroke="${stroke}" stroke-width="4" opacity="${op}"/>`;
+}
+
+/* ---------- math: missed match ($150/mo from 25 to 65 at 7%) ---------- */
+const R = 0.07 / 12, MATCH = [0];
+for (let k = 1; k <= 480; k++) MATCH.push(MATCH[k - 1] * (1 + R) + 150);
+const matchAt = age => { const m = clamp((age - 25) * 12, 0, 480), i = Math.floor(m), f = m - i; return i >= 480 ? MATCH[480] : MATCH[i] * (1 - f) + MATCH[i + 1] * f; };
+
+/* section header: pill + title */
+function section(label, title, T, scene, pillColor=GOLD) {
+  const a = clamp((T - SCENES[scene].start - 0.1) / 0.4), w = label.length * 15 + 44;
+  const g = `<g opacity="${a}"><rect x="30" y="34" width="${w}" height="48" rx="24" fill="${pillColor}"/>${text(30 + w / 2, 66, label, 22, NAVY)}</g>`;
+  return [g, title ? ov(title, 240, 36, 800, 44, WHITE, a) : ''];
+}
+function giftBox(cx, by, s, lid) {
+  const lx = cx - 135, ly = by - 236 - 75 * lid;
+  return `<g transform="translate(${cx},${by}) scale(${s}) translate(${-cx},${-by})">
+    <rect x="${cx - 120}" y="${by - 190}" width="240" height="190" rx="12" fill="${RED}"/>
+    <rect x="${cx - 17}" y="${by - 190}" width="34" height="190" fill="${GOLD}"/>
+    <g transform="rotate(${-22 * lid} ${lx} ${ly + 46})">
+      <rect x="${lx}" y="${ly}" width="270" height="48" rx="10" fill="#DC2626"/><rect x="${cx - 19}" y="${ly}" width="38" height="48" fill="${GOLD}"/>
+      <ellipse cx="${cx - 34}" cy="${ly - 16}" rx="36" ry="20" fill="${GOLD}" transform="rotate(-20 ${cx - 34} ${ly - 16})"/>
+      <ellipse cx="${cx + 34}" cy="${ly - 16}" rx="36" ry="20" fill="${GOLD}" transform="rotate(20 ${cx + 34} ${ly - 16})"/>
+      <circle cx="${cx}" cy="${ly - 8}" r="14" fill="#CA8A04"/></g></g>`;
+}
+function paycheck(x, y, w=220, h=120, op=1, label='PAYCHECK', amt='') {
+  return `<g opacity="${op}"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="14" fill="${WHITE}"/>
+    <rect x="${x}" y="${y}" width="18" height="${h}" rx="8" fill="${GREEN}"/>
+    ${text(x + w / 2 + 8, y + 50, label, 24, NAVY)}${amt ? text(x + w / 2 + 8, y + 88, amt, 26, '#15803D') : ''}</g>`;
+}
+function building(x, y, w, h, col='#64748B') {
+  let g = `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="4" fill="${col}"/>`;
+  for (let r = 0; r < Math.floor((h - 10) / 16); r++) for (let c = 0; c < Math.floor((w - 8) / 14); c++)
+    g += `<rect x="${x + 6 + c * 14}" y="${y + 8 + r * 16}" width="7" height="8" fill="${GOLD}" opacity="0.85"/>`;
+  return g;
+}
+function formCard(x, y, s, op=1) {
+  return `<g transform="translate(${x},${y}) scale(${s})" opacity="${op}">
+    <rect x="-150" y="-190" width="300" height="380" rx="16" fill="${WHITE}"/>
+    <rect x="-150" y="-190" width="300" height="70" rx="16" fill="${BLUE}"/><rect x="-150" y="-140" width="300" height="20" fill="${BLUE}"/>
+    ${text(0, -145, '401(k) ENROLLMENT', 24, WHITE)}
+    ${text(-120, -80, 'Contribution:', 20, NAVY, 800, 'start')}<rect x="20" y="-104" width="70" height="34" rx="6" fill="none" stroke="#94A3B8" stroke-width="3"/>${text(102, -80, '%', 22, NAVY, 800, 'start')}
+    ${text(-120, -20, 'Investment:', 20, NAVY, 800, 'start')}<rect x="-120" y="-6" width="240" height="30" rx="6" fill="none" stroke="#94A3B8" stroke-width="3"/>
+    <rect x="-120" y="50" width="240" height="8" rx="4" fill="#CBD5E1"/><rect x="-120" y="74" width="200" height="8" rx="4" fill="#CBD5E1"/>
+    <rect x="-120" y="98" width="220" height="8" rx="4" fill="#CBD5E1"/>
+    ${text(-120, 160, 'Signature: ______', 18, '#64748B', 800, 'start')}</g>`;
+}
+function trashCan(cx, by, op=1) {
+  return `<g opacity="${op}"><rect x="${cx - 52}" y="${by - 130}" width="104" height="130" rx="10" fill="#475569"/>
+    <rect x="${cx - 62}" y="${by - 146}" width="124" height="20" rx="6" fill="#64748B"/>
+    ${[-26, 0, 26].map(d => `<rect x="${cx + d - 4}" y="${by - 112}" width="8" height="96" rx="4" fill="#334155"/>`).join('')}</g>`;
+}
+
+/* ================= Binance hack: props ================= */
+const ORANGE = '#F97316', ICE = '#93C5FD', DARK = '#020617';
+const T2 = (x, y, s, size, fill, sw=12, anchor='middle') => `<text x="${x}" y="${y}" font-family="Montserrat" font-weight="900" font-size="${size}" fill="${fill}" text-anchor="${anchor}" stroke="${DARK}" stroke-width="${sw}" stroke-linejoin="round" paint-order="stroke fill">${s}</text>`;
+function exchangeB(cx, by, s, op=1) {
+  let g = `<g transform="translate(${cx},${by}) scale(${s})" opacity="${op}">
+    <rect x="-190" y="-22" width="380" height="22" rx="4" fill="#64748B"/><rect x="-170" y="-44" width="340" height="22" rx="4" fill="#94A3B8"/>
+    <rect x="-160" y="-216" width="320" height="20" fill="#CBD5E1"/>`;
+  for (let i = 0; i < 5; i++) g += `<rect x="${-142 + i * 64}" y="-196" width="28" height="152" fill="#E2E8F0"/><rect x="${-146 + i * 64}" y="-60" width="36" height="16" fill="#CBD5E1"/>`;
+  g += `<path d="M-200 -216 L0 -300 L200 -216Z" fill="${GOLD}"/>${text(0, -236, 'BINANCE', 28, NAVY)}</g>`;
+  return g;
+}
+function vault(cx, cy, s, op=1) {
+  let g = `<g transform="translate(${cx},${cy}) scale(${s})" opacity="${op}"><rect x="-110" y="-110" width="220" height="220" rx="20" fill="#475569" stroke="#94A3B8" stroke-width="6"/>
+    <circle r="78" fill="#64748B" stroke="#CBD5E1" stroke-width="6"/><circle r="24" fill="#334155" stroke="#CBD5E1" stroke-width="5"/>`;
+  for (let i = 0; i < 6; i++) { const a = i * Math.PI / 3; g += `<line x1="${Math.cos(a) * 26}" y1="${Math.sin(a) * 26}" x2="${Math.cos(a) * 60}" y2="${Math.sin(a) * 60}" stroke="#CBD5E1" stroke-width="6" stroke-linecap="round"/>`; }
+  g += `<rect x="-96" y="110" width="40" height="16" rx="4" fill="#334155"/><rect x="56" y="110" width="40" height="16" rx="4" fill="#334155"/>`;
+  for (let i = 0; i < 3; i++) { const a = i * Math.PI / 3; g += `<line x1="${80 + Math.cos(a) * 22}" y1="${-80 + Math.sin(a) * 22}" x2="${80 - Math.cos(a) * 22}" y2="${-80 - Math.sin(a) * 22}" stroke="${ICE}" stroke-width="5" stroke-linecap="round"/>`; }
+  return g + '</g>';
+}
+function register(cx, by, s, heat=1, alarm=0, op=1) {
+  let g = `<g transform="translate(${cx},${by}) scale(${s})" opacity="${op}">`;
+  if (heat > 0) for (let i = 0; i < 3; i++) g += `<path d="M${-50 + i * 50} -175 q -24 -40 0 -78 q 6 30 22 40 q 10 -18 4 -36 q 30 30 10 74 Z" fill="${ORANGE}" opacity="${0.75 * heat}"/>`;
+  g += `<path d="M-120 0 L-100 -150 L100 -150 L120 0Z" fill="${alarm > 0 ? '#B91C1C' : '#334155'}" stroke="#94A3B8" stroke-width="5"/>
+    <rect x="-70" y="-135" width="140" height="50" rx="8" fill="${alarm > 0 ? '#FCA5A5' : '#86EFAC'}"/>${text(0, -98, alarm > 0 ? '!!!' : '$$$', 30, NAVY)}
+    <rect x="-130" y="0" width="260" height="56" rx="8" fill="#475569"/><rect x="-28" y="20" width="56" height="12" rx="6" fill="#CBD5E1"/>
+    ${[0, 1, 2].map(r => [0, 1, 2].map(c => `<rect x="${-52 + c * 38}" y="${-72 + r * 22}" width="28" height="14" rx="3" fill="#94A3B8"/>`).join('')).join('')}</g>`;
+  return g;
+}
+function laptop(cx, cy, s, red=0, op=1) {
+  let g = `<g transform="translate(${cx},${cy}) scale(${s})" opacity="${op}"><rect x="-130" y="-95" width="260" height="170" rx="12" fill="${red ? '#7F1D1D' : SLATE}" stroke="#94A3B8" stroke-width="8"/>
+    <path d="M-165 75 L165 75 L185 100 L-185 100Z" fill="#94A3B8"/>`;
+  if (red) g += `<path d="M0 -60 L52 30 L-52 30Z" fill="${GOLD}"/>${text(0, 22, '!', 60, NAVY)}`;
+  else for (let i = 0; i < 4; i++) g += `<rect x="-100" y="${-62 + i * 30}" width="${[150, 110, 170, 90][i]}" height="12" rx="6" fill="${['#22C55E', '#60A5FA', '#94A3B8', '#22C55E'][i]}"/>`;
+  return g + '</g>';
+}
+function hood(cx, by, s, op=1, eyes=true) {
+  return `<g transform="translate(${cx},${by}) scale(${s})" opacity="${op}"><ellipse cx="0" cy="0" rx="60" ry="9" fill="${DARK}" opacity="0.6"/>
+    <path d="M-62 0 L-54 -150 Q0 -190 54 -150 L62 0Z" fill="#111827"/>
+    <path d="M-50 -150 Q-56 -250 0 -262 Q56 -250 50 -150 Q0 -120 -50 -150Z" fill="#1F2937"/>
+    <ellipse cx="0" cy="-190" rx="30" ry="38" fill="${DARK}"/>
+    ${eyes ? `<circle cx="-11" cy="-196" r="4" fill="${RED}"/><circle cx="11" cy="-196" r="4" fill="${RED}"/>` : ''}</g>`;
+}
+function warnTri(x, y, s, col=GOLD) { return `<g transform="translate(${x},${y}) scale(${s})"><path d="M0 -40 L46 38 L-46 38Z" fill="${col}" stroke="${DARK}" stroke-width="5" stroke-linejoin="round"/>${text(0, 30, '!', 50, NAVY)}</g>`; }
+function lockIcon(x, y, s, col=GREY) { return `<g transform="translate(${x},${y}) scale(${s})"><path d="M-18 -4 L-18 -22 Q-18 -42 0 -42 Q18 -42 18 -22 L18 -4" stroke="${col}" stroke-width="8" fill="none"/><rect x="-28" y="-6" width="56" height="44" rx="8" fill="${col}"/></g>`; }
+function keyIcon(x, y, s, col=GOLD) { return `<g transform="translate(${x},${y}) scale(${s})"><circle cx="-50" cy="0" r="32" fill="none" stroke="${col}" stroke-width="16"/><rect x="-20" y="-8" width="110" height="16" rx="6" fill="${col}"/><rect x="60" y="0" width="14" height="30" rx="4" fill="${col}"/><rect x="80" y="0" width="14" height="22" rx="4" fill="${col}"/></g>`; }
+function phone(cx, cy, s, mode, op=1) {
+  let g = `<g transform="translate(${cx},${cy}) scale(${s})" opacity="${op}"><rect x="-115" y="-210" width="230" height="420" rx="32" fill="${DARK}" stroke="#475569" stroke-width="6"/>
+    <rect x="-98" y="-188" width="196" height="372" rx="18" fill="${SLATE}"/><rect x="-30" y="-202" width="60" height="8" rx="4" fill="#334155"/>
+    ${text(0, -150, 'MY WALLET', 18, '#94A3B8', 800)}`;
+  if (mode === 'bal' || mode === 'lock') {
+    g += text(0, -90, '$3,000', 48, GOLD) + text(0, -60, 'crypto balance', 16, '#94A3B8', 800);
+    g += `<rect x="-78" y="40" width="156" height="54" rx="27" fill="${mode === 'lock' ? '#334155' : GREEN}"/>${text(0, 75, 'WITHDRAW', 20, mode === 'lock' ? '#64748B' : NAVY)}`;
+    if (mode === 'lock') g += lockIcon(0, 140, 0.9, RED);
+  }
+  if (mode === 'warn') g += warnTri(0, -60, 1.1) + text(0, 30, 'Withdrawals', 24, WHITE) + text(0, 62, 'temporarily', 24, WHITE) + text(0, 94, 'suspended', 24, RED);
+  if (mode === 'ok') g += `<circle cx="0" cy="-60" r="46" fill="${GREEN}"/>${check(0, -58, 2.4, WHITE, 1, 10)}` + text(0, 30, 'Withdrawals', 24, WHITE) + text(0, 62, 'resumed', 24, GREEN) + text(0, 120, '$3,000', 34, GOLD);
+  return g + '</g>';
+}
+function slip(cx, cy, s, sig=1, op=1) {
+  const L = 210;
+  return `<g transform="translate(${cx},${cy}) rotate(-4) scale(${s})" opacity="${op}"><rect x="-140" y="-100" width="280" height="200" rx="10" fill="#FEF3C7"/>
+    ${text(0, -62, 'PERMISSION SLIP', 22, NAVY)}<rect x="-62" y="-46" width="124" height="28" rx="14" fill="${BLUE}"/>${text(0, -25, 'EIP-7702', 16, WHITE)}
+    <rect x="-110" y="0" width="220" height="7" rx="3" fill="#D6C59A"/><rect x="-110" y="18" width="170" height="7" rx="3" fill="#D6C59A"/>
+    <path d="M-100 70 q 20 -30 35 0 t 35 0 q 15 -25 30 -5 t 40 -10 t 40 5" stroke="${BLUE}" stroke-width="5" fill="none" stroke-linecap="round" stroke-dasharray="${L}" stroke-dashoffset="${L * (1 - sig)}"/>
+    <line x1="-110" y1="80" x2="110" y2="80" stroke="#94A3B8" stroke-width="2"/></g>`;
+}
+function server(cx, cy, s, red=0, op=1) {
+  let g = `<g transform="translate(${cx},${cy}) scale(${s})" opacity="${op}"><rect x="-80" y="-120" width="160" height="240" rx="14" fill="#334155" stroke="#94A3B8" stroke-width="5"/>`;
+  for (let i = 0; i < 4; i++) g += `<rect x="-62" y="${-100 + i * 56}" width="124" height="40" rx="6" fill="${SLATE}"/><circle cx="-40" cy="${-80 + i * 56}" r="7" fill="${red ? RED : GREEN}"/><rect x="-20" y="${-84 + i * 56}" width="66" height="8" rx="4" fill="#475569"/>`;
+  return g + `${text(0, 150, 'SIGNING SYSTEM', 20, '#CBD5E1', 800)}</g>`;
+}
+function iceBlock(x, y, w, h, op=1) {
+  return `<g opacity="${op}"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="14" fill="${ICE}" fill-opacity="0.35" stroke="#BFDBFE" stroke-width="4"/>
+    <path d="M${x + 14} ${y + 18} L${x + 40} ${y + 12} M${x + w - 30} ${y + h - 16} L${x + w - 12} ${y + h - 26}" stroke="#EFF6FF" stroke-width="5" stroke-linecap="round" opacity="0.8"/></g>`;
+}
+function hexNode(x, y, r, col, op=1) {
+  const pts = Array.from({ length: 6 }, (_, i) => { const a = Math.PI / 6 + i * Math.PI / 3; return `${x + r * Math.cos(a)},${y + r * Math.sin(a)}`; }).join(' ');
+  return `<polygon points="${pts}" fill="${SLATE}" stroke="${col}" stroke-width="5" opacity="${op}"/>`;
+}
+const flyCoins = (T, t0, x0, y0, x1, y1, n, period=0.9, r=14, op=1, arc=80) => {
+  let g = ''; if (T < t0) return g;
+  for (let i = 0; i < n; i++) { const k = ((T - t0) / period + i / n) % 1; g += coin(lerp(x0, x1, k), lerp(y0, y1, k) - Math.sin(Math.PI * k) * arc, r, op * Math.min(1, (1 - k) * 4, k * 6)); }
+  return g;
+};
+
+/* ================= scenes ================= */
+const S = {};
+S.hook = (T) => {
+  let g = '', o = '';
+  const a1 = fin(T, 'h1', 0.5) * fout(T, 'h2');
+  if (a1 > 0) {
+    const typed = 'OCT 29, 2026'.slice(0, Math.floor(clamp((T - C('h1')) / 1.0) * 12));
+    o += ov(typed + '<span class="y">|</span>', 0, 210, W, 54, '#CBD5E1', a1, 'letter-spacing:6px');
+    o += ov('20:05 <span style="font-size:40px;color:#94A3B8">UTC</span>', 0, 290, W, 150, WHITE, a1 * clamp((T - C('h1') - 1.0) / 0.4), "font-variant-numeric:tabular-nums");
+  }
+  const a2 = fin(T, 'h2') * fout(T, 'h4b');
+  if (a2 > 0) {
+    g += exchangeB(470, 560, 1.15, a2);
+    g += flyCoins(T, C('h2') + 0.4, 600, 470, 1150, 420, 8, 1.4 - 0.7 * clamp((T - C('h3')) / 2), 16, a2, 120);
+    const cnt = 6.3e9 * Math.pow(clamp((T - C('h3')) / (E('h4') - C('h3'))), 2.2);
+    if (T > C('h3')) o += ov(money(cnt), 640, 150, 620, 70, RED, a2, "font-variant-numeric:tabular-nums");
+    if (T > C('h3')) o += ov('STOLEN', 640, 235, 620, 30, '#CBD5E1', a2, 'letter-spacing:8px');
+  }
+  const a4b = fin(T, 'h4b') * fout(T, 'h5');
+  if (a4b > 0) {
+    ['NO MASKS', 'NO GETAWAY CAR', 'NO ALARMS'].forEach((s, i) => { const p = clamp((T - C('h4b') - i * 0.55) / 0.3);
+      o += ov(`<s style="text-decoration-color:#EF4444;text-decoration-thickness:6px">${s}</s>`, 0, 150 + i * 90, W, 56, '#94A3B8', a4b * p); });
+    o += ov('JUST <span class="y">CODE.</span>', 0, 440, W, 80, WHITE, a4b * clamp((T - C('h4b') - 1.8) / 0.3));
+  }
+  const a5 = fin(T, 'h5') * fout(T, 'h6');
+  if (a5 > 0) {
+    o += ov('LARGEST CRYPTO THEFT<br><span class="r">IN HISTORY</span>', 0, 150, W, 72, WHITE, a5);
+    const p = pop(T, C('h5') + 1.6, 0.5); if (p > 0) g += `<g transform="${scaleAt(640, 450, p)}">${badge('4X THE PREVIOUS RECORD', 640, 462, GOLD, NAVY, 32)}</g>`;
+  }
+  const a6 = fin(T, 'h6') * fout(T, 'h7');
+  if (a6 > 0) {
+    g += hood(640, 560, 1.4, a6);
+    o += ov('NOT A LONE HACKER', 0, 80, W, 54, WHITE, a6);
+    const p = pop(T, C('h6') + 2.0, 0.45);
+    if (p > 0) o += ov('STATE-BACKED', 330, 430, 620, 64, RED, a6 * clamp(p), `transform:rotate(-8deg) scale(${p});border:7px solid #EF4444;border-radius:16px;padding:8px 0;background:rgba(15,23,42,0.85)`);
+  }
+  const a7 = fin(T, 'h7') * fout(T, 'h8');
+  if (a7 > 0) {
+    g += `<circle cx="640" cy="360" r="${260 * a7}" fill="${RED}" opacity="0.10"/>` + `<g transform="${scaleAt(640, 360, pop(T, C('h7'), 0.5))}">${laptop(640, 360, 1.3, T > C('h7') + 0.9 ? 1 : 0)}</g>`;
+    o += ov('ONE LAPTOP', 0, 560, W, 50, WHITE, a7 * clamp((T - C('h7') - 0.5) / 0.3));
+  }
+  const a8 = fin(T, 'h8');
+  if (a8 > 0) {
+    o += ov('HOW <span class="r">$6.3 BILLION</span><br>VANISHED IN ONE NIGHT', 0, 220, W, 74, WHITE, a8 * pop(T, C('h8'), 0.5));
+  }
+  return [g, o];
+};
+
+S.jake = (T) => {
+  let [g, o] = section("JAKE'S MORNING", '', T, 'jake', '#60A5FA');
+  const m5 = fin(T, 'j5');
+  const jx = lerp(-120, 380, P(T, C('j1') - 0.2, 1.3));
+  if (m5 < 1) {
+    g += `<g opacity="${1 - m5}">${floorLine()}${person('jake', jx, 600, 1.15, { sad: T > C('j3'), color: GREY })}</g>`;
+    const mode = T < C('j3') ? 'bal' : T < C('j4') ? 'warn' : 'lock';
+    const p = pop(T, C('j1') + 1.0, 0.5);
+    if (p > 0) g += `<g transform="${scaleAt(820, 360, p)}">${phone(820, 360, 1.2, mode, 1 - m5)}</g>`;
+    if (T > C('j3') && T < C('j4')) g += `<circle cx="820" cy="360" r="${200 + 40 * Math.sin(T * 8)}" fill="${RED}" opacity="${0.08 * (1 - m5)}"/>`;
+    const q = clamp((T - C('j2')) / 0.4) * fout(T, 'j3');
+    if (q > 0) o += ov('OCT 30', 0, 100, 560, 44, '#94A3B8', q * (1 - m5), 'letter-spacing:4px');
+  }
+  if (m5 > 0) {
+    for (let r = 0; r < 4; r++) for (let c = 0; c < 9; c++) {
+      const i = r * 9 + c, p = clamp((T - C('j5') - i * 0.03) / 0.25); if (p <= 0) continue;
+      const x = 150 + c * 122, y = 160 + r * 112;
+      g += `<g opacity="${p * m5}"><rect x="${x - 34}" y="${y - 50}" width="68" height="100" rx="12" fill="${SLATE}" stroke="#475569" stroke-width="3"/>${warnTri(x, y - 6, 0.45)}</g>`;
+    }
+    o += ov('MILLIONS OF USERS. <span class="y">SAME MESSAGE.</span>', 0, 610 - 80, W, 40, WHITE, m5 * clamp((T - C('j5') - 1.2) / 0.4), 'background:rgba(15,23,42,0.85);padding:10px 0');
+  }
+  return [g, o];
+};
+
+S.basics = (T) => {
+  let [g, o] = section('THE BASICS', 'HOT WALLETS vs COLD WALLETS', T, 'basics');
+  const a1 = fin(T, 'b1') * fout(T, 'b2');
+  if (a1 > 0) o += ov('<span style="color:#F97316">HOT</span> vs <span style="color:#93C5FD">COLD</span>', 0, 260, W, 130 * Math.max(0.01, pop(T, C('b1'), 0.5)), WHITE, a1);
+  const a2 = fin(T, 'b2');
+  if (a2 > 0) {
+    const split = P(T, C('b3'), 0.9);
+    g += exchangeB(640, lerp(420, 330, split), lerp(1.0, 0.62, split), a2);
+    if (split < 1) o += ov('~$171 BILLION', 0, 440, W, 60, GOLD, a2 * clamp((T - C('b2') - 1.5) / 0.4) * (1 - split));
+    if (T > C('b3')) {
+      g += `<g transform="${scaleAt(330, 380, pop(T, C('b3') + 0.2, 0.5))}">${vault(330, 380, 0.95)}</g>`;
+      g += text(330, 548, 'COLD WALLET', 30, ICE) + text(330, 574, 'offline vault', 20, '#94A3B8', 800);
+      g += `<line x1="530" y1="300" x2="420" y2="340" stroke="#475569" stroke-width="5" stroke-dasharray="10 10" opacity="${split}"/>`;
+    }
+    if (T > C('b4')) {
+      const al = clamp((T - C('b6') - 1.2) / 0.3);
+      g += `<g transform="${scaleAt(950, 440, pop(T, C('b4') + 0.2, 0.5))}">${register(950, 460, 0.95, 1, al)}</g>`;
+      g += text(950, 548, 'HOT WALLET', 30, ORANGE) + text(950, 574, 'online, pays out instantly', 20, '#94A3B8', 800);
+      g += `<line x1="750" y1="300" x2="860" y2="380" stroke="#475569" stroke-width="5" stroke-dasharray="10 10"/>`;
+      if (T > C('b5') && T < C('b6') + 1.2) g += flyCoins(T, C('b5'), 1000, 340, 1210, 260, 4, 1.2, 12, 1, 60);
+      if (T > C('b6')) g += hood(1170, 520, 0.7, clamp((T - C('b6')) / 0.4));
+    }
+  }
+  return [g, o];
+};
+
+S.heist = (T) => {
+  let [g, o] = section('THE HEIST', '', T, 'heist', RED);
+  const a1 = fin(T, 'k1') * fout(T, 'k2');
+  if (a1 > 0) o += ov('HOW DID THEY<br><span class="r">GET IN?</span>', 0, 230, W, 90, WHITE, a1 * pop(T, C('k1'), 0.5));
+  const a2 = fin(T, 'k2') * fout(T, 'k4');
+  if (a2 > 0) {
+    const red = T > C('k3') + 0.3, sv = clamp((T - C('k3')) / 0.5);
+    const lx = lerp(640, 330, P(T, C('k3'), 0.8));
+    g += laptop(lx, 340, 1.1, red ? 1 : 0, a2);
+    o += ov("ONE ENGINEER'S LAPTOP", lx - 300, 470, 600, 30, WHITE, a2 * fout(T, 'k3'));
+    if (sv > 0) {
+      g += server(950, 330, 1.0, red && T > C('k3') + 1.6 ? 1 : 0, a2 * sv);
+      const pr = clamp((T - C('k3') - 0.5) / 1.2);
+      g += `<line x1="${lx + 150}" y1="330" x2="${lx + 150 + (850 - lx - 150) * pr}" y2="330" stroke="${RED}" stroke-width="7" stroke-dasharray="14 10" opacity="${a2}"/>`;
+    }
+  }
+  const a4 = fin(T, 'k4') * fout(T, 'k5');
+  if (a4 > 0) {
+    g += `<g opacity="${a4}">${keyIcon(600, 330, 2.0, GOLD)}</g>`;
+    o += ov('PRIVATE KEYS', 0, 450, W, 46, WHITE, a4);
+    const p = pop(T, C('k4') + 0.9, 0.4); if (p > 0) o += ov('NOT STOLEN', 380, 515, 520, 50, GREEN, a4 * clamp(p), `transform:rotate(-4deg) scale(${p});border:6px solid #22C55E;border-radius:14px;padding:6px 0`);
+    if (T > C('k4') + 2.4) o += ov("THEY DIDN'T NEED THEM", 0, 130, W, 40, GOLD, a4 * clamp((T - C('k4') - 2.4) / 0.3));
+  }
+  const a5 = fin(T, 'k5') * fout(T, 'k8');
+  if (a5 > 0) {
+    const big = T < C('k6');
+    const sx = big ? 640 : 460;
+    g += slip(sx, 330, big ? 1.4 : 1.05, clamp((T - C('k5') - 1.0) / 1.2), a5);
+    if (!big) {
+      g += register(930, 470, 0.85, 0.6, 0, a5) + person('maya', 760, 620, 0.85, { color: '#64748B', opacity: a5 }) + hood(1150, 620, 0.85, a5);
+      o += ov('&ldquo;From now on, my friend<br>can open this register.&rdquo;', 180, 470, 560, 26, '#CBD5E1', a5 * clamp((T - C('k6') - 0.5) / 0.4), 'font-style:italic;font-weight:800');
+    }
+    const p7 = pop(T, C('k7'), 0.45);
+    if (p7 > 0) g += `<g transform="${scaleAt(640, 120, p7)}">${badge('FEATURE NOT BROKEN · PROCESS ABUSED', 640, 128, GOLD, NAVY, 24)}</g>`;
+  }
+  const a8 = fin(T, 'k8') * fout(T, 'k10');
+  if (a8 > 0) {
+    const chains = 9, cx0 = 160;
+    for (let i = 0; i < chains; i++) {
+      const x = cx0 + i * 120, y = 300 + (i % 2) * 70, drain = clamp((T - C('k8') - 0.6 - i * 0.45) / 1.0);
+      g += hexNode(x, y, 46, drain > 0.9 ? '#475569' : GOLD, a8);
+      g += `<rect x="${x - 22}" y="${y + 30 - 50 * (1 - drain)}" width="44" height="${50 * (1 - drain)}" rx="6" fill="${GOLD}" opacity="${a8 * 0.9}"/>`;
+      if (drain > 0 && drain < 1) g += flyCoins(T, C('k8') + 0.6 + i * 0.45, x, y - 20, 640, 470, 3, 0.8, 11, a8, 40);
+    }
+    g += hood(640, 560, 0.6, a8) + text(640, 580, 'DRAINED', 22, RED, 900, 'middle', `opacity="${a8 * clamp((T - C('k8') - 3) / 0.5)}"`);
+    if (T > C('k9')) {
+      o += ov('<span class="y">17</span> HOT WALLETS &middot; <span class="y">9</span> BLOCKCHAINS', 0, 110, W, 46, WHITE, a8 * clamp((T - C('k9')) / 0.3));
+    }
+    if (T > C('k9b')) o += ov('ALL IN A MATTER OF HOURS', 0, 170, W, 30, RED, a8 * clamp((T - C('k9b')) / 0.3), 'letter-spacing:3px');
+  }
+  const a10 = fin(T, 'k10');
+  if (a10 > 0) {
+    const p = pop(T, C('k10'), 0.5);
+    g += `<g transform="${scaleAt(640, 330, p)}"><circle cx="640" cy="300" r="110" fill="${RED}"/><rect x="595" y="240" width="30" height="120" rx="8" fill="${WHITE}"/><rect x="655" y="240" width="30" height="120" rx="8" fill="${WHITE}"/></g>`;
+    o += ov('WITHDRAWALS PAUSED', 0, 450, W, 64, WHITE, a10);
+  }
+  return [g, o];
+};
+
+S.who = (T) => {
+  let [g, o] = section('WHO DID IT', '', T, 'who', RED);
+  const a1 = fin(T, 'n1') * fout(T, 'n2');
+  if (a1 > 0) {
+    const p = pop(T, C('n1'), 0.5);
+    g += `<g transform="${scaleAt(640, 330, p)}" opacity="${a1}"><rect x="420" y="150" width="440" height="330" rx="16" fill="#E2E8F0"/>
+      <rect x="420" y="150" width="440" height="64" rx="16" fill="${BLUE}"/><rect x="420" y="190" width="440" height="24" fill="${BLUE}"/>${text(640, 194, 'FBI ALERT', 34, WHITE)}
+      ${[0, 1, 2, 3].map(i => `<rect x="460" y="${250 + i * 34}" width="${[360, 300, 340, 220][i]}" height="12" rx="6" fill="#94A3B8"/>`).join('')}</g>`;
+    const s = pop(T, C('n1') + 1.8, 0.4);
+    if (s > 0) o += ov('TRADERTRAITOR', 380, 380, 520, 50, RED, a1 * clamp(s), `transform:rotate(-7deg) scale(${s});border:6px solid #EF4444;border-radius:14px;padding:6px 0;background:rgba(226,232,240,0.95)`);
+  }
+  const a2 = fin(T, 'n2') * fout(T, 'n3');
+  if (a2 > 0) {
+    g += `<rect x="0" y="0" width="1280" height="720" fill="${NAVY}" opacity="${0.85 * a2}"/>`;
+    g += hood(470, 550, 1.0, a2) + hood(640, 570, 1.2, a2) + hood(810, 550, 1.0, a2);
+    o += ov('NORTH KOREA &middot; <span class="r">STATE-BACKED</span>', 0, 110, W, 50, WHITE, a2);
+    o += ov('a.k.a. LAZARUS GROUP', 0, 175, W, 30, '#94A3B8', a2 * clamp((T - C('n2') - 1.5) / 0.4), 'letter-spacing:3px');
+  }
+  const a3 = fin(T, 'n3') * fout(T, 'n4');
+  if (a3 > 0) {
+    if (T < C('n3b')) o += ov('THEY HAVE A <span class="y">TRACK RECORD</span>', 0, 280, W, 66, WHITE, a3 * pop(T, C('n3'), 0.45));
+    else {
+      // fake job offer email with malware
+      const p = pop(T, C('n3b'), 0.5), click = clamp((T - C('n3c') - 0.5) / 0.3);
+      g += `<g transform="${scaleAt(560, 340, p)}" opacity="${a3}"><rect x="330" y="180" width="460" height="300" rx="16" fill="#F8FAFC"/>
+        <rect x="330" y="180" width="460" height="60" rx="16" fill="#E2E8F0"/>${text(360, 220, 'Subject: Dream job offer!', 22, NAVY, 900, 'start')}
+        ${[0, 1, 2].map(i => `<rect x="360" y="${270 + i * 30}" width="${[380, 330, 260][i]}" height="12" rx="6" fill="#CBD5E1"/>`).join('')}
+        <rect x="360" y="380" width="200" height="60" rx="10" fill="${click > 0 ? '#FCA5A5' : '#DBEAFE'}" stroke="${click > 0 ? RED : BLUE}" stroke-width="3"/>${text(460, 418, 'offer.pdf', 22, click > 0 ? RED : BLUE)}</g>`;
+      o += ov('FAKE JOB OFFERS', 0, 110, W, 44, GOLD, a3);
+      if (T > C('n3c')) { g += `<g transform="translate(${470 + 10 * Math.sin(T * 3)},${430})"><path d="M0 0 L0 50 L13 38 L23 60 L33 55 L23 34 L40 34Z" fill="${WHITE}" stroke="${NAVY}" stroke-width="3"/></g>`;
+        if (click > 0) g += hood(1000, 600, 0.9, click) + `<line x1="580" y1="410" x2="930" y2="430" stroke="${RED}" stroke-width="5" stroke-dasharray="10 8" opacity="${click}"/>`; }
+    }
+  }
+  const a4 = fin(T, 'n4') * fout(T, 'n7');
+  if (a4 > 0) {
+    const bars = [['RONIN', '2022', 0.625, 'n4'], ['BYBIT', '2025', 1.5, 'n5'], ['BINANCE', '2026', 6.3, 'n6']];
+    g += `<line x1="200" y1="520" x2="1080" y2="520" stroke="#475569" stroke-width="5" opacity="${a4}"/>`;
+    bars.forEach(([n, y, v, k], i) => {
+      const p = easeOut(clamp((T - C(k) - 0.2) / 0.9)); if (p <= 0) return;
+      const h = v / 6.3 * 320 * p, x = 340 + i * 300, col = i === 2 ? RED : '#64748B';
+      g += `<g opacity="${a4}"><rect x="${x - 80}" y="${520 - h}" width="160" height="${h}" rx="10" fill="${col}"/>
+        ${text(x, 508 - h, v < 1 ? '$625M' : '$' + v + 'B', 44, i === 2 ? RED : WHITE)}${text(x, 554, n, 26, WHITE)}${text(x, 580, y, 20, '#94A3B8', 800)}</g>`;
+    });
+    o += ov("NORTH KOREA'S BIGGEST CRYPTO HEISTS", 0, 100, W, 36, WHITE, a4);
+  }
+  const a7 = fin(T, 'n7');
+  if (a7 > 0) {
+    const p = pop(T, C('n7'), 0.5);
+    g += `<g transform="${scaleAt(400, 360, p)}" opacity="${a7}"><circle cx="400" cy="360" r="130" fill="#60A5FA"/><circle cx="400" cy="360" r="104" fill="none" stroke="${WHITE}" stroke-width="6"/>
+      <path d="M330 360 Q400 300 470 360 Q400 420 330 360Z" fill="none" stroke="${WHITE}" stroke-width="6"/><line x1="400" y1="256" x2="400" y2="464" stroke="${WHITE}" stroke-width="5"/>${text(400, 540, 'UN EXPERTS', 30, WHITE)}</g>`;
+    o += ov('STOLEN CRYPTO<br><span class="r">HELPS FUND</span><br>WEAPONS PROGRAMS', 600, 230, 600, 54, WHITE, a7 * clamp((T - C('n7') - 0.6) / 0.4), 'text-align:left');
+    const s = pop(T, C('n8') + 0.8, 0.45);
+    if (s > 0) o += ov('NOT JUST A HACK', 600, 520, 520, 46, GOLD, a7 * clamp(s), `transform:rotate(-4deg) scale(${s});border:6px solid #EAB308;border-radius:14px;padding:6px 0;background:rgba(15,23,42,0.85)`);
+  }
+  return [g, o];
+};
+
+S.freeze = (T) => {
+  let [g, o] = section('THE CHASE', '', T, 'freeze', '#60A5FA');
+  const a1 = fin(T, 'f1') * fout(T, 'f2');
+  if (a1 > 0) {
+    g += hood(380, 620, 1.2, a1) + `<g opacity="${a1}"><ellipse cx="560" cy="560" rx="80" ry="70" fill="#92400E"/><path d="M520 500 Q560 470 600 500" stroke="#78350F" stroke-width="10" fill="none"/>${text(560, 580, '$', 60, GOLD)}</g>`;
+    o += ov('STEALING <span class="g">&#10003;</span>', 700, 250, 500, 56, WHITE, a1 * clamp((T - C('f1') - 1.5) / 0.3), 'text-align:left');
+    o += ov('SPENDING <span class="r">?</span>', 700, 340, 500, 56, WHITE, a1 * clamp((T - C('f1') - 2.6) / 0.3), 'text-align:left');
+  }
+  const a2 = fin(T, 'f2') * fout(T, 'f3');
+  if (a2 > 0) {
+    for (let i = 0; i < 6; i++) g += `<g opacity="${a2}"><rect x="${120 + i * 180}" y="300" width="120" height="100" rx="12" fill="${SLATE}" stroke="#60A5FA" stroke-width="4"/>${text(180 + i * 180, 360, '#' + (812 + i), 22, '#94A3B8', 800)}${i < 5 ? `<line x1="${240 + i * 180}" y1="350" x2="${300 + i * 180}" y2="350" stroke="#60A5FA" stroke-width="5"/>` : ''}</g>`;
+    const k = clamp((T - C('f2')) / D('f2')), mx = lerp(180, 1080, k);
+    g += coin(mx, 350, 18, a2) + `<g opacity="${a2}" transform="translate(${mx},230)"><circle r="44" fill="none" stroke="${WHITE}" stroke-width="10"/><line x1="30" y1="30" x2="70" y2="70" stroke="${WHITE}" stroke-width="14" stroke-linecap="round"/></g>`;
+    o += ov('EVERY MOVE IS <span class="y">PUBLIC</span>', 0, 480, W, 50, WHITE, a2);
+  }
+  const a3 = fin(T, 'f3') * fout(T, 'f5');
+  if (a3 > 0) {
+    const names = ['TETHER', 'CIRCLE', 'RIPPLE', 'ARBITRUM', 'OPTIMISM'];
+    names.forEach((n, i) => {
+      const fr = clamp((T - C('f4') - i * 0.5) / 0.5), x = 120 + i * 215;
+      g += `<g opacity="${a3}">${coin(x + 85, 330, 34)}${coin(x + 60, 370, 34)}${coin(x + 110, 372, 34)}</g>`;
+      if (fr > 0 || T < C('f4')) g += iceBlock(x + 10, 270, 150, 150, a3 * (T < C('f4') ? (i < 2 ? clamp((T - C('f3') - 1.5 - i * 0.6) / 0.4) : 0) : Math.max(fr, i < 2 ? 1 : 0)));
+      g += text(x + 85, 460, n, 22, '#BFDBFE', 900, 'middle', `opacity="${a3 * (T > C('f4') || i < 2 ? 1 : 0.3)}"`);
+    });
+    if (T > C('f4')) { const p = clamp((T - C('f4') - 0.5) / 2.2); o += ov(`<span style="color:#93C5FD">$${(2.85 * easeOut(p)).toFixed(2)}B</span> FROZEN`, 0, 520, W, 64, WHITE, a3); }
+    o += ov('STABLECOIN ISSUERS CAN <span style="color:#93C5FD">FREEZE</span> TOKENS', 0, 120, W, 38, WHITE, a3);
+  }
+  const a5 = fin(T, 'f5');
+  if (a5 > 0) {
+    const sw = (T - C('f5')) * 2;
+    g += `<g opacity="${a5 * fout(T, 'f6b')}">${hood(170, 600, 0.9)}${flyCoins(T, C('f5'), 260, 430, 520, 360, 4, 1.2, 14, 1, 50)}
+      <circle cx="600" cy="350" r="56" fill="#6366F1"/>${text(600, 368, 'ETH', 34, WHITE)}
+      <g transform="translate(900,350) rotate(${sw * 60})"><circle r="90" fill="none" stroke="#475569" stroke-width="10" stroke-dasharray="40 20"/><circle r="55" fill="none" stroke="#64748B" stroke-width="8" stroke-dasharray="25 15"/></g>
+      ${text(900, 365, '?', 60, GOLD)}${text(900, 490, 'DeFi &amp; swap services', 22, '#94A3B8', 800)}
+      <line x1="665" y1="350" x2="795" y2="350" stroke="${WHITE}" stroke-width="6"/><path d="M790 336 L812 350 L790 364Z" fill="${WHITE}"/></g>`;
+    o += ov('THE WASH', 0, 120, W, 44, GOLD, a5 * fout(T, 'f6'));
+    if (T > C('f6')) {
+      const k = (T - C('f6')) * 140 % 1400 - 100;
+      o += ov('THE CHASE CAN TAKE <span class="y">MONTHS</span>', 0, 120, W, 44, WHITE, clamp((T - C('f6')) / 0.3));
+    }
+    if (T > C('f6b')) { g += `<g opacity="${clamp((T - C('f6b')) / 0.4)}">${flyCoins(T, C('f6b'), 640, 400, 1300, 200, 5, 2.0, 16, 0.6, 30)}</g>`;
+      o += ov('SOME MAY <span class="r">NEVER</span> BE RECOVERED', 0, 300, W, 56, WHITE, clamp((T - C('f6b')) / 0.4)); }
+  }
+  return [g, o];
+};
+
+S.response = (T) => {
+  let [g, o] = section("BINANCE'S RESPONSE", '', T, 'response', GOLD);
+  const a1 = fin(T, 'r1') * fout(T, 'r2');
+  if (a1 > 0) o += ov('IS CUSTOMER MONEY<br><span class="y">SAFE?</span>', 0, 230, W, 90, WHITE, a1 * pop(T, C('r1'), 0.5));
+  const a2 = fin(T, 'r2') * fout(T, 'r2b');
+  if (a2 > 0) {
+    o += ov('&ldquo;Your assets are safe.&rdquo;', 0, 220, W, 70, WHITE, a2 * pop(T, C('r2'), 0.5), 'font-style:italic');
+    o += ov('&mdash; RICHARD TENG, BINANCE CO-CEO', 0, 320, W, 28, '#94A3B8', a2 * clamp((T - C('r2') - 1) / 0.4), 'letter-spacing:2px');
+    if (T > C('r2') + 3) g += badge('LOSSES COVERED WITH COMPANY FUNDS', 640, 470, GREEN, NAVY, 28, a2 * clamp((T - C('r2') - 3) / 0.4));
+  }
+  const a2b = fin(T, 'r2b') * fout(T, 'r3');
+  if (a2b > 0) {
+    g += `<g opacity="${a2b}">${jar(400, 480, 0.16, 'SAFU FUND', 1, GREEN)}${jar(880, 480, 1.0, 'NEEDED', 1, RED)}</g>`;
+    g += text(400, 270, '$1B', 56, GREEN, 900, 'middle', `opacity="${a2b}"`) + text(400, 220, 'set up 2018', 22, '#94A3B8', 800, 'middle', `opacity="${a2b}"`);
+    g += text(880, 270, '~$6.3B', 56, RED, 900, 'middle', `opacity="${a2b * clamp((T - C('r2b') - 2.5) / 0.4)}"`);
+  }
+  const a3 = fin(T, 'r3') * fout(T, 'r4');
+  if (a3 > 0) {
+    const p = easeOut(clamp((T - C('r3') - 0.5) / 2.0)) * 95;
+    g += `<g opacity="${a3}"><rect x="240" y="320" width="800" height="70" rx="35" fill="${SLATE}" stroke="#475569" stroke-width="4"/><rect x="248" y="328" width="${784 * p / 100}" height="54" rx="27" fill="${GREEN}"/></g>`;
+    o += ov(Math.round(p) + '%', 0, 170, W, 110, GREEN, a3) + ov('OF STOLEN ASSETS REPLACED', 0, 420, W, 34, WHITE, a3);
+  }
+  const a4 = fin(T, 'r4') * fout(T, 'r5');
+  if (a4 > 0) {
+    g += `<g transform="${scaleAt(380, 360, pop(T, C('r4'), 0.5))}">${phone(380, 360, 1.15, 'ok', a4)}</g>`;
+    ['BTC', 'ETH', 'SOL', '+12 MORE'].forEach((n, i) => { const p = pop(T, C('r4') + 1.2 + i * 0.4, 0.4); if (p > 0) g += `<g transform="${scaleAt(820, 230 + i * 90, p)}" opacity="${a4}">${badge(n, 820, 240 + i * 90, i === 3 ? '#334155' : GOLD, i === 3 ? WHITE : NAVY, 30)}</g>`; });
+    o += ov('15 NETWORKS FIRST', 620, 590, 400, 26, '#94A3B8', a4, 'font-weight:800');
+  }
+  const a5 = fin(T, 'r5') * fout(T, 'r6');
+  if (a5 > 0) {
+    g += exchangeB(400, 600, 1.0, a5);
+    for (let i = 0; i < 5; i++) { const k = ((T - C('r5')) * 0.6 + i / 5) % 1; g += `<g opacity="${a5 * (1 - k)}">${person('jake', lerp(560, 1250, k), 640 - i * 6, 0.5, { color: ['#64748B', '#22C55E', '#60A5FA', '#F472B6', '#EAB308'][i] })}</g>`; }
+    const p = clamp((T - C('r5') - 1.5) / 2.0);
+    o += ov(`$${(4.7 * easeOut(p)).toFixed(1)}B <span style="font-size:40px;color:#94A3B8">OUT</span>`, 600, 140, 640, 90, RED, a5);
+    o += ov('~3% OF ASSETS', 600, 250, 640, 34, WHITE, a5 * clamp((T - C('r5') - 3) / 0.4));
+  }
+  const a6 = fin(T, 'r6') * fout(T, 'r7');
+  if (a6 > 0) {
+    const X = i => 200 + i * 22, pts = Array.from({ length: 40 }, (_, i) => { const base = 80 - i * 0.05; const drop = i > 26 ? Math.min(4, (i - 26) * 1.2) : 0; return [X(i), 560 - (base - drop - 72) * 40 + Math.sin(i * 1.7) * 10]; });
+    const n = Math.max(2, Math.floor(40 * clamp((T - C('r6') + 0.2) / 2.2)));
+    g += `<g opacity="${a6}"><line x1="200" y1="${560 - 4 * 40}" x2="1080" y2="${560 - 4 * 40}" stroke="#475569" stroke-width="2" stroke-dasharray="8 8"/>${text(1090, 560 - 4 * 40 + 8, '$76K', 24, '#94A3B8', 800, 'start')}
+      <path d="${pts.slice(0, n).map((p, i) => (i ? 'L' : 'M') + p[0] + ' ' + p[1]).join(' ')}" stroke="${n > 28 ? RED : GOLD}" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>`;
+    o += ov('BITCOIN <span class="r">&#9660; ~5%</span>', 0, 110, W, 56, WHITE, a6);
+  }
+  const a7 = fin(T, 'r7');
+  if (a7 > 0) {
+    g += floorLine() + person('jake', 400, 600, 1.15, { color: GREY, wave: T > C('r7') + 1.5, t: T }) + `<g transform="${scaleAt(820, 360, pop(T, C('r7'), 0.5))}">${phone(820, 360, 1.15, 'ok')}</g>`;
+    const s = pop(T, C('r7') + 1.6, 0.4);
+    if (s > 0) o += ov('THIS TIME.', 130, 150, 520, 56, GOLD, clamp(s), `transform:rotate(-5deg) scale(${s});border:6px solid #EAB308;border-radius:14px;padding:4px 0;background:rgba(15,23,42,0.9)`);
+  }
+  return [g, o];
+};
+
+S.twist = (T) => {
+  let [g, o] = section('THE REAL LESSON', '', T, 'twist', GREEN);
+  const a1 = fin(T, 't1') * fout(T, 't2');
+  if (a1 > 0) o += ov("THAT'S THE PART<br>WORTH <span class=\"y\">THINKING ABOUT</span>", 0, 230, W, 76, WHITE, a1 * pop(T, C('t1'), 0.45));
+  const a2 = fin(T, 't2') * fout(T, 't4');
+  if (a2 > 0) {
+    g += exchangeB(380, 500, 1.0, a2);
+    for (let i = 0; i < 12; i++) g += coin(260 + (i % 6) * 48, 545 - Math.floor(i / 6) * 24, 22, a2 * clamp((T - C('t2') - i * 0.05) / 0.3));
+    o += ov('BILLIONS TO<br>COVER THE HOLE', 130, 140, 500, 40, GREEN, a2);
+    if (T > C('t3')) {
+      g += `<g opacity="${clamp((T - C('t3')) / 0.4) * a2}">${exchangeB(900, 500, 0.62)}${text(900, 300, 'SMALLER EXCHANGE', 24, '#CBD5E1', 800)}</g>`;
+      o += ov('?', 820, 320, 160, 100, RED, clamp((T - C('t3') - 0.5) / 0.3) * a2);
+    }
+  }
+  const a4 = fin(T, 't4') * fout(T, 't5');
+  if (a4 > 0) {
+    const crack = clamp((T - C('t4') - 0.6) / 1.2);
+    g += `<g opacity="${a4}" transform="rotate(${-10 * crack} 640 520)">${exchangeB(640, 520, 1.0).replace('BINANCE', 'FTX')}</g>`;
+    g += `<path d="M600 250 L630 320 L600 370 L650 440" stroke="${DARK}" stroke-width="8" fill="none" opacity="${a4 * crack}"/>`;
+    o += ov('FTX &middot; 2022', 0, 90, W, 50, RED, a4);
+    if (T > C('t4') + 2.5) g += badge('CUSTOMERS WAITED 2+ YEARS', 640, 172, GOLD, NAVY, 28, a4 * clamp((T - C('t4') - 2.5) / 0.4));
+  }
+  const a5 = fin(T, 't5') * fout(T, 't6');
+  if (a5 > 0) {
+    g += `<g opacity="${a5}">${floorLine()}${person('jake', 320, 600, 1.1, { color: GREY })}${exchangeB(930, 600, 0.9)}</g>`;
+    g += flyCoins(T, C('t5'), 380, 480, 860, 420, 4, 1.3, 16, a5, 80);
+    o += ov("YOU'RE <span class=\"y\">TRUSTING</span> THE COMPANY", 0, 110, W, 46, WHITE, a5);
+  }
+  const a6 = fin(T, 't6');
+  if (a6 > 0) {
+    g += `<g transform="${scaleAt(640, 300, pop(T, C('t6'), 0.5))}">${keyIcon(660, 280, 2.4, GOLD)}</g>`;
+    o += ov('NOT YOUR KEYS,<br><span class="y">NOT YOUR COINS.</span>', 0, 410, W, 66, WHITE, a6 * clamp((T - C('t6') - 0.8) / 0.4));
+  }
+  return [g, o];
+};
+
+S.lessons = (T) => {
+  let [g, o] = section('5 LESSONS', 'PROTECT YOUR CRYPTO', T, 'lessons', GREEN);
+  const items = [['l2', 'Don&rsquo;t keep everything on one exchange'], ['l3', 'Long-term coins? Consider a <span class="y">hardware wallet</span>'],
+                 ['l4', 'Beware fake &ldquo;refund&rdquo; emails &amp; support calls'], ['l5', 'Use an <span class="g">authenticator app</span> or passkey, not SMS'],
+                 ['l6', 'Only invest what you can <span class="r">afford to lose</span>']];
+  items.forEach(([k, s], i) => {
+    const a = clamp((T - C(k)) / 0.5); if (!a) return;
+    const y = 140 + i * 92, x = 150 + (1 - easeOut(a)) * -60, cur = T >= C(k) && (i === 4 || T < C(items[i + 1][0]));
+    g += `<g opacity="${a}"><rect x="${x}" y="${y}" width="980" height="76" rx="18" fill="${cur ? '#1E3A5F' : SLATE}" stroke="${cur ? GOLD : '#334155'}" stroke-width="3"/>
+      <circle cx="${x + 42}" cy="${y + 38}" r="26" fill="${GREEN}"/>${text(x + 42, y + 49, i + 1, 30, NAVY)}</g>`;
+    o += ov(s, x + 88, y + 20, 880, 32, WHITE, a, 'text-align:left;font-weight:800');
+  });
+  return [g, o];
+};
+
+S.end = (T) => {
+  let g = '', o = '';
+  if (T < C('e3')) {
+    const a1 = fin(T, 'e1') * fout(T, 'e2');
+    if (a1 > 0) {
+      g += laptop(330, 360, 1.0, 1, a1) + `<g opacity="${a1}"><line x1="520" y1="360" x2="760" y2="360" stroke="${WHITE}" stroke-width="8"/><path d="M752 340 L782 360 L752 380Z" fill="${WHITE}"/></g>`;
+      o += ov('$6.3B', 800, 300, 420, 100, RED, a1 * clamp((T - C('e1') - 1.2) / 0.4));
+      o += ov('IN ONE NIGHT', 800, 410, 420, 36, WHITE, a1 * clamp((T - C('e1') - 2.2) / 0.4));
+    }
+    const a2 = fin(T, 'e2');
+    if (a2 > 0) {
+      const k = ((T - C('e2')) * 0.25) % 1;
+      g += `<g opacity="${a2}"><line x1="100" y1="420" x2="1180" y2="420" stroke="#334155" stroke-width="4" stroke-dasharray="12 12"/>${coin(lerp(200, 1100, k) + 120, 400, 20)}
+        <g transform="translate(${lerp(200, 1100, k)},380)"><circle r="40" fill="none" stroke="${WHITE}" stroke-width="9"/><line x1="28" y1="28" x2="62" y2="62" stroke="${WHITE}" stroke-width="12" stroke-linecap="round"/></g></g>`;
+      o += ov('THE STORY ISN&rsquo;T OVER', 0, 180, W, 60, WHITE, a2 * fout(T, 'e2b'));
+      if (T > C('e2b')) o += ov('SEND THIS TO A FRIEND<br>WHO KEEPS CRYPTO ON AN EXCHANGE', 0, 160, W, 44, GOLD, clamp((T - C('e2b')) / 0.4));
+    }
+    return [g, o];
+  }
+  const a = fin(T, 'e3', 0.6);
+  g += `<g opacity="${a}" transform="translate(640,150) scale(1.1)"><path d="M0 60 C -38 18 -48 -2 -48 -22 A48 48 0 1 1 48 -22 C 48 -2 38 18 0 60Z" fill="${GOLD}"/><circle cx="0" cy="-22" r="31" fill="${NAVY}"/>${text(0, -6, '$', 46, GOLD)}</g>`;
+  o += ov('THE MONEY <span class="y">MAP</span>', 0, 230, W, 44, WHITE, a);
+  g += `<g opacity="${a}"><rect x="500" y="300" width="280" height="70" rx="14" fill="${RED}"/>${text(640, 347, 'SUBSCRIBE', 34, WHITE)}</g>`;
+  g += `<g opacity="${a}"><rect x="140" y="410" width="460" height="230" rx="18" fill="#1E293B" stroke="#334155" stroke-width="3" stroke-dasharray="10 10"/>
+        <rect x="680" y="410" width="460" height="230" rx="18" fill="#1E293B" stroke="#334155" stroke-width="3" stroke-dasharray="10 10"/></g>`;
+  o += ov('WATCH NEXT:<br><span class="y">Two Friends<br>Earn $60K</span>', 140, 465, 460, 34, WHITE, a);
+  o += ov('WATCH:<br><span class="g">401(k) Explained</span>', 680, 485, 460, 34, WHITE, a);
+  return [g, o];
+};
+
+/* ---------- frame renderer ---------- */
+function captionHTML(T) {
+  for (const k in CUE) {
+    const c = CUE[k];
+    if (T >= c.start - 0.05 && T <= c.end + 0.3) {
+      const s = c.text.replace(/(401\(k\)|\$[\d,]+(?:\.\d+)?|\d+%|\b\d{2,}\b)/g, '<span class="hl">$1</span>');
+      return `<div class="cap"><span class="box">${s}</span></div>`;
+    }
+  }
+  return '';
+}
+
+const TITLES = { jake: 'JAKE&rsquo;S <span class="hl">MORNING</span>', basics: 'HOT WALLETS <span style="color:#94A3B8">vs</span> <span style="color:#93C5FD">COLD WALLETS</span>',
+  heist: 'THE <span style="color:#EF4444">HEIST</span>', who: 'WHO <span style="color:#EF4444">DID IT?</span>', freeze: 'THE <span style="color:#93C5FD">CHASE</span>',
+  response: 'BINANCE&rsquo;S <span class="hl">RESPONSE</span>', twist: 'THE REAL <span style="color:#22C55E">LESSON</span>', lessons: '5 WAYS TO PROTECT<br><span style="color:#22C55E">YOUR CRYPTO</span>' };
+const FIRST = {}; for (const [sc, key] of CUES) if (!(sc in FIRST)) FIRST[sc] = key;
+function sectionCard(T) {
+  for (const sc in TITLES) {
+    const a = SCENES[sc].start + 0.05, b = C(FIRST[sc]) - 0.05;
+    if (T < a || T > b + 0.3 || b - a < 0.6) continue;
+    const op = Math.min(clamp((T - a) / 0.25), clamp((b + 0.3 - T) / 0.3)), s2 = 0.85 + 0.15 * easeOut((T - a) / 0.4);
+    return `<div style="position:absolute;inset:0;background:rgba(11,16,32,0.95);opacity:${op}"></div>` +
+      ov(TITLES[sc], 0, 280, W, 72, WHITE, op, `transform:scale(${s2});text-shadow:0 6px 0 #020617`);
+  }
+  return '';
+}
+window.render = function (T) {
+  let svg = '', html = '';
+  for (const name of ORDER) {
+    const sc = SCENES[name];
+    if (T < sc.start - 0.01 || T > sc.end + 0.01) continue;
+    const fade = Math.min(1, (T - sc.start) / 0.45, (sc.end - T) / 0.45);
+    if (fade <= 0) continue;
+    const [g, o] = S[name](T);
+    svg += `<g opacity="${fade.toFixed(3)}">${g}</g>`;
+    html += `<div style="opacity:${fade.toFixed(3)}">${o}</div>`;
+  }
+  const disc = T < C('e2') ? 'Based on news reports as of Nov 2, 2026 &middot; Details still developing &middot; Not financial advice' : '';
+  const bg = `<rect width="${W}" height="${H}" fill="${NAVY}"/><circle cx="640" cy="320" r="620" fill="#1E293B" opacity="0.35"/>`;
+  html += sectionCard(T);
+  document.getElementById('stage').innerHTML =
+    `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${bg}${svg}</svg>` + html +
+    (disc ? `<div class="ov" style="left:20px;top:8px;font-size:15px;font-weight:800;color:#64748B;text-align:left">${disc}</div>` : '') +
+    captionHTML(T);
+};
+window.CUE_LIST = () => Object.entries(CUE).map(([k, c]) => ({ key: k, start: c.start, end: c.end, text: c.text }));
+window.render(0);
+</script>
+</body>
+</html>

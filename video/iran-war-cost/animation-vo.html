@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>The Iran War Is Costing Your Family $2,000 - animated video (voiceover)</title>
+<style>
+  html, body { margin: 0; padding: 0; background: #0F172A; overflow: hidden; }
+  #stage { position: relative; width: 1280px; height: 720px; overflow: hidden;
+           font-family: "Montserrat", sans-serif; color: #F8FAFC; }
+  #stage svg { position: absolute; left: 0; top: 0; }
+  .ov { position: absolute; text-align: center; font-weight: 900; line-height: 1.05; }
+  .cap { position: absolute; left: 90px; width: 1100px; bottom: 26px; text-align: center; }
+  .cap span.box { display: inline-block; background: rgba(2,6,23,0.82); border-radius: 14px;
+                  padding: 10px 22px; font-weight: 800; font-size: 33px; line-height: 1.25; }
+  .hl { color: #EAB308; }
+  .g { color: #22C55E; } .r { color: #EF4444; } .y { color: #EAB308; }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<script>
+/* ============================================================
+   Video 3: "401(k) Explained for Beginners: The Free Money Most People Miss"
+   Deterministic animation: render(t) draws the frame at time t (s).
+   Figures are for the 2026 tax year (IRS Rev. Proc. 2025-32 etc.).
+   ============================================================ */
+const W = 1280, H = 720;
+const GREEN = '#22C55E', GREY = '#94A3B8', GOLD = '#EAB308', RED = '#EF4444',
+      NAVY = '#0F172A', WHITE = '#F8FAFC', SLATE = '#1E293B', BLUE = '#1D4ED8';
+
+/* ---------- narration cues (captions) ---------- */
+const CUES = [
+ // HOOK
+ ['hook','h1','Since February, the average American household has quietly lost about $2,000.'],
+ ['hook','h2','Not to a scam. Not to a bad investment.'],
+ ['hook','h3','To a war happening more than 6,000 miles away.'],
+ ['hook','h4',"That's the estimate from Mark Zandi, chief economist at Moody's Analytics."],
+ ['hook','h5','And at current prices, he says the bill keeps growing by about $50 every week.'],
+ ['hook','h6',"So where is that money actually going? And how do you keep more of it? Let's follow the money."],
+ // WHY
+ ['why','y1','It starts with a narrow strip of water called the Strait of Hormuz.'],
+ ['why','y2',"About a fifth of the world's oil normally passes through it on tankers."],
+ ['why','y3','On February 28th, 2026, the United States and Israel began air strikes on Iran.'],
+ ['why','y4',"Two days later, Iran's Revolutionary Guard declared the strait closed."],
+ ['why','y5','Oil traders panicked. Brent crude jumped from about $72 a barrel to nearly $120 at its peak.'],
+ ['why','y6',"Even now, in early November, oil is still around $100 a barrel. And that number touches almost everything you buy."],
+ // PUMP
+ ['pump','p1','Meet Maya. She has never been anywhere near the Middle East. But she feels this war every single week.'],
+ ['pump','p2','Before the war, gas averaged about $2.99 a gallon.'],
+ ['pump','p3','By mid-October, it was $4.33. That is 45% higher.'],
+ ['pump','p4','Maya fills a 15-gallon tank once a week. That is about $20 more, every week.'],
+ ['pump','p5','Over a year, that is more than $1,000. Just for driving to work.'],
+ // RIPPLE
+ ['ripple','q1',"And it doesn't stop at the pump."],
+ ['ripple','q2','Diesel jumped even more, up 68%, to $6.33 a gallon.'],
+ ['ripple','q3','Diesel moves the trucks that carry almost everything to your local store. So shipping costs climb, and stores pass them on.'],
+ ['ripple','q4','Groceries. Packages. Even the plastic in everyday products.'],
+ ['ripple','q5','And with winter coming, home heating bills are rising too.'],
+ ['ripple','q6',"Zandi estimates energy costs alone have taken about $1,100 from the typical family. That's the biggest slice."],
+ // RATES
+ ['rates','i1',"But the second slice is sneakier. It hides inside your interest rates."],
+ ['rates','i2','When energy gets expensive, inflation rises. In September, inflation hit 3.7%, while wages grew only about 3%.'],
+ ['rates','i3','To fight inflation, the Federal Reserve raised interest rates in September, and some officials want to go higher.'],
+ ['rates','i4','In late February, a 30-year mortgage averaged under 6%. By late October, it was above 7%.'],
+ ['rates','i5',"On a $350,000 home loan, that's about $291 more every month. Around $3,500 a year."],
+ ['rates','i6','Credit cards and car loans get more expensive too. Zandi puts this slice at about $540 per household.'],
+ // BILL
+ ['bill','b1',"Here's the full bill, as Moody's estimates it."],
+ ['bill','b2','About $1,100 in energy.'],
+ ['bill','b3','About $540 in higher interest rates.'],
+ ['bill','b4','And about $360 as each household\'s share of the cost of military operations.'],
+ ['bill','b5','Total: roughly $2,000 per household. About $265 billion across the whole country.'],
+ // CAVEAT
+ ['caveat','c1','Now, a quick reality check.'],
+ ['caveat','c2',"This is an economist's estimate, not a bill that lands in your mailbox. Your number could be much higher or much lower."],
+ ['caveat','c3',"If you drive a lot or carry credit card debt, you're probably paying more. If you rent and work from home, maybe less."],
+ // NEXT
+ ['next','x1','So what happens next? Nobody knows for sure, but there are three main paths.'],
+ ['next','x2','Path one: a diplomatic deal. In early November, oil prices dipped on exactly that hope. Gas could slowly come down.'],
+ ['next','x3',"But here's the catch. Economists have a name for how gas prices move: rockets and feathers. They shoot up fast, and float down slowly."],
+ ['next','x4','Path two: a long stalemate. Prices stay high, and that $50 a week keeps adding up.'],
+ ['next','x5','Path three: escalation. If shipping through the strait is disrupted again, oil could spike past its old peak.'],
+ ['next','x6',"You can't pick the path. But you can get your budget ready for all three."],
+ // PROTECT
+ ['protect','m1',"So here's how to keep more of your money, no matter what happens next."],
+ ['protect','m2','One: cut your gas bill. Compare prices with an app, try warehouse club stations, keep your tires inflated, and slow down on the highway.'],
+ ['protect','m3','Two: get ahead of winter. Setting your thermostat back 7 to 10 degrees for 8 hours a day can save up to 10% a year on heating, according to the Department of Energy.'],
+ ['protect','m4',"Three: attack variable-rate debt first. Credit card rates move with the Fed, so pay those down before rates climb further."],
+ ['protect','m5',"Four: if you're buying a home, shop at least three lenders. Even a small rate difference saves thousands."],
+ ['protect','m6','Five: make your cash work. Higher rates also mean high-yield savings accounts pay more. Your emergency fund should be earning something.'],
+ // END
+ ['end','e1',"A war thousands of miles away has quietly reached into almost every American wallet."],
+ ['end','e2',"You can't control oil prices. But you can control how much of the damage reaches you."],
+ ['end','e3','Subscribe to The Money Map, and we will keep tracking what this means for your money.'],
+];
+
+/* timing: ~2.45 spoken words/sec; numbers count as ~3 spoken words */
+function spokenWords(s) {
+  return s.split(/\s+/).filter(Boolean).reduce((n, w) => n + (/\d/.test(w) ? 3 : 1), 0);
+}
+const CUE = {}; const SCENES = {}; const ORDER = [];
+(function buildTimeline() {
+  let t = 0.4, prevScene = null;
+  for (const [scene, key, text] of CUES) {
+    if (scene !== prevScene) {
+      if (prevScene) { SCENES[prevScene].end = t + 0.5; t += 0.9; }
+      SCENES[scene] = { start: t - 0.2 }; ORDER.push(scene); prevScene = scene;
+    }
+    const d = Math.max(1.9, spokenWords(text) / 2.45);
+    CUE[key] = { start: t, end: t + d, text };
+    t += d + 0.35;
+  }
+  SCENES[prevScene].end = t + 15;          // 15 s end-screen hold
+  window.TOTAL = SCENES[prevScene].end;
+})();
+/* ---- synced to the ElevenLabs voiceover (forced alignment) ---- */
+const VO_SYNC = {"cues": [{"key": "h1", "start": 0.03, "end": 5.45}, {"key": "h2", "start": 5.964, "end": 8.9}, {"key": "h3", "start": 9.361, "end": 12.55}, {"key": "h4", "start": 13.145, "end": 17.36}, {"key": "h5", "start": 17.832, "end": 22.66}, {"key": "h6", "start": 23.145, "end": 28.56}, {"key": "y1", "start": 30.567, "end": 34.72}, {"key": "y2", "start": 35.251, "end": 39.0}, {"key": "y3", "start": 39.5, "end": 46.28}, {"key": "y4", "start": 46.945, "end": 50.95}, {"key": "y5", "start": 51.612, "end": 59.32}, {"key": "y6", "start": 59.799, "end": 67.79}, {"key": "p1", "start": 69.664, "end": 76.78}, {"key": "p2", "start": 77.341, "end": 80.93}, {"key": "p3", "start": 81.524, "end": 86.41}, {"key": "p4", "start": 86.957, "end": 93.22}, {"key": "p5", "start": 93.821, "end": 98.4}, {"key": "q1", "start": 100.044, "end": 101.37}, {"key": "q2", "start": 102.02, "end": 106.97}, {"key": "q3", "start": 107.582, "end": 115.706}, {"key": "q4", "start": 115.856, "end": 120.07}, {"key": "q5", "start": 120.666, "end": 123.79}, {"key": "q6", "start": 124.453, "end": 132.33}, {"key": "i1", "start": 134.763, "end": 138.99}, {"key": "i2", "start": 139.439, "end": 149.56}, {"key": "i3", "start": 149.911, "end": 156.12}, {"key": "i4", "start": 156.669, "end": 164.51}, {"key": "i5", "start": 165.065, "end": 174.04}, {"key": "i6", "start": 174.991, "end": 182.45}, {"key": "b1", "start": 184.123, "end": 187.14}, {"key": "b2", "start": 187.391, "end": 189.72}, {"key": "b3", "start": 190.08, "end": 193.07}, {"key": "b4", "start": 193.54, "end": 199.57}, {"key": "b5", "start": 200.033, "end": 207.93}, {"key": "c1", "start": 209.967, "end": 211.99}, {"key": "c2", "start": 212.429, "end": 219.65}, {"key": "c3", "start": 220.164, "end": 227.52}, {"key": "x1", "start": 229.682, "end": 234.73}, {"key": "x2", "start": 235.232, "end": 244.53}, {"key": "x3", "start": 244.999, "end": 254.44}, {"key": "x4", "start": 254.946, "end": 261.67}, {"key": "x5", "start": 262.208, "end": 269.64}, {"key": "x6", "start": 270.229, "end": 273.96}, {"key": "m1", "start": 276.972, "end": 280.49}, {"key": "m2", "start": 280.987, "end": 290.58}, {"key": "m3", "start": 291.711, "end": 301.27}, {"key": "m4", "start": 301.794, "end": 310.05}, {"key": "m5", "start": 310.591, "end": 316.95}, {"key": "m6", "start": 317.455, "end": 326.39}, {"key": "e1", "start": 326.779, "end": 332.54}, {"key": "e2", "start": 333.065, "end": 338.74}, {"key": "e3", "start": 339.284, "end": 344.65}], "scenes": {"hook": {"start": -0.2, "end": 29.21}, "why": {"start": 28.91, "end": 68.44}, "pump": {"start": 68.14, "end": 99.05}, "ripple": {"start": 98.75, "end": 132.98}, "rates": {"start": 132.68, "end": 183.1}, "bill": {"start": 182.8, "end": 208.58}, "caveat": {"start": 208.28, "end": 228.17}, "next": {"start": 227.87, "end": 274.61}, "protect": {"start": 274.31, "end": 327.04}, "end": {"start": 326.74, "end": 354.1}}, "total": 354.1};
+for (const o of VO_SYNC.cues) { CUE[o.key].start = o.start; CUE[o.key].end = o.end; }
+for (const k in VO_SYNC.scenes) { SCENES[k].start = VO_SYNC.scenes[k].start; SCENES[k].end = VO_SYNC.scenes[k].end; }
+window.TOTAL = VO_SYNC.total;
+const C = k => CUE[k].start, E = k => CUE[k].end, D = k => CUE[k].end - CUE[k].start;
+
+/* ---------- helpers ---------- */
+const clamp = (x, a=0, b=1) => Math.max(a, Math.min(b, x));
+const ease = x => { x = clamp(x); return x < .5 ? 4*x*x*x : 1 - Math.pow(-2*x+2, 3)/2; };
+const easeOut = x => 1 - Math.pow(1 - clamp(x), 3);
+const P = (t, a, d) => ease((t - a) / d);
+const lerp = (a, b, p) => a + (b - a) * p;
+const money = n => '$' + Math.round(n).toLocaleString('en-US');
+const pop = (t, a, d=0.45) => { const x = clamp((t - a) / d); return x === 0 ? 0 : 1 + 0.25*Math.sin(x*Math.PI) * (1 - x) + (easeOut(x) - 1); };
+const fin = (T, k, d=0.4) => clamp((T - C(k)) / d);             // fade-in at cue k
+const fout = (T, k, d=0.4) => 1 - clamp((T - C(k)) / d);        // fade-out at cue k
+const scaleAt = (cx, cy, s) => `translate(${cx},${cy}) scale(${s}) translate(${-cx},${-cy})`;
+
+function text(x, y, s, size, color=WHITE, weight=900, anchor='middle', extra='') {
+  return `<text x="${x}" y="${y}" font-family="Montserrat" font-weight="${weight}" font-size="${size}"
+           fill="${color}" text-anchor="${anchor}" ${extra}>${s}</text>`;
+}
+function ov(html, x, y, w, size, color=WHITE, opacity=1, extra='') {
+  return `<div class="ov" style="left:${x}px;top:${y}px;width:${w}px;font-size:${size}px;color:${color};opacity:${opacity};${extra}">${html}</div>`;
+}
+function badge(s, x, y, color=GOLD, fg=NAVY, size=24, op=1) {
+  const w = s.length * size * 0.66 + 40;
+  return `<g opacity="${op}"><rect x="${x - w/2}" y="${y - size - 8}" width="${w}" height="${size + 26}" rx="${(size+26)/2}" fill="${color}"/>
+          ${text(x, y + 5, s, size, fg, 900)}</g>`;
+}
+const floorLine = (y=600) => `<line x1="80" y1="${y}" x2="1200" y2="${y}" stroke="#334155" stroke-width="4"/>`;
+const check = (x, y, s, color=WHITE, prog=1, w=4) =>
+  `<path d="M${x-10*s} ${y} L${x-3*s} ${y+7*s} L${x+11*s} ${y-9*s}" stroke="${color}" stroke-width="${w}" fill="none"
+     stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="${40*s}" stroke-dashoffset="${40*s*(1-prog)}"/>`;
+const cross = (x, y, r, color=RED, w=12, op=1) =>
+  `<g opacity="${op}"><line x1="${x-r}" y1="${y-r}" x2="${x+r}" y2="${y+r}" stroke="${color}" stroke-width="${w}" stroke-linecap="round"/>
+   <line x1="${x+r}" y1="${y-r}" x2="${x-r}" y2="${y+r}" stroke="${color}" stroke-width="${w}" stroke-linecap="round"/></g>`;
+
+/* ---------- characters & props ---------- */
+function person(kind, x, y, s=1, o={}) {
+  const maya = kind === 'maya';
+  const skin = maya ? '#C68642' : '#F1C27D';
+  const hair = maya ? '#2B1B17' : '#6B4423';
+  const top = o.color || (maya ? GREEN : GREY);
+  const op = o.opacity == null ? 1 : o.opacity;
+  let g = `<g transform="translate(${x},${y}) scale(${s})" opacity="${op}">`;
+  g += `<ellipse cx="0" cy="0" rx="48" ry="8" fill="#020617" opacity="0.5"/>`;
+  g += `<rect x="-22" y="-72" width="17" height="70" rx="6" fill="${SLATE}"/><rect x="5" y="-72" width="17" height="70" rx="6" fill="${SLATE}"/>`;
+  g += `<ellipse cx="-15" cy="-3" rx="15" ry="7" fill="#0B1120"/><ellipse cx="15" cy="-3" rx="15" ry="7" fill="#0B1120"/>`;
+  if (maya) g += `<circle cx="-30" cy="-196" r="15" fill="${hair}"/><circle cx="30" cy="-196" r="15" fill="${hair}"/>`;
+  g += `<rect x="-41" y="-178" width="82" height="112" rx="30" fill="${top}"/>`;
+  const armA = o.wave ? -40 + Math.sin((o.t || 0) * 9) * 10 : 0;
+  g += `<g transform="rotate(${armA} -45 -165)"><rect x="-56" y="-168" width="19" height="84" rx="9" fill="${top}"/><circle cx="-46" cy="-84" r="10" fill="${skin}"/></g>`;
+  if (o.clip) {
+    g += `<g transform="rotate(-8 60 -120)"><rect x="34" y="-158" width="64" height="84" rx="8" fill="#92400E"/>
+          <rect x="40" y="-148" width="52" height="68" rx="4" fill="${WHITE}"/><rect x="52" y="-164" width="28" height="12" rx="4" fill="#64748B"/>`;
+    for (let i = 0; i < 4; i++) {
+      const done = (o.ticks || 0) > i;
+      g += `<rect x="46" y="${-140 + i*15}" width="9" height="9" rx="2" fill="${done ? GREEN : 'none'}" stroke="${done ? GREEN : '#94A3B8'}" stroke-width="2"/>
+            <rect x="60" y="${-137 + i*15}" width="26" height="4" rx="2" fill="#CBD5E1"/>`;
+    }
+    g += `</g><rect x="37" y="-168" width="19" height="70" rx="9" fill="${top}"/><circle cx="48" cy="-100" r="10" fill="${skin}"/>`;
+  } else {
+    g += `<rect x="37" y="-168" width="19" height="84" rx="9" fill="${top}"/><circle cx="46" cy="-84" r="10" fill="${skin}"/>`;
+  }
+  if (!maya) g += `<path d="M-30 -176 Q 0 -150 30 -176" stroke="#64748B" stroke-width="7" fill="none"/>`;
+  g += `<rect x="-9" y="-194" width="18" height="22" fill="${skin}"/>`;
+  g += `<circle cx="0" cy="-226" r="37" fill="${skin}"/>`;
+  if (maya) {
+    for (const [cx, cy, r] of [[-30,-244,16],[-17,-259,16],[0,-265,17],[17,-259,16],[30,-244,16],[-37,-222,13],[37,-222,13]])
+      g += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${hair}"/>`;
+  } else {
+    g += `<path d="M-37 -230 Q -36 -272 0 -268 Q 36 -272 37 -230 Q 22 -250 0 -248 Q -22 -250 -37 -230Z" fill="${hair}"/>`;
+  }
+  g += `<circle cx="-12" cy="-224" r="4.5" fill="${NAVY}"/><circle cx="12" cy="-224" r="4.5" fill="${NAVY}"/>`;
+  g += o.sad ? `<path d="M-11 -204 Q 0 -212 11 -204" stroke="${NAVY}" stroke-width="3.5" fill="none" stroke-linecap="round"/>`
+             : `<path d="M-12 -209 Q 0 -198 12 -209" stroke="${NAVY}" stroke-width="3.5" fill="none" stroke-linecap="round"/>`;
+  if (o.party) g += `<path d="M-14 -258 L0 -312 L14 -258Z" fill="${GOLD}"/><circle cx="0" cy="-314" r="7" fill="${RED}"/>`;
+  return g + '</g>';
+}
+function coin(x, y, r=13, op=1) {
+  return `<g opacity="${op}"><circle cx="${x}" cy="${y}" r="${r}" fill="${GOLD}" stroke="#A16207" stroke-width="3"/>
+          ${text(x, y + r*0.42, '$', r*1.15, '#854D0E', 900)}</g>`;
+}
+function jar(x, y, fill, label, opacity=1, color=GOLD) {   // x center, y bottom
+  const h = 170, w = 130, fh = clamp(fill) * (h - 14);
+  let g = `<g opacity="${opacity}">`;
+  g += `<rect x="${x-w/2}" y="${y-h}" width="${w}" height="${h}" rx="22" fill="#1E293B" opacity="0.55"/>`;
+  g += `<rect x="${x-w/2+7}" y="${y-7-fh}" width="${w-14}" height="${fh}" rx="14" fill="${color}"/>`;
+  for (let yy = y - 7 - 14; yy > y - 7 - fh + 4; yy -= 14)
+    g += `<line x1="${x-w/2+12}" y1="${yy}" x2="${x+w/2-12}" y2="${yy}" stroke="#000" stroke-width="2" opacity="0.18"/>`;
+  g += `<rect x="${x-w/2}" y="${y-h}" width="${w}" height="${h}" rx="22" fill="none" stroke="#CBD5E1" stroke-width="5"/>`;
+  g += `<rect x="${x-w/2-8}" y="${y-h-16}" width="${w+16}" height="20" rx="8" fill="#64748B"/>`;
+  if (label) g += text(x, y + 40, label, 30, '#E2E8F0', 900);
+  return g + '</g>';
+}
+function calendar(cx, cy, s, month, day, sub='', op=1, sy=1) {
+  return `<g transform="translate(${cx},${cy}) scale(${s},${s*sy})" opacity="${op}">
+   <rect x="-112" y="-115" width="240" height="270" rx="24" fill="#020617" opacity="0.4"/>
+   <rect x="-120" y="-125" width="240" height="270" rx="24" fill="${WHITE}"/>
+   <path d="M-120 -101 Q-120 -125 -96 -125 L96 -125 Q120 -125 120 -101 L120 -50 L-120 -50Z" fill="${RED}"/>
+   ${text(0, -76, month, 30, WHITE)}
+   ${text(0, sub ? 62 : 72, day, 128, NAVY)}
+   ${sub ? text(0, 118, sub, 28, '#64748B', 900) : ''}
+   <rect x="-70" y="-142" width="16" height="36" rx="8" fill="#64748B"/><rect x="54" y="-142" width="16" height="36" rx="8" fill="#64748B"/>
+  </g>`;
+}
+function alarmClock(cx, cy, s, rot=0, ring=false) {
+  let g = `<g transform="translate(${cx},${cy}) rotate(${rot}) scale(${s})">
+   <line x1="-40" y1="50" x2="-58" y2="80" stroke="#475569" stroke-width="10" stroke-linecap="round"/>
+   <line x1="40" y1="50" x2="58" y2="80" stroke="#475569" stroke-width="10" stroke-linecap="round"/>
+   <circle cx="-50" cy="-58" r="26" fill="${GOLD}"/><circle cx="50" cy="-58" r="26" fill="${GOLD}"/>
+   <circle cx="0" cy="0" r="72" fill="${RED}"/><circle cx="0" cy="0" r="56" fill="${WHITE}"/>
+   <line x1="0" y1="0" x2="-5" y2="-30" stroke="${NAVY}" stroke-width="8" stroke-linecap="round"/>
+   <line x1="0" y1="0" x2="-10" y2="-46" stroke="${NAVY}" stroke-width="5" stroke-linecap="round"/>
+   <circle cx="0" cy="0" r="7" fill="${NAVY}"/>`;
+  if (ring) g += `<path d="M-92 -92 L-110 -110 M-104 -60 L-128 -64 M92 -92 L110 -110 M104 -60 L128 -64" stroke="${GOLD}" stroke-width="7" stroke-linecap="round"/>`;
+  return g + '</g>';
+}
+function hourglass(cx, cy, s, u, op=1) {
+  const t = 1 - clamp(u), b = clamp(u), wb = 0.35 + 0.65 * b;
+  let g = `<g transform="translate(${cx},${cy}) scale(${s})" opacity="${op}">
+   <path d="M-56 -92 L56 -92 L8 0 L56 92 L-56 92 L-8 0 Z" fill="#CBD5E1" opacity="0.18" stroke="#CBD5E1" stroke-width="4" stroke-linejoin="round"/>`;
+  if (t > 0.01) g += `<path d="M${-46*t} ${-4-80*t} L${46*t} ${-4-80*t} L0 -4 Z" fill="${GOLD}"/>`;
+  g += `<path d="M${-50*wb} 88 L${50*wb} 88 L0 ${88 - 70*b - 4}Z" fill="${GOLD}"/>`;
+  if (t > 0.01) g += `<line x1="0" y1="-4" x2="0" y2="86" stroke="${GOLD}" stroke-width="4"/>`;
+  g += `<rect x="-72" y="-112" width="144" height="20" rx="7" fill="#92400E"/><rect x="-72" y="92" width="144" height="20" rx="7" fill="#92400E"/>`;
+  return g + '</g>';
+}
+function tile(x, y, w, h, op=1, stroke='#334155') {
+  return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="20" fill="${SLATE}" stroke="${stroke}" stroke-width="4" opacity="${op}"/>`;
+}
+
+/* ---------- math: missed match ($150/mo from 25 to 65 at 7%) ---------- */
+const R = 0.07 / 12, MATCH = [0];
+for (let k = 1; k <= 480; k++) MATCH.push(MATCH[k - 1] * (1 + R) + 150);
+const matchAt = age => { const m = clamp((age - 25) * 12, 0, 480), i = Math.floor(m), f = m - i; return i >= 480 ? MATCH[480] : MATCH[i] * (1 - f) + MATCH[i + 1] * f; };
+
+/* section header: pill + title */
+function section(label, title, T, scene, pillColor=GOLD) {
+  const a = clamp((T - SCENES[scene].start - 0.1) / 0.4), w = label.length * 15 + 44;
+  const g = `<g opacity="${a}"><rect x="30" y="34" width="${w}" height="48" rx="24" fill="${pillColor}"/>${text(30 + w / 2, 66, label, 22, NAVY)}</g>`;
+  return [g, title ? ov(title, 240, 36, 800, 44, WHITE, a) : ''];
+}
+function giftBox(cx, by, s, lid) {
+  const lx = cx - 135, ly = by - 236 - 75 * lid;
+  return `<g transform="translate(${cx},${by}) scale(${s}) translate(${-cx},${-by})">
+    <rect x="${cx - 120}" y="${by - 190}" width="240" height="190" rx="12" fill="${RED}"/>
+    <rect x="${cx - 17}" y="${by - 190}" width="34" height="190" fill="${GOLD}"/>
+    <g transform="rotate(${-22 * lid} ${lx} ${ly + 46})">
+      <rect x="${lx}" y="${ly}" width="270" height="48" rx="10" fill="#DC2626"/><rect x="${cx - 19}" y="${ly}" width="38" height="48" fill="${GOLD}"/>
+      <ellipse cx="${cx - 34}" cy="${ly - 16}" rx="36" ry="20" fill="${GOLD}" transform="rotate(-20 ${cx - 34} ${ly - 16})"/>
+      <ellipse cx="${cx + 34}" cy="${ly - 16}" rx="36" ry="20" fill="${GOLD}" transform="rotate(20 ${cx + 34} ${ly - 16})"/>
+      <circle cx="${cx}" cy="${ly - 8}" r="14" fill="#CA8A04"/></g></g>`;
+}
+function paycheck(x, y, w=220, h=120, op=1, label='PAYCHECK', amt='') {
+  return `<g opacity="${op}"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="14" fill="${WHITE}"/>
+    <rect x="${x}" y="${y}" width="18" height="${h}" rx="8" fill="${GREEN}"/>
+    ${text(x + w / 2 + 8, y + 50, label, 24, NAVY)}${amt ? text(x + w / 2 + 8, y + 88, amt, 26, '#15803D') : ''}</g>`;
+}
+function building(x, y, w, h, col='#64748B') {
+  let g = `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="4" fill="${col}"/>`;
+  for (let r = 0; r < Math.floor((h - 10) / 16); r++) for (let c = 0; c < Math.floor((w - 8) / 14); c++)
+    g += `<rect x="${x + 6 + c * 14}" y="${y + 8 + r * 16}" width="7" height="8" fill="${GOLD}" opacity="0.85"/>`;
+  return g;
+}
+function formCard(x, y, s, op=1) {
+  return `<g transform="translate(${x},${y}) scale(${s})" opacity="${op}">
+    <rect x="-150" y="-190" width="300" height="380" rx="16" fill="${WHITE}"/>
+    <rect x="-150" y="-190" width="300" height="70" rx="16" fill="${BLUE}"/><rect x="-150" y="-140" width="300" height="20" fill="${BLUE}"/>
+    ${text(0, -145, '401(k) ENROLLMENT', 24, WHITE)}
+    ${text(-120, -80, 'Contribution:', 20, NAVY, 800, 'start')}<rect x="20" y="-104" width="70" height="34" rx="6" fill="none" stroke="#94A3B8" stroke-width="3"/>${text(102, -80, '%', 22, NAVY, 800, 'start')}
+    ${text(-120, -20, 'Investment:', 20, NAVY, 800, 'start')}<rect x="-120" y="-6" width="240" height="30" rx="6" fill="none" stroke="#94A3B8" stroke-width="3"/>
+    <rect x="-120" y="50" width="240" height="8" rx="4" fill="#CBD5E1"/><rect x="-120" y="74" width="200" height="8" rx="4" fill="#CBD5E1"/>
+    <rect x="-120" y="98" width="220" height="8" rx="4" fill="#CBD5E1"/>
+    ${text(-120, 160, 'Signature: ______', 18, '#64748B', 800, 'start')}</g>`;
+}
+function trashCan(cx, by, op=1) {
+  return `<g opacity="${op}"><rect x="${cx - 52}" y="${by - 130}" width="104" height="130" rx="10" fill="#475569"/>
+    <rect x="${cx - 62}" y="${by - 146}" width="124" height="20" rx="6" fill="#64748B"/>
+    ${[-26, 0, 26].map(d => `<rect x="${cx + d - 4}" y="${by - 112}" width="8" height="96" rx="4" fill="#334155"/>`).join('')}</g>`;
+}
+
+/* ================= Iran war cost: props ================= */
+const ORANGE = '#F97316', ICE = '#93C5FD', DARK = '#020617', SAND = '#C2A26B', LAND = '#8B6B43', SEA = '#1E3A5F';
+function wallet(cx, cy, s, op=1) {
+  return `<g transform="translate(${cx},${cy}) scale(${s})" opacity="${op}"><rect x="-130" y="-85" width="260" height="170" rx="22" fill="#92400E"/>
+    <rect x="-130" y="-85" width="260" height="60" rx="22" fill="#78350F"/><rect x="40" y="-20" width="110" height="64" rx="16" fill="#B45309"/><circle cx="74" cy="12" r="12" fill="${GOLD}"/></g>`;
+}
+function barrel(cx, cy, s, op=1) {
+  return `<g transform="translate(${cx},${cy}) scale(${s})" opacity="${op}"><rect x="-60" y="-80" width="120" height="160" rx="18" fill="#1F2937"/>
+    <rect x="-60" y="-48" width="120" height="10" fill="#4B5563"/><rect x="-60" y="38" width="120" height="10" fill="#4B5563"/>
+    ${text(0, 12, 'OIL', 34, GOLD)}</g>`;
+}
+function tanker(x, y, s, op=1) {
+  return `<g transform="translate(${x},${y}) scale(${s})" opacity="${op}"><path d="M-90 0 L90 0 L72 26 L-80 26Z" fill="#B91C1C"/>
+    <rect x="-80" y="-10" width="150" height="12" rx="3" fill="#64748B"/><rect x="45" y="-34" width="28" height="26" rx="3" fill="#E2E8F0"/>
+    ${[-60, -30, 0].map(dx => `<circle cx="${dx}" cy="-12" r="8" fill="#94A3B8"/>`).join('')}</g>`;
+}
+function straitMap(op=1, closed=0) {
+  let g = `<g opacity="${op}"><rect x="140" y="130" width="1000" height="440" rx="26" fill="${SEA}"/>
+    <path d="M140 130 L1140 130 L1140 300 Q980 330 860 290 Q760 255 700 300 Q640 345 520 300 Q380 250 260 280 Q190 300 140 280Z" fill="${LAND}"/>
+    <path d="M140 570 L140 470 Q260 430 420 455 Q560 480 640 410 Q700 360 760 405 Q860 480 1000 440 Q1080 420 1140 450 L1140 570Z" fill="${SAND}"/>
+    ${text(820, 200, 'IRAN', 40, '#FDE68A')}${text(420, 540, 'ARABIAN PENINSULA', 26, '#78350F')}
+    ${text(660, 376, 'STRAIT OF HORMUZ', 22, '#BFDBFE', 900)}`;
+  if (closed > 0) g += `<g opacity="${closed}"><line x1="700" y1="300" x2="700" y2="400" stroke="${RED}" stroke-width="14" stroke-dasharray="18 12"/>${cross(700, 350, 34, RED, 12)}</g>`;
+  return g + '</g>';
+}
+function gasPump(cx, by, s, price='$2.99', col=GREEN, op=1) {
+  return `<g transform="translate(${cx},${by}) scale(${s})" opacity="${op}"><rect x="-70" y="-260" width="140" height="260" rx="14" fill="#DC2626"/>
+    <rect x="-52" y="-238" width="104" height="70" rx="8" fill="${DARK}"/>${text(0, -190, price, 36, col)}
+    <rect x="-40" y="-150" width="80" height="12" rx="6" fill="#FCA5A5"/><rect x="-82" y="-8" width="164" height="16" rx="6" fill="#7F1D1D"/>
+    <path d="M70 -170 Q120 -170 120 -110 L120 -40" stroke="${DARK}" stroke-width="10" fill="none"/><rect x="108" y="-48" width="26" height="40" rx="6" fill="#334155"/></g>`;
+}
+function truck(x, by, s, op=1) {
+  return `<g transform="translate(${x},${by}) scale(${s})" opacity="${op}"><rect x="-170" y="-150" width="230" height="120" rx="10" fill="#E2E8F0"/>
+    ${text(-55, -78, 'GOODS', 30, NAVY)}<path d="M60 -110 L130 -110 L170 -60 L170 -30 L60 -30Z" fill="${BLUE}"/><rect x="88" y="-100" width="40" height="34" rx="4" fill="#BFDBFE"/>
+    ${[-130, 10, 120].map(dx => `<circle cx="${dx}" cy="-24" r="26" fill="${DARK}"/><circle cx="${dx}" cy="-24" r="10" fill="#94A3B8"/>`).join('')}</g>`;
+}
+function house(cx, by, s, op=1, snow=0) {
+  let g = `<g transform="translate(${cx},${by}) scale(${s})" opacity="${op}"><rect x="-120" y="-150" width="240" height="150" rx="6" fill="#CBD5E1"/>
+    <path d="M-150 -150 L0 -260 L150 -150Z" fill="${RED}"/><rect x="-30" y="-80" width="60" height="80" rx="4" fill="#1E3A8A"/>
+    <rect x="-100" y="-120" width="50" height="44" rx="4" fill="#FDE68A"/><rect x="50" y="-120" width="50" height="44" rx="4" fill="#FDE68A"/>`;
+  if (snow > 0) for (let i = 0; i < 10; i++) g += `<circle cx="${-200 + i * 45}" cy="${-300 + ((i * 53) % 120)}" r="6" fill="${WHITE}" opacity="${snow}"/>`;
+  return g + '</g>';
+}
+function upArrow(x, y, s, col=RED) { return `<g transform="translate(${x},${y}) scale(${s})"><path d="M0 -40 L30 0 L12 0 L12 40 L-12 40 L-12 0 L-30 0Z" fill="${col}"/></g>`; }
+function ccard(x, y, s, op=1) {
+  return `<g transform="translate(${x},${y}) scale(${s})" opacity="${op}"><rect x="-110" y="-70" width="220" height="140" rx="16" fill="#7C3AED"/>
+    <rect x="-110" y="-38" width="220" height="24" fill="#4C1D95"/><rect x="-86" y="6" width="44" height="32" rx="6" fill="${GOLD}"/>${text(60, 52, 'APR', 22, WHITE)}</g>`;
+}
+function car(x, by, s, op=1) {
+  return `<g transform="translate(${x},${by}) scale(${s})" opacity="${op}"><path d="M-110 -30 L-80 -80 L60 -80 L100 -30Z" fill="${BLUE}"/><rect x="-130" y="-40" width="260" height="50" rx="16" fill="#2563EB"/>
+    <circle cx="-70" cy="12" r="24" fill="${DARK}"/><circle cx="70" cy="12" r="24" fill="${DARK}"/></g>`;
+}
+const flyCoins = (T, t0, x0, y0, x1, y1, n, period=0.9, r=14, op=1, arc=80) => {
+  let g = ''; if (T < t0) return g;
+  for (let i = 0; i < n; i++) { const k = ((T - t0) / period + i / n) % 1; g += coin(lerp(x0, x1, k), lerp(y0, y1, k) - Math.sin(Math.PI * k) * arc, r, op * Math.min(1, (1 - k) * 4, k * 6)); }
+  return g;
+};
+const stampO = (txt, x, y, w, size, color, s, rot=-8) => s > 0 ? ov(txt, x, y, w, size, color, clamp(s),
+  `transform:rotate(${rot}deg) scale(${s});border:6px solid ${color};border-radius:14px;padding:6px 0;background:rgba(15,23,42,0.88)`) : '';
+function priceChart(T, t0, dur, op, upto=1) {
+  // Brent-like path: $72 (Feb) -> ~$120 (Mar peak) -> ~$90s -> ~$100 (Nov)
+  const pts = [[0, 72], [0.06, 85], [0.12, 112], [0.16, 119], [0.22, 104], [0.3, 95], [0.38, 99], [0.46, 92], [0.55, 88], [0.65, 94], [0.75, 90], [0.88, 104], [1, 100]];
+  const X = f => 220 + f * 840, Y = v => 560 - (v - 60) / 70 * 400;
+  const p = clamp((T - t0) / dur) * upto;
+  let d = '', last = pts[0];
+  for (let i = 0; i < pts.length; i++) { const [f, v] = pts[i]; if (f > p) { const [f0, v0] = pts[i - 1]; const v1 = v0 + (v - v0) * (p - f0) / (f - f0); d += ` L${X(p)} ${Y(v1)}`; last = [p, v1]; break; } d += (i ? ' L' : 'M') + X(f) + ' ' + Y(v); last = [f, v]; }
+  let g = `<g opacity="${op}">`;
+  for (const v of [60, 80, 100, 120]) g += `<line x1="220" y1="${Y(v)}" x2="1060" y2="${Y(v)}" stroke="#334155" stroke-width="2" stroke-dasharray="${v === 60 ? '' : '6 8'}"/>${text(205, Y(v) + 7, '$' + v, 20, '#94A3B8', 800, 'end')}`;
+  for (const [f, m] of [[0, 'FEB'], [0.2, 'APR'], [0.45, 'JUN'], [0.7, 'AUG'], [0.95, 'OCT']]) g += text(X(f), 595, m, 20, '#94A3B8', 800);
+  g += `<path d="${d}" stroke="${ORANGE}" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="${X(last[0])}" cy="${Y(last[1])}" r="11" fill="${ORANGE}" stroke="${NAVY}" stroke-width="3"/>`;
+  return [g + '</g>', last[1]];
+}
+
+/* ================= scenes ================= */
+const S = {};
+S.hook = (T) => {
+  let g = '', o = '';
+  const a1 = fin(T, 'h1') * fout(T, 'h2');
+  if (a1 > 0) {
+    g += wallet(640, 420, 1.2, a1) + flyCoins(T, C('h1') + 0.3, 700, 360, 1100, 180, 6, 1.1, 18, a1, 60);
+    const c = 2000 * easeOut(clamp((T - C('h1') - 0.3) / (D('h1') - 0.3)));
+    o += ov('&minus;' + money(c), 0, 120, W, 110, RED, a1, 'font-variant-numeric:tabular-nums');
+    o += ov('PER HOUSEHOLD', 0, 245, W, 30, '#CBD5E1', a1 * clamp((T - C('h1') - 1) / 0.4), 'letter-spacing:6px');
+  }
+  const a2 = fin(T, 'h2') * fout(T, 'h3');
+  if (a2 > 0) ['NOT A SCAM', 'NOT A BAD INVESTMENT'].forEach((s, i) => { const p = clamp((T - C('h2') - i * 0.9) / 0.3);
+    o += ov(`<s style="text-decoration-color:#EF4444;text-decoration-thickness:7px">${s}</s>`, 0, 220 + i * 110, W, 62, '#94A3B8', a2 * p); });
+  const a3 = fin(T, 'h3') * fout(T, 'h4');
+  if (a3 > 0) {
+    const p = clamp((T - C('h3') - 0.3) / 1.5);
+    g += `<g opacity="${a3}"><circle cx="260" cy="420" r="16" fill="${GREEN}"/><circle cx="1020" cy="420" r="16" fill="${RED}"/>
+      <path d="M260 420 Q640 ${420 - 320} 1020 420" stroke="${GOLD}" stroke-width="6" fill="none" stroke-dasharray="14 12" stroke-dashoffset="0" pathLength="100" style="stroke-dasharray:${100 * p} 100"/>
+      ${text(260, 480, 'USA', 34, GREEN)}${text(1020, 480, 'IRAN', 34, RED)}</g>`;
+    o += ov('6,000+ MILES AWAY', 0, 140, W, 56, WHITE, a3 * clamp((T - C('h3') - 1.2) / 0.4));
+  }
+  const a4 = fin(T, 'h4') * fout(T, 'h5');
+  if (a4 > 0) {
+    g += `<g opacity="${a4}" transform="${scaleAt(640, 330, pop(T, C('h4'), 0.5))}"><rect x="330" y="190" width="620" height="280" rx="24" fill="${SLATE}" stroke="#334155" stroke-width="4"/>
+      ${text(640, 260, 'MARK ZANDI', 40, WHITE)}${text(640, 300, "Chief Economist, Moody's Analytics", 22, '#94A3B8', 800)}
+      ${text(640, 395, '~$2,000', 72, RED)}${text(640, 440, 'estimated cost per household', 22, '#CBD5E1', 800)}</g>`;
+  }
+  const a5 = fin(T, 'h5') * fout(T, 'h6');
+  if (a5 > 0) {
+    for (let i = 0; i < 7; i++) { const p = clamp((T - C('h5') - 0.4 - i * 0.35) / 0.3);
+      g += `<g opacity="${a5 * p}"><rect x="${220 + i * 125}" y="300" width="100" height="110" rx="12" fill="${SLATE}" stroke="#475569" stroke-width="3"/>${text(270 + i * 125, 345, 'WK ' + (i + 1), 20, '#94A3B8', 800)}${text(270 + i * 125, 390, '+$50', 26, RED)}</g>`; }
+    o += ov('+$50 EVERY WEEK', 0, 150, W, 64, RED, a5);
+  }
+  const a6 = fin(T, 'h6');
+  if (a6 > 0) {
+    o += ov('FOLLOW THE <span class="y">MONEY</span>', 0, 240, W, 96, WHITE, a6 * pop(T, C('h6') + 1.5, 0.5));
+    for (let i = 0; i < 8; i++) g += text(180 + i * 130, 470, '$', 50, GOLD, 900, 'middle', `opacity="${a6 * clamp((T - C('h6') - 2 - i * 0.12) / 0.3)}"`);
+  }
+  return [g, o];
+};
+
+S.why = (T) => {
+  let [g, o] = section('THE CAUSE', 'WHERE IT STARTS', T, 'why', ORANGE);
+  const aMap = fin(T, 'y1') * fout(T, 'y5');
+  if (aMap > 0) {
+    const closed = clamp((T - C('y4') - 0.6) / 0.4);
+    g += straitMap(aMap, closed);
+    if (T > C('y2')) { for (let i = 0; i < 3; i++) { const k = closed > 0 ? 0.42 + i * 0.03 : ((T - C('y2')) * 0.12 + i / 3) % 1;
+        g += tanker(lerp(260, 1050, k), 355 + (i % 2) * 30, 0.6, aMap * (closed > 0 ? 0.8 : Math.min(1, k * 6, (1 - k) * 6))); } }
+    if (T > C('y2')) g += badge('~1/5 OF THE WORLD&rsquo;S OIL', 640, 118, GOLD, NAVY, 26, aMap * clamp((T - C('y2') - 0.8) / 0.4) * fout(T, 'y3'));
+    if (T > C('y3')) g += `<g transform="${scaleAt(1000, 180, pop(T, C('y3'), 0.5))}">${calendar(1000, 230, 0.6, 'FEBRUARY', '28', '2026', aMap)}</g>`;
+    if (T > C('y4')) o += stampO('STRAIT DECLARED CLOSED', 200, 420, 620, 40, RED, aMap * pop(T, C('y4') + 0.6, 0.4), -3);
+  }
+  const aC = fin(T, 'y5');
+  if (aC > 0) {
+    const [cg, last] = priceChart(T, C('y5') - 0.2, D('y5') + D('y6') + 1.2, aC, T < C('y6') ? 0.18 : 1);
+    g += cg + `<g opacity="${aC}">${barrel(1150, 250, 0.7)}</g>`;
+    o += ov('BRENT CRUDE', 220, 110, 600, 34, '#CBD5E1', aC, 'text-align:left;letter-spacing:3px');
+    o += ov('$' + Math.round(last), 220, 150, 600, 64, ORANGE, aC, 'text-align:left');
+    if (T > C('y6') + 2.5) g += badge('STILL ~$100 IN NOVEMBER', 820, 175, '#334155', WHITE, 24, aC * clamp((T - C('y6') - 2.5) / 0.4));
+  }
+  return [g, o];
+};
+
+S.pump = (T) => {
+  let [g, o] = section("MAYA'S WALLET", 'AT THE PUMP', T, 'pump', RED);
+  const mx = lerp(-120, 330, P(T, C('p1') - 0.2, 1.3));
+  g += floorLine() + person('maya', mx, 600, 1.1, { sad: T > C('p3') + 0.5 });
+  const hi = T > C('p3') + 0.5;
+  if (T > C('p2') - 0.3) g += `<g transform="${scaleAt(800, 600, pop(T, C('p2') - 0.3, 0.5))}">${gasPump(800, 600, 1.15, hi ? '$4.33' : '$2.99', hi ? RED : GREEN)}</g>`;
+  if (T > C('p2')) o += ov(hi ? 'NOW' : 'BEFORE THE WAR', 900, 150, 360, 30, hi ? RED : GREEN, clamp((T - C('p2')) / 0.4), 'text-align:left;letter-spacing:2px');
+  if (T > C('p3') + 0.8) g += `<g transform="${scaleAt(1100, 300, pop(T, C('p3') + 0.8, 0.45))}">${badge('+45%', 1100, 310, RED, WHITE, 44)}</g>`;
+  if (T > C('p4')) {
+    const a = fin(T, 'p4') * fout(T, 'p5');
+    const fill = clamp((T - C('p4') - 0.3) / 2.0);
+    g += `<g opacity="${a}"><rect x="1000" y="380" width="200" height="60" rx="12" fill="${SLATE}" stroke="#475569" stroke-width="3"/><rect x="1006" y="386" width="${188 * fill}" height="48" rx="8" fill="${ORANGE}"/>${text(1100, 470, '15-GALLON TANK', 18, '#94A3B8', 800)}</g>`;
+    o += ov('+$20 / WEEK', 940, 500, 320, 44, RED, a * clamp((T - C('p4') - 2.0) / 0.4));
+  }
+  if (T > C('p5')) {
+    const c = 1048 * easeOut(clamp((T - C('p5') - 0.3) / 2.0));
+    o += ov('+' + money(c) + '<br><span style="font-size:30px;color:#CBD5E1">PER YEAR</span>', 900, 400, 380, 70, RED, fin(T, 'p5'), 'background:rgba(15,23,42,0.92);padding:16px 0;border-radius:18px');
+  }
+  return [g, o];
+};
+
+S.ripple = (T) => {
+  let [g, o] = section('THE RIPPLE', '', T, 'ripple', ORANGE);
+  const a1 = fin(T, 'q1') * fout(T, 'q2');
+  if (a1 > 0) { g += gasPump(400, 560, 1.0, '$4.33', RED, a1); for (let i = 0; i < 3; i++) g += `<g opacity="${a1 * clamp((T - C('q1') - 0.4 - i * 0.3) / 0.3)}"><path d="M${560 + i * 160} 400 l80 0" stroke="${ORANGE}" stroke-width="10" stroke-linecap="round"/><path d="M${640 + i * 160} 382 l26 18 l-26 18Z" fill="${ORANGE}"/></g>`;
+    o += ov("IT DOESN'T STOP AT THE PUMP", 0, 120, W, 48, WHITE, a1); }
+  const a2 = fin(T, 'q2') * fout(T, 'q3');
+  if (a2 > 0) { g += `<g transform="${scaleAt(500, 560, pop(T, C('q2'), 0.5))}">${gasPump(500, 580, 1.1, '$6.33', RED)}</g>`; o += ov('DIESEL', 640, 230, 520, 70, WHITE, a2, 'text-align:left'); o += ov('+68%', 640, 320, 520, 110, RED, a2 * clamp((T - C('q2') - 1.2) / 0.4), 'text-align:left'); }
+  const a3 = fin(T, 'q3') * fout(T, 'q4');
+  if (a3 > 0) {
+    const k = clamp((T - C('q3')) / (D('q3') + 0.3));
+    g += `<g opacity="${a3}">${floorLine(560)}<rect x="980" y="380" width="220" height="180" rx="8" fill="#334155"/><rect x="960" y="350" width="260" height="40" rx="6" fill="${GREEN}"/>${text(1090, 378, 'STORE', 26, NAVY)}<rect x="1060" y="460" width="60" height="100" fill="#1E293B"/></g>`;
+    g += truck(lerp(150, 760, easeOut(k)), 560, 0.95, a3);
+    if (T > C('q3') + 2.5) g += `<g opacity="${a3}">${upArrow(1090, 300, 1.0)}</g>` + text(1090, 240, 'COSTS PASSED ON', 22, RED, 900, 'middle', `opacity="${a3}"`);
+  }
+  const a4 = fin(T, 'q4') * fout(T, 'q5');
+  if (a4 > 0) {
+    [['GROCERIES', 0], ['PACKAGES', 1], ['EVERYDAY PLASTICS', 2]].forEach(([n, i]) => { const p = pop(T, C('q4') + i * 0.7, 0.4); if (p <= 0) return;
+      const x = 280 + i * 360; let ic = '';
+      if (i === 0) ic = `<path d="M${x - 70} 260 L${x - 50} 260 L${x - 30} 360 L${x + 60} 360 L${x + 75} 290 L${x - 40} 290" stroke="${WHITE}" stroke-width="9" fill="none" stroke-linejoin="round"/><circle cx="${x - 20}" cy="385" r="12" fill="${WHITE}"/><circle cx="${x + 50}" cy="385" r="12" fill="${WHITE}"/><circle cx="${x + 10}" cy="270" r="20" fill="${GREEN}"/><circle cx="${x + 40}" cy="262" r="18" fill="${RED}"/>`;
+      if (i === 1) ic = `<rect x="${x - 70}" y="250" width="140" height="130" rx="8" fill="#B45309"/><rect x="${x - 70}" y="250" width="140" height="30" fill="#92400E"/><rect x="${x - 12}" y="250" width="24" height="130" fill="#FDE68A"/>`;
+      if (i === 2) ic = `<rect x="${x - 30}" y="240" width="60" height="150" rx="20" fill="#60A5FA" opacity="0.8"/><rect x="${x - 16}" y="222" width="32" height="24" rx="5" fill="${BLUE}"/>`;
+      g += `<g transform="${scaleAt(x, 320, p)}" opacity="${a4}">${tile(x - 150, 180, 300, 300)}${ic}${text(x, 450, n, 22, '#CBD5E1', 800)}${upArrow(x + 110, 220, 0.6)}</g>`; });
+  }
+  const a5 = fin(T, 'q5') * fout(T, 'q6');
+  if (a5 > 0) { g += house(500, 560, 1.15, a5, a5); g += `<g opacity="${a5}" transform="${scaleAt(900, 380, pop(T, C('q5') + 0.6, 0.45))}"><circle cx="900" cy="380" r="80" fill="${SLATE}" stroke="${ORANGE}" stroke-width="8"/>${text(900, 395, '72&deg;', 48, ORANGE)}</g>`;
+    o += ov('HEATING BILLS <span class="r">&#9650;</span>', 0, 110, W, 50, WHITE, a5); }
+  const a6 = fin(T, 'q6');
+  if (a6 > 0) {
+    const w = 900 * 1100 / 2000 * easeOut(clamp((T - C('q6') - 0.5) / 1.2));
+    g += `<g opacity="${a6}"><rect x="190" y="320" width="900" height="100" rx="20" fill="${SLATE}" stroke="#334155" stroke-width="3"/><rect x="196" y="326" width="${w}" height="88" rx="16" fill="${ORANGE}"/></g>`;
+    o += ov('~$1,100 <span style="font-size:34px;color:#CBD5E1">ENERGY</span>', 0, 170, W, 80, ORANGE, a6 * clamp((T - C('q6') - 1.2) / 0.4));
+    o += ov('THE BIGGEST SLICE', 0, 450, W, 30, '#CBD5E1', a6 * clamp((T - C('q6') - 2) / 0.4), 'letter-spacing:4px');
+  }
+  return [g, o];
+};
+
+S.rates = (T) => {
+  let [g, o] = section('HIDDEN COST', '', T, 'rates', '#60A5FA');
+  const a1 = fin(T, 'i1') * fout(T, 'i2');
+  if (a1 > 0) o += ov('HIDDEN INSIDE YOUR<br><span style="color:#60A5FA">INTEREST RATES</span>', 0, 230, W, 76, WHITE, a1 * pop(T, C('i1'), 0.5));
+  const a2 = fin(T, 'i2') * fout(T, 'i3');
+  if (a2 > 0) {
+    const p = easeOut(clamp((T - C('i2') - 0.6) / 1.2));
+    g += `<g opacity="${a2}"><line x1="300" y1="540" x2="980" y2="540" stroke="#475569" stroke-width="5"/>
+      <rect x="400" y="${540 - 3.7 * 75 * p}" width="160" height="${3.7 * 75 * p}" rx="10" fill="${RED}"/><rect x="720" y="${540 - 3.0 * 75 * p}" width="160" height="${3.0 * 75 * p}" rx="10" fill="#64748B"/>
+      ${text(480, 525 - 3.7 * 75 * p, '3.7%', 44, RED)}${text(800, 525 - 3.0 * 75 * p, '~3%', 44, WHITE)}${text(480, 578, 'INFLATION', 24, WHITE)}${text(800, 578, 'WAGES', 24, WHITE)}</g>`;
+    o += ov('PRICES ARE OUTRUNNING PAY', 0, 110, W, 40, GOLD, a2 * clamp((T - C('i2') - 2.5) / 0.4));
+  }
+  const a3 = fin(T, 'i3') * fout(T, 'i4');
+  if (a3 > 0) {
+    let fed = `<g transform="translate(560,560) scale(1.0)" opacity="${a3}"><rect x="-190" y="-22" width="380" height="22" rx="4" fill="#64748B"/><rect x="-170" y="-44" width="340" height="22" rx="4" fill="#94A3B8"/><rect x="-160" y="-216" width="320" height="20" fill="#CBD5E1"/>`;
+    for (let i = 0; i < 5; i++) fed += `<rect x="${-142 + i * 64}" y="-196" width="28" height="152" fill="#E2E8F0"/>`;
+    fed += `<path d="M-200 -216 L0 -300 L200 -216Z" fill="#94A3B8"/>${text(0, -236, 'THE FED', 28, NAVY)}</g>`;
+    g += fed + `<g opacity="${a3}" transform="${scaleAt(900, 330, pop(T, C('i3') + 1.2, 0.45))}">${upArrow(900, 330, 2.0)}${text(900, 460, 'RATES', 34, RED)}</g>`;
+  }
+  const a4 = fin(T, 'i4') * fout(T, 'i6');
+  if (a4 > 0) {
+    g += house(330, 560, 1.0, a4);
+    const r = T < C('i4') + 2.2 ? 5.98 : lerp(5.98, 7.24, clamp((T - C('i4') - 2.2) / 1.0));
+    o += ov(r.toFixed(2) + '%', 560, 170, 600, 110, r > 6.5 ? RED : GREEN, a4, 'text-align:left');
+    o += ov('30-YEAR MORTGAGE RATE', 560, 300, 600, 28, '#CBD5E1', a4, 'text-align:left;letter-spacing:2px');
+    if (T > C('i5')) {
+      o += ov('$350K LOAN: <span style="color:#94A3B8">$2,094</span> &rarr; <span class="r">$2,385</span>/mo', 560, 380, 700, 34, WHITE, clamp((T - C('i5')) / 0.4), 'text-align:left');
+      g += `<g transform="${scaleAt(800, 500, pop(T, C('i5') + 1.5, 0.45))}">${badge('+$291/MONTH', 800, 510, RED, WHITE, 36)}</g>`;
+    }
+  }
+  const a6 = fin(T, 'i6');
+  if (a6 > 0) {
+    g += `<g opacity="${a6}">${ccard(330, 300, 1.2)}${upArrow(480, 220, 0.8)}${car(900, 360, 1.1)}${upArrow(1060, 220, 0.8)}</g>`;
+    const w = 900 * 540 / 2000 * easeOut(clamp((T - C('i6') - 1.5) / 1.0));
+    g += `<g opacity="${a6}"><rect x="190" y="470" width="900" height="70" rx="16" fill="${SLATE}" stroke="#334155" stroke-width="3"/><rect x="196" y="476" width="${w}" height="58" rx="12" fill="#60A5FA"/></g>`;
+    o += ov('~$540 <span style="font-size:28px;color:#CBD5E1">HIGHER RATES</span>', 520, 470, 600, 50, '#60A5FA', a6 * clamp((T - C('i6') - 2.2) / 0.4), 'text-align:left');
+  }
+  return [g, o];
+};
+
+S.bill = (T) => {
+  let [g, o] = section('THE BILL', 'THE $2,000 BILL (ESTIMATE)', T, 'bill', RED);
+  const parts = [['b2', 1100, ORANGE, 'ENERGY'], ['b3', 540, '#60A5FA', 'HIGHER RATES'], ['b4', 360, '#94A3B8', 'MILITARY COST SHARE']];
+  let x = 140; const scale = 1000 / 2000;
+  parts.forEach(([k, v, col, n]) => {
+    const p = easeOut(clamp((T - C(k) - 0.2) / 0.8)); if (p <= 0) { x += v * scale; return; }
+    const w = v * scale * p;
+    g += `<rect x="${x}" y="270" width="${w}" height="140" rx="10" fill="${col}"/>`;
+    if (p > 0.6) { g += text(x + v * scale / 2, 355, '$' + v.toLocaleString(), 40, NAVY); g += text(x + v * scale / 2, 450, n, 20, col, 900); }
+    x += v * scale;
+  });
+  g += `<rect x="140" y="270" width="1000" height="140" rx="10" fill="none" stroke="#475569" stroke-width="4"/>`;
+  if (T > C('b5')) {
+    const c = 2000 * easeOut(clamp((T - C('b5')) / 1.0));
+    o += ov('&asymp; ' + money(c) + ' PER HOUSEHOLD', 0, 130, W, 60, WHITE, clamp((T - C('b5')) / 0.3));
+    g += badge('~$265 BILLION NATIONWIDE', 640, 540, RED, WHITE, 30, clamp((T - C('b5') - 2.2) / 0.4));
+  }
+  return [g, o];
+};
+
+S.caveat = (T) => {
+  let [g, o] = section('REALITY CHECK', '', T, 'caveat', GREEN);
+  const a1 = fin(T, 'c1') * fout(T, 'c2');
+  if (a1 > 0) o += ov('A QUICK <span class="g">REALITY CHECK</span>', 0, 270, W, 80, WHITE, a1 * pop(T, C('c1'), 0.45));
+  const a2 = fin(T, 'c2') * fout(T, 'c3');
+  if (a2 > 0) {
+    g += `<g opacity="${a2}" transform="${scaleAt(400, 360, pop(T, C('c2'), 0.5))}"><rect x="260" y="270" width="280" height="180" rx="14" fill="#F8FAFC"/><path d="M260 270 L400 380 L540 270" stroke="#94A3B8" stroke-width="5" fill="none"/>${text(400, 430, 'BILL: $2,000', 22, NAVY)}</g>`;
+    g += cross(400, 360, 90, RED, 14, a2 * clamp((T - C('c2') - 1.2) / 0.3));
+    o += ov("AN ECONOMIST'S<br><span class=\"y\">ESTIMATE</span>", 640, 240, 560, 60, WHITE, a2 * clamp((T - C('c2') - 0.6) / 0.4), 'text-align:left');
+    o += ov('YOUR NUMBER: HIGHER OR LOWER', 640, 410, 600, 28, '#CBD5E1', a2 * clamp((T - C('c2') - 2.5) / 0.4), 'text-align:left');
+  }
+  const a3 = fin(T, 'c3');
+  if (a3 > 0) {
+    g += `<g opacity="${a3}">${floorLine()}${person('jake', 320, 600, 1.0, { color: GREY })}${car(320, 640, 0.0)}${ccard(480, 330, 0.55)}${person('maya', 960, 600, 1.0, { color: GREEN })}${house(1120, 600, 0.5)}</g>`;
+    o += ov('DRIVES A LOT<br>+ CARD DEBT<br><span class="r">PAYS MORE</span>', 40, 120, 520, 30, WHITE, a3 * clamp((T - C('c3') - 0.3) / 0.4));
+    o += ov('RENTS +<br>WORKS FROM HOME<br><span class="g">PAYS LESS</span>', 720, 120, 520, 30, WHITE, a3 * clamp((T - C('c3') - 2.4) / 0.4));
+  }
+  return [g, o];
+};
+
+S.next = (T) => {
+  let [g, o] = section("WHAT'S NEXT", '3 POSSIBLE PATHS', T, 'next', GOLD);
+  const paths = [['x2', 'DEAL', GREEN, '&#9660;'], ['x4', 'STALEMATE', GOLD, '&#9654;'], ['x5', 'ESCALATION', RED, '&#9650;']];
+  const a1 = fin(T, 'x1') * fout(T, 'x3');
+  const showPaths = T < C('x3') || T > C('x4');
+  if (showPaths) {
+    const op = T < C('x3') ? 1 : fin(T, 'x4');
+    g += `<g opacity="${op}"><circle cx="200" cy="380" r="22" fill="${WHITE}"/>`;
+    paths.forEach(([k, n, col], i) => { const y = 220 + i * 160, lit = T > C(k);
+      g += `<path d="M222 380 C 420 380 420 ${y} 640 ${y} L1000 ${y}" stroke="${lit ? col : '#475569'}" stroke-width="${lit ? 14 : 8}" fill="none" stroke-dasharray="${lit ? '' : '14 12'}"/>`;
+      g += `<rect x="1010" y="${y - 40}" width="220" height="80" rx="16" fill="${lit ? col : SLATE}" stroke="${col}" stroke-width="4"/>${text(1120, y + 10, n, 26, lit ? NAVY : col)}`; });
+    g += '</g>';
+    if (T > C('x4')) o += ov('+$50/WEEK KEEPS ADDING UP', 300, 290, 640, 30, GOLD, clamp((T - C('x4')) / 0.4) * fout(T, 'x5'));
+    if (T > C('x5')) o += ov('OIL COULD PASS ITS OLD PEAK', 300, 450, 640, 30, RED, clamp((T - C('x5')) / 0.4) * fout(T, 'x6'));
+    if (T > C('x2') && T < C('x3')) o += ov('OIL DIPPED ON DEAL HOPES', 300, 130, 640, 30, GREEN, clamp((T - C('x2') - 0.5) / 0.4));
+  }
+  const a3 = fin(T, 'x3') * fout(T, 'x4');
+  if (a3 > 0) {
+    const k = clamp((T - C('x3') - 0.5) / 4);
+    g += `<g opacity="${a3}" transform="translate(380,${520 - 270 * Math.min(1, k * 3)})"><path d="M0 -70 Q30 -30 26 30 L-26 30 Q-30 -30 0 -70Z" fill="#E2E8F0"/><circle cx="0" cy="-15" r="12" fill="#60A5FA"/><path d="M-26 30 L-46 60 L-26 50Z M26 30 L46 60 L26 50Z" fill="${RED}"/><path d="M-14 32 Q0 80 14 32Z" fill="${ORANGE}"/></g>`;
+    g += `<g opacity="${a3}" transform="translate(${1080 + 40 * Math.sin(T * 2)},${200 + 300 * k}) rotate(${30 * Math.sin(T * 2)})"><path d="M0 -60 Q40 -20 0 60 Q-40 -20 0 -60Z" fill="#F8FAFC" opacity="0.9"/><line x1="0" y1="-60" x2="0" y2="70" stroke="#94A3B8" stroke-width="3"/></g>`;
+    g += text(560, 300, 'UP FAST', 30, RED, 900, 'middle', `opacity="${a3}"`) + text(1080, 300, 'DOWN SLOWLY', 30, GREEN, 900, 'middle', `opacity="${a3}"`);
+    o += ov('ROCKETS &amp; <span style="color:#CBD5E1">FEATHERS</span>', 0, 110, W, 56, ORANGE, a3);
+  }
+  const a6 = fin(T, 'x6');
+  if (a6 > 0) o += ov('GET YOUR BUDGET READY<br>FOR <span class="y">ALL THREE</span>', 0, 240, W, 64, WHITE, a6, 'background:rgba(15,23,42,0.92);padding:30px 0');
+  return [g, o];
+};
+
+S.protect = (T) => {
+  let [g, o] = section('5 MOVES', 'KEEP MORE OF YOUR MONEY', T, 'protect', GREEN);
+  const items = [['m2', 'Cut your <span class="y">gas bill</span>: compare prices, check tires, slow down'],
+                 ['m3', 'Get ahead of winter: <span class="y">thermostat</span> back 7&ndash;10&deg; = up to 10% saved'],
+                 ['m4', 'Pay down <span class="r">variable-rate</span> credit card debt first'],
+                 ['m5', 'Buying a home? Shop <span class="y">3+ lenders</span>'],
+                 ['m6', 'Put your cash in a <span class="g">high-yield savings</span> account']];
+  items.forEach(([k, s], i) => {
+    const a = clamp((T - C(k)) / 0.5); if (!a) return;
+    const y = 128 + i * 82, x = 110 + (1 - easeOut(a)) * -60, cur = T >= C(k) && (i === 4 || T < C(items[i + 1][0]));
+    g += `<g opacity="${a}"><rect x="${x}" y="${y}" width="1060" height="70" rx="18" fill="${cur ? '#1E3A5F' : SLATE}" stroke="${cur ? GOLD : '#334155'}" stroke-width="3"/>
+      <circle cx="${x + 42}" cy="${y + 35}" r="24" fill="${GREEN}"/>${text(x + 42, y + 45, i + 1, 28, NAVY)}</g>`;
+    o += ov(s, x + 88, y + 19, 960, 28, WHITE, a, 'text-align:left;font-weight:800');
+  });
+  return [g, o];
+};
+
+S.end = (T) => {
+  let g = '', o = '';
+  if (T < C('e3')) {
+    const a1 = fin(T, 'e1') * fout(T, 'e2');
+    if (a1 > 0) { g += wallet(640, 400, 1.1, a1) + `<g opacity="${a1}">${barrel(300, 380, 0.8)}${gasPump(1000, 500, 0.7, '$4.33', RED)}</g>`;
+      o += ov('A WAR FAR AWAY.<br><span class="r">A HIT TO EVERY WALLET.</span>', 0, 110, W, 50, WHITE, a1); }
+    const a2 = fin(T, 'e2');
+    if (a2 > 0) o += ov("YOU CAN'T CONTROL OIL PRICES.<br><span class=\"g\">YOU CAN CONTROL YOUR BUDGET.</span>", 0, 250, W, 52, WHITE, a2 * pop(T, C('e2'), 0.5));
+    return [g, o];
+  }
+  const a = fin(T, 'e3', 0.6);
+  g += `<g opacity="${a}" transform="translate(640,150) scale(1.1)"><path d="M0 60 C -38 18 -48 -2 -48 -22 A48 48 0 1 1 48 -22 C 48 -2 38 18 0 60Z" fill="${GOLD}"/><circle cx="0" cy="-22" r="31" fill="${NAVY}"/>${text(0, -6, '$', 46, GOLD)}</g>`;
+  o += ov('THE MONEY <span class="y">MAP</span>', 0, 230, W, 44, WHITE, a);
+  g += `<g opacity="${a}"><rect x="500" y="300" width="280" height="70" rx="14" fill="${RED}"/>${text(640, 347, 'SUBSCRIBE', 34, WHITE)}</g>`;
+  g += `<g opacity="${a}"><rect x="140" y="410" width="460" height="230" rx="18" fill="#1E293B" stroke="#334155" stroke-width="3" stroke-dasharray="10 10"/>
+        <rect x="680" y="410" width="460" height="230" rx="18" fill="#1E293B" stroke="#334155" stroke-width="3" stroke-dasharray="10 10"/></g>`;
+  o += ov('WATCH NEXT:<br><span class="r">The $6.3B<br>Binance Hack</span>', 140, 465, 460, 34, WHITE, a);
+  o += ov('WATCH:<br><span class="g">5 Money Moves<br>Before Dec 31</span>', 680, 465, 460, 34, WHITE, a);
+  return [g, o];
+};
+
+/* ---------- frame renderer ---------- */
+function captionHTML(T) {
+  for (const k in CUE) {
+    const c = CUE[k];
+    if (T >= c.start - 0.05 && T <= c.end + 0.3) {
+      const s = c.text.replace(/(401\(k\)|\$[\d,]+(?:\.\d+)?|\d+%|\b\d{2,}\b)/g, '<span class="hl">$1</span>');
+      return `<div class="cap"><span class="box">${s}</span></div>`;
+    }
+  }
+  return '';
+}
+
+const TITLES = { why: 'WHERE IT <span style="color:#F97316">STARTS</span>', pump: 'MAYA&rsquo;S <span style="color:#EF4444">WALLET</span>',
+  ripple: 'THE <span style="color:#F97316">RIPPLE EFFECT</span>', rates: 'THE <span style="color:#60A5FA">HIDDEN COST</span>', bill: 'THE FULL <span style="color:#EF4444">BILL</span>',
+  caveat: 'A <span style="color:#22C55E">REALITY CHECK</span>', next: 'WHAT HAPPENS <span class="hl">NEXT?</span>', protect: '5 WAYS TO KEEP<br><span style="color:#22C55E">MORE OF YOUR MONEY</span>' };
+const FIRST = {}; for (const [sc, key] of CUES) if (!(sc in FIRST)) FIRST[sc] = key;
+function sectionCard(T) {
+  for (const sc in TITLES) {
+    const a = SCENES[sc].start + 0.05, b = C(FIRST[sc]) - 0.05;
+    if (T < a || T > b + 0.3 || b - a < 0.6) continue;
+    const op = Math.min(clamp((T - a) / 0.25), clamp((b + 0.3 - T) / 0.3)), s2 = 0.85 + 0.15 * easeOut((T - a) / 0.4);
+    return `<div style="position:absolute;inset:0;background:rgba(11,16,32,0.95);opacity:${op}"></div>` +
+      ov(TITLES[sc], 0, 280, W, 72, WHITE, op, `transform:scale(${s2});text-shadow:0 6px 0 #020617`);
+  }
+  return '';
+}
+window.render = function (T) {
+  let svg = '', html = '';
+  for (const name of ORDER) {
+    const sc = SCENES[name];
+    if (T < sc.start - 0.01 || T > sc.end + 0.01) continue;
+    const fade = Math.min(1, (T - sc.start) / 0.45, (sc.end - T) / 0.45);
+    if (fade <= 0) continue;
+    const [g, o] = S[name](T);
+    svg += `<g opacity="${fade.toFixed(3)}">${g}</g>`;
+    html += `<div style="opacity:${fade.toFixed(3)}">${o}</div>`;
+  }
+  const disc = T < C('e2') ? 'Estimates &amp; news reports as of Nov 3, 2026 &middot; Not financial advice' : '';
+  const bg = `<rect width="${W}" height="${H}" fill="${NAVY}"/><circle cx="640" cy="320" r="620" fill="#1E293B" opacity="0.35"/>`;
+  html += sectionCard(T);
+  document.getElementById('stage').innerHTML =
+    `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${bg}${svg}</svg>` + html +
+    (disc ? `<div class="ov" style="left:20px;top:8px;font-size:15px;font-weight:800;color:#64748B;text-align:left">${disc}</div>` : '') +
+    captionHTML(T);
+};
+window.CUE_LIST = () => Object.entries(CUE).map(([k, c]) => ({ key: k, start: c.start, end: c.end, text: c.text }));
+window.render(0);
+</script>
+</body>
+</html>

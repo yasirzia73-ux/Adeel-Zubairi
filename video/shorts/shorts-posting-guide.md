@@ -86,3 +86,22 @@ Based on news reports as of Nov 2, 2026 · details still developing · not finan
 **Pinned comment:** Would you still keep your crypto on an exchange after this? 👇
 
 **Tip:** link it to the full Binance video with YouTube's "Related video" field. Post it the same day as the long video, because breaking-news Shorts fade fast.
+
+---
+
+## Short 5: The Iran War's Cost, $2,000 Per Family
+
+**File:** `short-5-iran-war-2000-per-family.mp4` (0:55). The voice is clipped from your ElevenLabs "Jeremy" voiceover of the full video.
+
+**Title:** The Iran War Is Costing Your Family $2,000 😳
+
+**Description:**
+Since February, the average US household has lost about $2,000 to the Iran war, according to Moody's chief economist. Gas went from $2.99 to $4.33, mortgages went above 7%, and the bill keeps growing. ⛽🏠
+▶️ Full breakdown + 5 ways to protect your money: "The Iran War Is Costing Your Family $2,000. Here's Where It's Going" on the channel.
+Estimates and news reports as of Nov 3, 2026 · not financial advice.
+
+**Hashtags:** #shorts #gasprices #inflation #costofliving #oilprices #mortgagerates #personalfinance #moneytips #economy #iran
+
+**Pinned comment:** How much more are you paying for gas than last year? 👇
+
+**Tip:** link it to the full video with "Related video". Post it the same day as the long video, or the next morning (about 5:00 AM PKT).

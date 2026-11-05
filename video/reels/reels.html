@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>Money Map Reels v2</title>
+<style>
+  html, body { margin: 0; padding: 0; background: #05070D; overflow: hidden; }
+  #stage { position: relative; width: 720px; height: 1280px; overflow: hidden; font-family: "Montserrat", sans-serif; color: #F8FAFC; }
+  #cam, #bg, #svg, #photos, #ov { position: absolute; inset: 0; }
+  #svg svg { position: absolute; left: 0; top: 0; }
+  .ph { position: absolute; overflow: hidden; background: #000; transform-origin: 50% 50%; }
+  .ph img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform-origin: 50% 50%; }
+  .ph .vig { position: absolute; inset: 0; background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.55) 100%), linear-gradient(180deg, rgba(0,0,0,0) 60%, rgba(0,0,0,.55) 100%); }
+  .ph .credit { position: absolute; right: 10px; bottom: 8px; font-size: 12px; font-weight: 700; color: rgba(255,255,255,.75); text-shadow: 0 1px 2px #000; }
+  .ov { position: absolute; text-align: center; font-weight: 900; line-height: 1.05; }
+  .glass { position: absolute; border-radius: 26px; border: 2px solid rgba(255,255,255,.18); background: linear-gradient(160deg, rgba(255,255,255,.14), rgba(255,255,255,.04));
+           backdrop-filter: blur(14px); box-shadow: 0 20px 50px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.25); box-sizing: border-box; }
+  .chip { position: absolute; font-weight: 900; padding: 10px 22px; border-radius: 999px; white-space: nowrap; box-shadow: 0 8px 0 rgba(0,0,0,.35), 0 16px 30px rgba(0,0,0,.45); }
+  .stamp { position: absolute; font-weight: 900; padding: 8px 22px; border: 7px solid; border-radius: 16px; background: rgba(5,7,13,.82); white-space: nowrap; letter-spacing: 1px; }
+  .ticker { position: absolute; left: 0; width: 720px; height: 54px; background: rgba(2,6,23,.85); border-top: 2px solid #334155; border-bottom: 2px solid #334155; overflow: hidden; white-space: nowrap; font-weight: 900; font-size: 26px; line-height: 54px; }
+  .head { position: absolute; left: 26px; right: 26px; top: 46px; text-align: center; font-weight: 900; font-size: 42px; line-height: 1.12; padding: 18px 10px;
+          background: linear-gradient(160deg, rgba(15,23,42,.85), rgba(2,6,23,.9)); border: 2px solid rgba(250,204,21,.5); border-radius: 26px; box-shadow: 0 16px 40px rgba(0,0,0,.5); }
+  .y { color: #FACC15; } .g { color: #4ADE80; } .r { color: #F87171; } .c { color: #22D3EE; }
+  .cap { position: absolute; left: 24px; right: 24px; top: 905px; text-align: center; font-weight: 900; font-size: 56px; line-height: 1.25; }
+  .cap .w { display: inline-block; margin: 0 6px; padding: 0 8px; border-radius: 12px; color: #fff;
+            text-shadow: 0 0 6px #000, 0 4px 0 #000, 3px 3px 0 #000, -3px 3px 0 #000, 3px -3px 0 #000, -3px -3px 0 #000; }
+  .cap .w.cur { background: #FACC15; color: #0B1020; text-shadow: none; box-shadow: 0 6px 0 #A16207; }
+  .prog { position: absolute; left: 0; top: 0; width: 720px; height: 10px; background: rgba(255,255,255,.08); }
+  .prog div { height: 10px; background: linear-gradient(90deg, #FACC15, #F97316); }
+  .disc { position: absolute; left: 0; right: 0; top: 1168px; text-align: center; font-size: 16px; font-weight: 800; color: rgba(148,163,184,.85); }
+  .follow { position: absolute; left: 360px; top: 640px; background: linear-gradient(180deg,#F87171,#DC2626); color: #fff; font-weight: 900; font-size: 52px; padding: 20px 56px; border-radius: 999px; box-shadow: 0 10px 0 #7F1D1D, 0 30px 60px rgba(220,38,38,.5); white-space: nowrap; }
+  .cursor { position: absolute; font-size: 64px; color: #fff; transform: rotate(-60deg); text-shadow: 0 4px 10px #000; }
+  #flash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; }
+</style></head>
+<body><div id="stage"><div id="cam"><div id="bg"></div><div id="svg"></div><div id="photos"></div><div id="ov"></div></div><div id="flash"></div></div>
+<script src="data.js"></script>
+<script src="engine.js"></script>
+<script>
+const CREDITS = window.CREDITS || {};
+const ID = new URLSearchParams(location.search).get('id') || 'trump';
+
+/* ================= REEL 1: Trump / midterm rally ================= */
+function trumpScene(T) {
+  let g = '', o = '';
+  let v = vis(T, 0, 0);
+  if (v > 0) {
+    photo('capitol', { op: v, x: 30, y: 250, w: 660, h: 560, p: (T - st(0)) / 3, z0: 1.25, z1: 1.05, glow: C.red, tilt: -6 + 6 * at(T, 0, 0, 1.2) });
+    o += chip('HOUSE ✗', 200, 760, C.red, '#fff', 40, v * clamp(pop(T, st(0) + 0.9)), -6, pop(T, st(0) + 0.9));
+    o += chip('SENATE ✗', 520, 760, C.red, '#fff', 40, v * clamp(pop(T, st(0) + 1.7)), 6, pop(T, st(0) + 1.7));
+  }
+  v = vis(T, 1, 1);
+  if (v > 0) {
+    photo('floor', { op: v, x: 30, y: 250, w: 660, h: 580, p: (T - st(1)) / 2.5, z0: 1.05, z1: 1.3, y0: 0, y1: -6, glow: C.green });
+    g += confettiSVG(T, st(1) + 0.9, 360, 520, 80, v);
+    o += chip('WALL STREET', 360, 790, C.green, '#052E16', 40, v * clamp(pop(T, st(1) + 0.9)), -4, pop(T, st(1) + 0.9));
+  }
+  v = vis(T, 2, 2);
+  if (v > 0) {
+    const p = easeOut(at(T, 2, 0.6, 1.2));
+    o += glass(50, 300, 620, 240, `<div style="position:absolute;left:30px;top:24px;font-size:30px;font-weight:900">SENATE</div>
+      <div style="position:absolute;left:30px;top:84px;width:${540 * 54 / 100 * p}px;height:46px;border-radius:12px;background:${C.blue}"></div>
+      <div style="position:absolute;left:30px;top:142px;width:${540 * 44 / 100 * p}px;height:46px;border-radius:12px;background:${C.red}"></div>
+      <div style="position:absolute;left:${44 + 540 * 0.54 * p}px;top:88px;font-size:32px;font-weight:900">D ~54</div>
+      <div style="position:absolute;left:${44 + 540 * 0.44 * p}px;top:146px;font-size:32px;font-weight:900">R ~44</div>`, v * clamp(pop(T, st(2))), 'rgba(59,130,246,.6)');
+    o += glass(50, 570, 620, 200, `<div style="position:absolute;left:30px;top:26px;font-size:30px;font-weight:900">HOUSE</div>
+      <div style="position:absolute;left:30px;top:84px;right:30px;font-size:34px;font-weight:900;line-height:1.15;color:#93C5FD">Biggest Democratic majority<br>in nearly 20 years</div>`, v * clamp(pop(T, st(2) + 0.6)), 'rgba(59,130,246,.6)');
+  }
+  v = vis(T, 3, 3);
+  if (v > 0) {
+    const p = at(T, 3, 0.2, en(3) - st(3));
+    const [cg] = glowChart([[0, .2], [.15, .25], [.3, .18], [.45, .22], [.6, .2], [.72, .24], [.82, .55], [.9, .78], [1, .9]], p, 60, 470, 600, 330, C.green, v);
+    g += cg;
+    o += big3d('+' + Math.round(1569 * easeOut(at(T, 3, 0.2, 1.6))).toLocaleString(), 270, 150, '#BBF7D0', '#16A34A', '#14532D', v);
+    o += ov('DOW POINTS &middot; <span class="g">&#9650; ~3%</span>', 0, 440, 720, 34, C.white, v);
+    o += ticker(T, [['DOW +1,569 ▲', C.green], ['S&P 500 +1.6% ▲', C.green], ['NASDAQ +1.4% ▲', C.green], ['OIL −8% ▼', C.red]], 830, v);
+  }
+  v = vis(T, 4, 4);
+  if (v > 0) {
+    o += big3d('44 YEARS', 300, 120, '#FDE68A', '#EAB308', '#854D0E', v, pop(T, st(4)));
+    const p = easeOut(at(T, 4, 0.4, 1.4));
+    g += `<g opacity="${v}"><line x1="90" y1="640" x2="${90 + 540 * p}" y2="640" stroke="${C.gold}" stroke-width="8" stroke-linecap="round"/>
+      ${[0, .25, .5, .75, 1].map(f => `<circle cx="${90 + 540 * f}" cy="640" r="${f <= p ? 12 : 6}" fill="${f <= p ? C.gold : '#475569'}"/>`).join('')}
+      ${svgText(90, 700, '1982', 30, C.grey)}${svgText(630, 700, '2026', 30, C.gold)}</g>`;
+    o += ov('BIGGEST POST-MIDTERM RALLY', 0, 470, 720, 34, C.white, v * at(T, 4, 0.6));
+  }
+  v = vis(T, 5, 5);
+  if (v > 0) {
+    const spin = T < st(5) + 2.2 ? (T - st(5)) * 90 : 2.2 * 90;
+    const gear = (cx, cy, r, rot, col) => { let p = ''; for (let i = 0; i < 12; i++) { const a = i * Math.PI / 6; p += `<rect x="${cx - 14}" y="${cy - r - 26}" width="28" height="34" rx="6" fill="${col}" transform="rotate(${rot + i * 30} ${cx} ${cy})"/>`; }
+      return p + `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${col}"/><circle cx="${cx}" cy="${cy}" r="${r * 0.35}" fill="#0B1020"/>`; };
+    g += `<g opacity="${v}">${gear(270, 600, 110, spin, C.blue)}${gear(470, 600, 110, -spin + 15, C.red)}</g>`;
+    o += big3d('GRIDLOCK', 300, 104, '#FFFFFF', '#94A3B8', '#334155', v, pop(T, st(5) + 1.0));
+    if (T > st(5) + 2.2) o += stamp('LOCKED', 360, 780, C.gold, 44, pop(T, st(5) + 2.2), -6);
+  }
+  v = vis(T, 6, 6);
+  if (v > 0) {
+    photo('capitol', { op: v, x: 30, y: 270, w: 320, h: 460, p: (T - st(6)) / 4, z0: 1.3, z1: 1.15, x0: 0, x1: -5, glow: C.blue, tilt: 10 });
+    photo('whitehouse', { op: v, x: 370, y: 270, w: 320, h: 460, p: (T - st(6)) / 4, z0: 1.3, z1: 1.15, glow: C.red, tilt: -10 });
+    o += ov('CONGRESS', 30, 740, 320, 30, '#93C5FD', v) + ov('WHITE HOUSE', 370, 740, 320, 30, '#FCA5A5', v);
+    o += chip('BIG CHANGES = HARDER', 360, 820, C.gold, '#0B1020', 32, v * clamp(pop(T, st(6) + 2)), -3, pop(T, st(6) + 2));
+  }
+  v = vis(T, 7, 7);
+  if (v > 0) {
+    photo('trump', { op: v, x: 110, y: 250, w: 500, h: 560, p: (T - st(7)) / 4, z0: 1.15, z1: 1.3, y0: -2, y1: -6, glow: C.gold, r: 32 });
+    o += chip('TONE: CALM', 360, 770, C.gold, '#0B1020', 38, v * clamp(pop(T, st(7) + 1)), -4, pop(T, st(7) + 1));
+    o += chip('OPEN TO WORKING WITH DEMOCRATS', 360, 840, 'rgba(15,23,42,.92)', '#fff', 26, v * at(T, 7, 2), 0, 1);
+  }
+  v = vis(T, 8, 8);
+  if (v > 0) {
+    photo('oil', { op: v, x: 30, y: 280, w: 660, h: 440, p: (T - st(8)) / 3, z0: 1.1, z1: 1.25, glow: C.red });
+    o += big3d('&minus;8%', 520, 150, '#FCA5A5', '#DC2626', '#7F1D1D', v, pop(T, st(8) + 0.5));
+    o += chip('OIL ▼', 140, 320, C.red, '#fff', 34, v, -6, 1);
+    o += chip('CHEAPER GAS?', 360, 800, C.green, '#052E16', 34, v * clamp(pop(T, st(8) + 1.8)), 3, pop(T, st(8) + 1.8));
+  }
+  v = vis(T, 9, 9);
+  if (v > 0) {
+    o += big3d('ONE DAY ≠ A TREND', 270, 60, '#fff', '#CBD5E1', '#334155', v);
+    [['INFLATION', C.red], ['IRAN WAR', C.orange], ['THE FED', C.blue]].forEach(([s, c], i) => {
+      const p = pop(T, st(9) + 1.2 + i * 0.6, 0.35); if (p <= 0) return;
+      o += glass(110, 400 + i * 130, 500, 100, `<div style="position:absolute;left:28px;top:22px;width:56px;height:56px;border-radius:50%;background:${c};font-size:38px;line-height:56px;text-align:center">!</div>
+        <div style="position:absolute;left:110px;top:28px;font-size:40px;font-weight:900">${s}</div>`, v * clamp(p), c, `transform:scale(${p})`);
+    });
+  }
+  v = vis(T, 10, 10);
+  if (v > 0) { o += big3d('THE MONEY <span style="color:#FACC15">MAP</span>', 380, 56, '#fff', '#CBD5E1', '#334155', v); o += followBtn(T, st(10) + 0.2); }
+  return [g, o];
+}
+
+/* ================= REEL 2: Musk $474M -> $33B ================= */
+function muskScene(T) {
+  let g = '', o = '';
+  let v = vis(T, 0, 1);
+  if (v > 0) {
+    const red = T > st(1) + 0.2;
+    photo('musk', { op: v, x: 30, y: 250, w: 660, h: 440, p: (T - st(0)) / 5, z0: 1.15, z1: 1.35, x0: 0, x1: -8, glow: red ? C.red : C.gold, filter: red ? 'saturate(.6) contrast(1.15) hue-rotate(-10deg)' : undefined });
+    if (!red) { o += big3d(money(474e6 * easeOut(at(T, 0, 0.3, 2.0))), 700, 66, '#FDE68A', '#EAB308', '#854D0E', v); o += ov('SPENT ON THE ELECTION', 0, 790, 720, 30, C.white, v * at(T, 0, 0.8)); }
+    else { o += big3d('&minus;$33,000,000,000', 700, 58, '#FCA5A5', '#DC2626', '#7F1D1D', v, pop(T, st(1) + 0.2)); o += chip('IN 24 HOURS', 360, 830, C.red, '#fff', 34, v * at(T, 1, 0.6), -3, 1); }
+    if (!red) for (let i = 0; i < 10; i++) { const k = ((T * 0.9 + i / 10) % 1); g += coinSVG(80 + i * 62, 240 + k * 480, 16, v * (1 - k) * 0.9); }
+  }
+  v = vis(T, 2, 2);
+  if (v > 0) { o += big3d("HERE'S WHAT<br>HAPPENED", 380, 92, '#fff', '#94A3B8', '#334155', v, pop(T, st(2))); g += `<g opacity="${v * 0.6}">${[0, 1, 2].map(i => `<polygon points="${200 + i * 60},680 ${150 + i * 60},720 ${200 + i * 60},760" fill="${C.gold}"/>`).join('')}</g>`; }
+  v = vis(T, 3, 3);
+  if (v > 0) {
+    g += isoBar(360, 760, 300, 200, '#334155', v) + `<rect x="300" y="548" width="120" height="14" rx="7" fill="#0B1020" opacity="${v}"/>` + svgText(360, 700, 'VOTE', 56, '#E2E8F0', 900, 'middle', `opacity="${v}"`);
+    for (let i = 0; i < 7; i++) { const k = ((T - st(3)) * 0.8 + i / 7) % 1; g += coinSVG(360 + Math.sin(i * 2) * 40, 300 + k * 250, 20, v * (1 - k)); }
+    o += chip('BACKING REPUBLICAN CANDIDATES', 360, 830, C.red, '#fff', 28, v * at(T, 3, 0.8), 0, 1);
+  }
+  v = vis(T, 4, 4);
+  if (v > 0) {
+    photo('capitol', { op: v, x: 30, y: 260, w: 660, h: 520, p: (T - st(4)) / 3, z0: 1.05, z1: 1.2, glow: C.blue });
+    o += stamp('DEMOCRATS SWEEP', 360, 760, '#60A5FA', 46, pop(T, st(4) + 1.0), -6);
+  }
+  v = vis(T, 5, 5);
+  if (v > 0) {
+    photo('rocket', { op: v, x: 380, y: 290, w: 300, h: 380, p: (T - st(5)) / 4, z0: 1.05, z1: 1.2, y0: 2, y1: -2, glow: C.red, r: 22 });
+    o += glass(40, 290, 320, 380, `<div style="position:absolute;top:40px;width:100%;text-align:center;font-size:56px;font-weight:900">TESLA</div>
+      <svg style="position:absolute;left:30px;top:130px" width="260" height="160">${[0, 1, 2, 3, 4, 5].map(i => { const h = 30 + (i * 37) % 50, y = 20 + i * 18; return `<rect x="${12 + i * 40}" y="${y}" width="24" height="${h}" fill="${i % 2 && i < 5 ? C.green : C.red}"/>`; }).join('')}</svg>`, v, 'rgba(239,68,68,.6)');
+    o += ov('SPACEX', 380, 300, 300, 50, C.white, v, 'text-shadow:0 3px 10px #000');
+    o += chip('▼ 5%+', 200, 720, C.red, '#fff', 44, v * clamp(pop(T, st(5) + 1.2)), -4, pop(T, st(5) + 1.2));
+    o += chip('▼ 5%+', 530, 720, C.red, '#fff', 44, v * clamp(pop(T, st(5) + 1.6)), 4, pop(T, st(5) + 1.6));
+    o += ov('BEFORE THE MARKET OPENED', 0, 790, 720, 28, C.grey, v * at(T, 5, 2));
+  }
+  v = vis(T, 6, 6);
+  if (v > 0) {
+    const p = easeOut(at(T, 6, 1.0, 2.5)), nw = lerp(898, 865, p);
+    const [cg] = glowChart([[0, .9], [.2, .88], [.35, .9], [.5, .8], [.62, .7], [.75, .45], [.88, .3], [1, .22]], p, 70, 520, 580, 280, C.red, v);
+    g += cg;
+    o += big3d('$' + Math.round(nw) + 'B', 300, 140, nw > 880 ? '#fff' : '#FCA5A5', nw > 880 ? '#CBD5E1' : '#DC2626', '#3F0D0D', v);
+    o += ov('MUSK NET WORTH &middot; BLOOMBERG EST.', 0, 460, 720, 26, C.grey, v);
+  }
+  v = vis(T, 7, 7);
+  if (v > 0) {
+    g += `<g opacity="${v}">${isoBar(120, 760, 60, 30, C.gold)}${svgText(120, 820, '$474M', 26, C.gold)}`;
+    for (let i = 0; i < 70; i++) { const p = clamp((T - st(7) - 0.4 - i * 0.02) / 0.2); if (p <= 0) continue; const x = 240 + (i % 10) * 44, y = 760 - Math.floor(i / 10) * 52; g += isoBar(x, y, 26, 34 * p, C.red); }
+    g += svgText(440, 820, '$33B', 30, C.red) + '</g>';
+    o += big3d('≈ 70×', 250, 110, '#FCA5A5', '#DC2626', '#7F1D1D', v, pop(T, st(7) + 0.3));
+  }
+  v = vis(T, 8, 8);
+  if (v > 0) {
+    const p = easeOut(at(T, 8, 0.3, 1.2));
+    photo('musk2', { op: v * 0.9, x: 160, y: 250, w: 400, h: 230, p: (T - st(8)) / 4, z0: 1.2, z1: 1.35, glow: C.gold, r: 20 });
+    g += isoBar(260, 840, 150, 300 * p, C.gold, v) + isoBar(470, 840, 150, 120 * p, '#64748B', v);
+    g += svgText(260, 880, '#1 MUSK', 28, C.gold, 900, 'middle', `opacity="${v}"`) + svgText(470, 880, '#2', 28, C.grey, 900, 'middle', `opacity="${v}"`);
+    if (p > 0.8) o += chip('+$490B AHEAD', 520, 610, C.green, '#052E16', 34, v, -4, pop(T, st(8) + 1.5));
+  }
+  v = vis(T, 9, 9);
+  if (v > 0) {
+    photo('capitol', { op: v, x: 30, y: 260, w: 660, h: 480, p: (T - st(9)) / 4, z0: 1.2, z1: 1.05, glow: C.blue });
+    o += glass(230, 560, 260, 200, `<div style="background:${C.red};height:60px;border-radius:24px 24px 0 0;font-size:30px;font-weight:900;line-height:60px;text-align:center">JANUARY</div>
+      <div style="text-align:center;font-size:80px;font-weight:900;color:#0B1020;background:#F8FAFC;height:138px;line-height:138px;border-radius:0 0 24px 24px">2027</div>`, v * clamp(pop(T, st(9) + 0.8)), 'rgba(255,255,255,.4)', `transform:scale(${pop(T, st(9) + 0.8)})`);
+    o += chip('NEW CONGRESS', 360, 820, C.blue, '#fff', 34, v * at(T, 9, 1.6), 0, 1);
+  }
+  v = vis(T, 10, 10);
+  if (v > 0) { o += big3d('THE MONEY <span style="color:#FACC15">MAP</span>', 380, 56, '#fff', '#CBD5E1', '#334155', v); o += followBtn(T, st(10) + 0.2); }
+  return [g, o];
+}
+
+/* ================= REEL 3: 2027 crash prediction ================= */
+const CRASH_PTS = [[0, .45], [.1, .5], [.2, .48], [.3, .58], [.4, .62], [.5, .74], [.58, .86], [.62, .9], [.7, .7], [.8, .52], [.9, .38], [1, .32]];
+function crashScene(T) {
+  let g = '', o = '';
+  let v = vis(T, 0, 0);
+  if (v > 0) {
+    const p = at(T, 0, 0, en(0) - st(0) + 0.3), crashed = p > 0.62;
+    const [cg] = glowChart(CRASH_PTS, p, 50, 360, 620, 420, crashed ? C.red : C.green, v);
+    g += cg;
+    if (crashed) o += big3d('&minus;21%', 330, 170, '#FCA5A5', '#DC2626', '#7F1D1D', v, pop(T, st(0) + (en(0) - st(0) + 0.3) * 0.62));
+    else o += ov('RECORD HIGH', 0, 330, 720, 50, C.green, v * at(T, 0, 0.6));
+  }
+  v = vis(T, 1, 1);
+  if (v > 0) {
+    photo('floor', { op: v, x: 30, y: 250, w: 660, h: 560, p: (T - st(1)) / 3, z0: 1.3, z1: 1.1, y0: -4, y1: 0, glow: C.red, filter: 'saturate(.8) contrast(1.15)' });
+    o += big3d('2027?', 520, 170, '#fff', '#F87171', '#7F1D1D', v, pop(T, st(1) + 0.6));
+  }
+  v = vis(T, 2, 4);
+  if (v > 0) {
+    const pts = [[0, .55], [.12, .6], [.24, .66], [.36, .72], [.48, .8], [.58, .88], [.68, .74], [.8, .55], [.9, .4], [1, .32]];
+    const pr = T < st(3) ? 0.58 * easeOut(at(T, 2, 0.3, en(2) - st(2))) : 0.58 + 0.42 * easeOut(at(T, 3, 0.3, en(3) - st(3)));
+    const [cg, end] = glowChart(pts, pr, 60, 330, 600, 420, T < st(3) + 0.5 ? C.green : C.red, v * (T < st(4) ? 1 : 1 - at(T, 4, 0, 0.4)));
+    g += cg + `<g opacity="${v}"><line x1="60" y1="${330 + 420 * (1 - .55)}" x2="660" y2="${330 + 420 * (1 - .55)}" stroke="#64748B" stroke-dasharray="8 8" stroke-width="2"/></g>`;
+    o += chip('TODAY ~7,689', 170, 520, '#334155', '#fff', 24, v * (T < st(4) ? 1 : 0), 0, 1);
+    if (T > st(2) + 1.2 && T < st(4)) o += chip('8,250 · END 2026', 470, 330, C.green, '#052E16', 26, at(T, 2, 1.2), -3, 1);
+    if (T > st(3) + 1.2 && T < st(4)) o += chip('6,500 · END 2027', 520, 760, C.red, '#fff', 26, at(T, 3, 1.2), 3, 1);
+    o += ov('CAPITAL ECONOMICS FORECAST &middot; S&amp;P 500', 0, 818, 720, 24, C.grey, v * (T < st(4) ? 1 : 0));
+    if (T > st(4) - 0.1) {
+      const k = at(T, 4, 0, en(4) - st(4)), burst = T > en(4) - 0.2;
+      if (!burst) g += `<g opacity="${v}"><circle cx="360" cy="560" r="${120 + 90 * k}" fill="url(#bub)" stroke="#BAE6FD" stroke-width="3" stroke-opacity=".6"/>
+        <ellipse cx="${310 - 20 * k}" cy="${500 - 25 * k}" rx="${30 + 20 * k}" ry="${18 + 10 * k}" fill="#fff" opacity=".5"/>
+        <defs><radialGradient id="bub" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#E0F2FE" stop-opacity=".35"/><stop offset=".7" stop-color="#38BDF8" stop-opacity=".15"/><stop offset="1" stop-color="#0EA5E9" stop-opacity=".5"/></radialGradient></defs></g>`;
+      else for (let i = 0; i < 16; i++) { const a = i / 16 * Math.PI * 2, r1 = 160 + (T - en(4) + 0.2) * 300; g += `<line x1="${360 + Math.cos(a) * r1 * .7}" y1="${560 + Math.sin(a) * r1 * .7}" x2="${360 + Math.cos(a) * r1}" y2="${560 + Math.sin(a) * r1}" stroke="#BAE6FD" stroke-width="5" opacity="${v * clamp(1 - (T - en(4)) * 2)}"/>`; }
+      o += big3d('BUBBLE?', 330, 80, '#fff', '#7DD3FC', '#0C4A6E', v * clamp((T - st(4)) / 0.3));
+      o += chip('"LATE-STAGE BUBBLE"', 360, 800, '#0EA5E9', '#082F49', 30, v * at(T, 4, 0.8), -2, 1);
+    }
+  }
+  v = vis(T, 5, 5);
+  if (v > 0) {
+    let ekg = ''; for (let x = 0; x <= 600; x += 6) { const ph = (x / 600 + (T - st(5)) * 0.5) % 1; const y = ph > .45 && ph < .5 ? -80 : ph > .5 && ph < .55 ? 60 : 0; ekg += (x ? ' L' : 'M') + (60 + x) + ' ' + (700 + y); }
+    g += `<path d="${ekg}" stroke="${C.red}" stroke-width="5" fill="none" opacity="${v}" filter="url(#blur4)"/><path d="${ekg}" stroke="#FCA5A5" stroke-width="3" fill="none" opacity="${v}"/>`;
+    o += glass(60, 320, 600, 260, `<div style="position:absolute;left:34px;top:30px;font-size:26px;font-weight:800;color:${C.grey}">ECONOMIST DAVID ROSENBERG</div>
+      <div style="position:absolute;left:34px;top:80px;right:34px;font-size:44px;font-weight:900;line-height:1.15">Expects a <span class="r">significant recession</span> in 2027</div>`, v * clamp(pop(T, st(5))), 'rgba(239,68,68,.6)');
+  }
+  v = vis(T, 6, 6);
+  if (v > 0) {
+    const p = easeOut(at(T, 6, 1.2, 1.4)) * 0.22, R = 170, cx = 360, cy = 560, L = 2 * Math.PI * R;
+    g += `<g opacity="${v}" transform="rotate(-90 ${cx} ${cy})"><circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="#1E293B" stroke-width="44"/>
+      <circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="${C.gold}" stroke-width="44" stroke-dasharray="${L * p} ${L}" stroke-linecap="round"/></g>`;
+    o += big3d(Math.round(p * 100) + '%', 480, 120, '#FDE68A', '#EAB308', '#854D0E', v);
+    o += ov('KALSHI TRADERS:<br>2027 RECESSION ODDS', 0, 800, 720, 30, C.white, v);
+    o += ov('CALMER THAN THE HEADLINES', 0, 300, 720, 34, C.green, v * at(T, 6, 0.2));
+  }
+  v = vis(T, 7, 7);
+  if (v > 0) {
+    ['CRASH COMING!', 'MARKET DOOM!', 'SELL EVERYTHING!'].forEach((s, i) => {
+      const p = pop(T, st(7) + i * 0.4, 0.35); if (p <= 0) return;
+      o += `<div style="position:absolute;left:${120 + i * 30}px;top:${320 + i * 120}px;width:480px;padding:22px;background:#F8FAFC;color:#0B1020;font-weight:900;font-size:40px;border-radius:10px;opacity:${v};transform:rotate(${-6 + i * 5}deg) scale(${p});box-shadow:0 20px 40px rgba(0,0,0,.5)">${s}<div style="height:8px;background:#CBD5E1;margin-top:12px;width:80%"></div></div>`;
+    });
+    o += stamp('MANY NEVER HAPPEN', 360, 780, C.green, 40, pop(T, st(7) + 1.6), -5);
+  }
+  v = vis(T, 8, 8);
+  if (v > 0) {
+    o += big3d("DON'T PANIC", 290, 84, '#fff', '#86EFAC', '#14532D', v, pop(T, st(8)));
+    ['EMERGENCY FUND', 'KEEP INVESTING REGULARLY', "DON'T INVEST MONEY YOU NEED SOON"].forEach((s, i) => {
+      const p = pop(T, st(8) + 0.9 + i * 1.1, 0.35); if (p <= 0) return;
+      o += glass(60, 420 + i * 120, 600, 96, `<div style="position:absolute;left:24px;top:20px;width:56px;height:56px;border-radius:50%;background:${C.green};color:#052E16;font-size:38px;line-height:56px;text-align:center">✓</div>
+        <div style="position:absolute;left:100px;right:20px;top:${s.length > 26 ? 18 : 28}px;font-size:${s.length > 26 ? 26 : 34}px;font-weight:900;line-height:1.1">${s}</div>`, v * clamp(p), 'rgba(34,197,94,.6)', `transform:scale(${p})`);
+    });
+  }
+  v = vis(T, 9, 9);
+  if (v > 0) { o += big3d('THE MONEY <span style="color:#FACC15">MAP</span>', 380, 56, '#fff', '#CBD5E1', '#334155', v); o += followBtn(T, st(9) + 0.2); }
+  return [g, o];
+}
+
+const REELS = {
+  trump: { scene: trumpScene, theme: ['#1D4ED8', '#DC2626', '#0B1430'], photos: ['capitol', 'floor', 'whitehouse', 'trump', 'oil'],
+    head: 'TRUMP LOST CONGRESS&hellip;<br><span class="g">WALL STREET EXPLODED</span>', disc: 'News reports as of Nov 4, 2026 &middot; Not financial advice', shakes: [0.05, 3], flashes: [0.02, 3] },
+  musk: { scene: muskScene, theme: ['#7C3AED', '#06B6D4', '#0A0A1F'], photos: ['musk', 'musk2', 'capitol', 'rocket'],
+    head: 'SPENT $474M &rarr;<br><span class="r">LOST $33B IN A DAY</span>', disc: 'Bloomberg estimates &amp; news reports as of Nov 4, 2026 &middot; Not financial advice', shakes: [1], flashes: [1] },
+  crash: { scene: crashScene, theme: ['#DC2626', '#0EA5E9', '#140A0E'], photos: ['floor'],
+    head: 'EXPERTS PREDICT A<br><span class="r">21% CRASH</span> IN 2027', disc: 'Forecasts are opinions, not guarantees &middot; Not financial advice', shakes: [], flashes: [0.02] },
+};
+const SCRIPTS = window.SCRIPTS;
+const R = REELS[ID];
+setupTiming(SCRIPTS[ID], (window.SYNC || {})[ID]);
+// impact moments: given as line indices (resolved after timing)
+const resolve = arr => arr.map(x => Number.isInteger(x) ? st(x) + 0.15 : x);
+SHAKES = resolve(R.shakes); FLASHES = resolve(R.flashes);
+if (ID === 'crash') { const t = st(0) + (en(0) - st(0) + 0.3) * 0.62; SHAKES.push(t); FLASHES.push(t); }
+window.TOTAL = TOTAL;
+window.READY = false;
+document.fonts.ready.then(() => initPhotos(R.photos, CREDITS)).then(() => { renderFrame(0.3, R); window.READY = true; });
+window.render = T => renderFrame(T, R);
+</script>
+</body></html>

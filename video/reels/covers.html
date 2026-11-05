@@ -1,0 +1,63 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Reel covers</title><style>
+  html, body { margin: 0; padding: 0; background: #05070D; overflow: hidden; }
+  #stage { position: relative; width: 720px; height: 1280px; overflow: hidden; font-family: "Montserrat", sans-serif; color: #F8FAFC; }
+  #cam, #bg, #svg, #photos, #ov { position: absolute; inset: 0; }
+  #svg svg { position: absolute; left: 0; top: 0; }
+  .ph { position: absolute; overflow: hidden; background: #000; transform-origin: 50% 50%; }
+  .ph img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform-origin: 50% 50%; }
+  .ph .vig { position: absolute; inset: 0; background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.55) 100%), linear-gradient(180deg, rgba(0,0,0,0) 60%, rgba(0,0,0,.55) 100%); }
+  .ph .credit { position: absolute; right: 10px; bottom: 8px; font-size: 12px; font-weight: 700; color: rgba(255,255,255,.75); text-shadow: 0 1px 2px #000; }
+  .ov { position: absolute; text-align: center; font-weight: 900; line-height: 1.05; }
+  .glass { position: absolute; border-radius: 26px; border: 2px solid rgba(255,255,255,.18); background: linear-gradient(160deg, rgba(255,255,255,.14), rgba(255,255,255,.04));
+           backdrop-filter: blur(14px); box-shadow: 0 20px 50px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.25); box-sizing: border-box; }
+  .chip { position: absolute; font-weight: 900; padding: 10px 22px; border-radius: 999px; white-space: nowrap; box-shadow: 0 8px 0 rgba(0,0,0,.35), 0 16px 30px rgba(0,0,0,.45); }
+  .stamp { position: absolute; font-weight: 900; padding: 8px 22px; border: 7px solid; border-radius: 16px; background: rgba(5,7,13,.82); white-space: nowrap; letter-spacing: 1px; }
+  .ticker { position: absolute; left: 0; width: 720px; height: 54px; background: rgba(2,6,23,.85); border-top: 2px solid #334155; border-bottom: 2px solid #334155; overflow: hidden; white-space: nowrap; font-weight: 900; font-size: 26px; line-height: 54px; }
+  .head { position: absolute; left: 26px; right: 26px; top: 46px; text-align: center; font-weight: 900; font-size: 42px; line-height: 1.12; padding: 18px 10px;
+          background: linear-gradient(160deg, rgba(15,23,42,.85), rgba(2,6,23,.9)); border: 2px solid rgba(250,204,21,.5); border-radius: 26px; box-shadow: 0 16px 40px rgba(0,0,0,.5); }
+  .y { color: #FACC15; } .g { color: #4ADE80; } .r { color: #F87171; } .c { color: #22D3EE; }
+  .cap { position: absolute; left: 24px; right: 24px; top: 905px; text-align: center; font-weight: 900; font-size: 56px; line-height: 1.25; }
+  .cap .w { display: inline-block; margin: 0 6px; padding: 0 8px; border-radius: 12px; color: #fff;
+            text-shadow: 0 0 6px #000, 0 4px 0 #000, 3px 3px 0 #000, -3px 3px 0 #000, 3px -3px 0 #000, -3px -3px 0 #000; }
+  .cap .w.cur { background: #FACC15; color: #0B1020; text-shadow: none; box-shadow: 0 6px 0 #A16207; }
+  .prog { position: absolute; left: 0; top: 0; width: 720px; height: 10px; background: rgba(255,255,255,.08); }
+  .prog div { height: 10px; background: linear-gradient(90deg, #FACC15, #F97316); }
+  .disc { position: absolute; left: 0; right: 0; top: 1168px; text-align: center; font-size: 16px; font-weight: 800; color: rgba(148,163,184,.85); }
+  .follow { position: absolute; left: 360px; top: 640px; background: linear-gradient(180deg,#F87171,#DC2626); color: #fff; font-weight: 900; font-size: 52px; padding: 20px 56px; border-radius: 999px; box-shadow: 0 10px 0 #7F1D1D, 0 30px 60px rgba(220,38,38,.5); white-space: nowrap; }
+  .cursor { position: absolute; font-size: 64px; color: #fff; transform: rotate(-60deg); text-shadow: 0 4px 10px #000; }
+  #flash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; }
+</style></head>
+<body><div id="stage"><div id="cam"><div id="bg"></div><div id="svg"></div><div id="photos"></div><div id="ov"></div></div><div id="flash"></div></div>
+<script src="data.js"></script><script src="engine.js"></script>
+<script>
+const ID = new URLSearchParams(location.search).get('id') || 'trump';
+const COV = {
+ trump: { theme: ['#16A34A', '#DC2626', '#0B1430'], photos: ['floor', 'trump'], draw() {
+   photo('floor', { op: 0.55, x: 0, y: 0, w: 720, h: 1280, p: 0, z0: 1.15, z1: 1.15, r: 0, credit: false, filter: 'saturate(.7) brightness(.6)' });
+   photo('trump', { op: 1, x: 120, y: 120, w: 480, h: 560, p: 0, z0: 1.12, z1: 1.12, y0: -3, y1: -3, glow: '#FACC15', r: 34 });
+   let o = big3d('LOST CONGRESS&hellip;', 720, 70, '#fff', '#CBD5E1', '#334155', 1);
+   o += big3d('+1,569', 810, 200, '#BBF7D0', '#16A34A', '#14532D', 1);
+   o += chip('WALL STREET EXPLODED', 360, 1080, '#FACC15', '#0B1020', 40, 1, -4, 1);
+   let g = ''; for (let i = 0; i < 3; i++) g += `<polygon points="${600 + i * 0},${1000 - i * 60} ${640},${940 - i * 60} ${680},${1000 - i * 60}" fill="#22C55E" opacity="${0.9 - i * 0.25}"/>`;
+   return [g, o]; } },
+ musk: { theme: ['#7C3AED', '#06B6D4', '#0A0A1F'], photos: ['musk'], draw() {
+   photo('musk', { op: 1, x: 40, y: 120, w: 640, h: 600, p: 0, z0: 1.35, z1: 1.35, x0: -6, x1: -6, y0: 2, y1: 2, glow: '#EF4444', r: 34 });
+   let o = big3d('$474M', 740, 120, '#FDE68A', '#EAB308', '#854D0E', 1);
+   o += ov('&darr;', 0, 860, 720, 90, '#F8FAFC', 1);
+   o += big3d('&minus;$33B', 940, 170, '#FCA5A5', '#DC2626', '#7F1D1D', 1);
+   o += chip('IN ONE DAY', 360, 1160, '#EF4444', '#fff', 44, 1, -3, 1);
+   return ['', o]; } },
+ crash: { theme: ['#DC2626', '#0EA5E9', '#140A0E'], photos: ['floor'], draw() {
+   photo('floor', { op: 0.5, x: 0, y: 0, w: 720, h: 1280, p: 0, z0: 1.2, z1: 1.2, r: 0, credit: false, filter: 'saturate(.5) brightness(.5) sepia(.3) hue-rotate(-20deg)' });
+   const [cg] = glowChart([[0, .45], [.15, .5], [.3, .6], [.45, .72], [.58, .9], [.7, .6], [.85, .38], [1, .2]], 1, 50, 260, 620, 460, '#EF4444', 1);
+   let o = big3d('&minus;21%', 700, 220, '#FCA5A5', '#DC2626', '#7F1D1D', 1);
+   o += big3d('CRASH IN 2027?', 960, 74, '#fff', '#CBD5E1', '#334155', 1);
+   o += chip('EXPERTS WARN', 360, 1120, '#FACC15', '#0B1020', 40, 1, -3, 1);
+   return [cg, o]; } },
+};
+const R = COV[ID];
+document.fonts.ready.then(() => initPhotos(R.photos, window.CREDITS || {})).then(() => {
+  hidePhotos(); const [g, o] = R.draw();
+  document.getElementById('svg').innerHTML = `<svg width="720" height="1280" viewBox="0 0 720 1280">${DEFS}${background(2.0, R.theme)}</svg>`;
+  document.getElementById('ov').innerHTML = `<svg style="position:absolute;left:0;top:0" width="720" height="1280" viewBox="0 0 720 1280">${DEFS}${g}</svg>` + o; window.READY = true; });
+</script></body></html>

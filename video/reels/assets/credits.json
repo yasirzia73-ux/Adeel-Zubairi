@@ -1,0 +1,65 @@
+{
+ "capitol": {
+  "source": "https://www.loc.gov/item/2010630189/",
+  "title": "United States Capitol, Washington, D.C.",
+  "creator": "Highsmith, Carol M., 1946-, photographer",
+  "rights": "No known restrictions on publication.",
+  "credit": "Carol M. Highsmith / Library of Congress"
+ },
+ "nyse": {
+  "source": "https://www.loc.gov/item/2011632359/",
+  "title": "New York Stock Exchange, New York, New York",
+  "creator": "Highsmith, Carol M., 1946-, photographer",
+  "rights": "No known restrictions on publication.",
+  "credit": "Carol M. Highsmith / Library of Congress"
+ },
+ "floor": {
+  "source": "https://www.loc.gov/item/2011630168/",
+  "title": "Trading floor, New York Stock Exchange, New York, New York",
+  "creator": "Highsmith, Carol M., 1946-, photographer",
+  "rights": "No known restrictions on publication.",
+  "credit": "Carol M. Highsmith / Library of Congress"
+ },
+ "whitehouse": {
+  "source": "https://www.loc.gov/item/2011633022/",
+  "title": "The White House, Washington, D.C.",
+  "creator": "Highsmith, Carol M., 1946-, photographer",
+  "rights": "No known restrictions on publication.",
+  "credit": "Carol M. Highsmith / Library of Congress"
+ },
+ "musk": {
+  "source": "https://images.nasa.gov/details/KSC-20180206-PH_KLS03_0080",
+  "title": "SpaceX Falcon Heavy Post Launch News Conference",
+  "creator": "NASA/Kim Shiflett",
+  "rights": "NASA imagery is generally not subject to copyright (public domain); no NASA endorsement implied",
+  "credit": "NASA/Kim Shiflett"
+ },
+ "musk2": {
+  "source": "https://images.nasa.gov/details/NHQ201910100030",
+  "title": "NASA Administrator Visits SpaceX HQ",
+  "creator": "NASA/Aubrey Gemignani",
+  "rights": "NASA imagery is generally not subject to copyright (public domain); no NASA endorsement implied",
+  "credit": "NASA/Aubrey Gemignani"
+ },
+ "rocket": {
+  "source": "https://images.nasa.gov/details/KSC-20190302-PH_AWG03_0009",
+  "title": "SpaceX Demo-1 Liftoff",
+  "creator": "NASA/Tony Gray",
+  "rights": "NASA imagery is generally not subject to copyright (public domain); no NASA endorsement implied",
+  "credit": "NASA/Tony Gray"
+ },
+ "oil": {
+  "source": "https://www.loc.gov/item/2014631353/",
+  "title": "Colorful \"pumpjack,\" a type of small oil pump that's a common sight in West Texas, along U.S. 83 near the town of Winters in Runnels County, Texas",
+  "creator": "Highsmith, Carol M., 1946-, photographer",
+  "rights": "No known restrictions on publication.",
+  "credit": "Carol M. Highsmith / Library of Congress"
+ },
+ "trump": {
+  "source": "https://commons.wikimedia.org/wiki/File:Donald_Trump_official_portrait.jpg",
+  "title": "Donald_Trump_official_portrait.jpg",
+  "creator": "Official White House photo by Shealah Craighead",
+  "rights": "Public domain (work of the U.S. federal government)",
+  "credit": "Official White House photo by Shealah Craighead"
+ }
+}

@@ -54,6 +54,14 @@ const COV = {
    o += big3d('CRASH IN 2027?', 960, 74, '#fff', '#CBD5E1', '#334155', 1);
    o += chip('EXPERTS WARN', 360, 1120, '#FACC15', '#0B1020', 40, 1, -3, 1);
    return [cg, o]; } },
+  crypto: { theme: ['#F7931A', '#0EA5E9', '#0D0905'], photos: [], draw() {
+   const [cg] = glowChart([[0, .05], [.15, .08], [.3, .15], [.45, .12], [.6, .35], [.75, .5], [.88, .8], [1, .95]], 1, 40, 560, 640, 380, '#22C55E', 1);
+   let g = cg + cryptoCoin('btc', 230, 330, 150, 0.35, 1) + cryptoCoin('xrp', 520, 380, 110, -0.4, 1);
+   for (let i = 0; i < 9; i++) g += coinSVG(60 + i * 75, 140 + (i * 37) % 90, 16, 0.7);
+   let o = big3d('RICH BY', 700, 110, '#fff', '#CBD5E1', '#334155', 1);
+   o += big3d('2030?', 810, 210, '#FFE4B5', '#F7931A', '#7C3D00', 1);
+   o += chip('BITCOIN + XRP', 360, 1100, '#FACC15', '#0B1020', 46, 1, -3, 1);
+   return [g, o]; } },
 };
 const R = COV[ID];
 document.fonts.ready.then(() => initPhotos(R.photos, window.CREDITS || {})).then(() => {

@@ -59,3 +59,23 @@ And remember: many crash predictions never come true.
 So don't panic. Build an emergency fund, keep investing regularly, and never invest money you'll need soon.
 Follow so you're ready, whatever happens.
 ```
+
+
+---
+
+## Reel 4: Can Bitcoin & XRP make you rich by 2030? (~58 sec)
+Save as `voiceover/crypto.mp3`. Paste this into ElevenLabs (Jeremy). Spoken forms are already written out:
+
+```
+A thousand dollars in Bitcoin in twenty fifteen is worth over two hundred thousand dollars today.
+But can Bitcoin and X R P still make you rich by twenty thirty?
+Right now, Bitcoin is near seventy-six thousand dollars, about forty percent below its record.
+X R P is near a dollar seventeen, down almost seventy percent from its peak.
+That's crypto: wild swings, both ways.
+Bitcoin's case: only twenty-one million will ever exist, and Wall Street now buys it through E T Fs.
+X R P's case: fast, cheap global payments, and its S E C lawsuit is finally over.
+The bulls dream big. Ark Invest's twenty thirty Bitcoin scenarios run from five hundred thousand dollars to two point four million.
+But forecasts aren't promises. Both coins have crashed over seventy percent before.
+So the honest answer: maybe. Invest only what you can afford to lose, and keep crypto a small slice.
+What's your twenty thirty prediction? Comment below and follow The Money Map.
+```

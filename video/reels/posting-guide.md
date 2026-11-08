@@ -51,6 +51,23 @@ Forecasts are opinions, not guarantees · not financial advice.
 
 ---
 
+## Reel 4: Bitcoin & XRP by 2030
+**Cover:** `cover-crypto.png`
+
+**Title:** Can Bitcoin & XRP Still Make You Rich by 2030? 🚀
+
+**Description:**
+$1,000 in Bitcoin in 2015 is worth over $200,000 today. But Bitcoin is about 40% below its record and XRP is down nearly 70% from its peak. Can they still make you rich by 2030? ARK Invest's Bitcoin scenarios run from $500K to $2.4M, but forecasts aren't promises. Here's the honest answer. 🪙
+Prices approx. as of Nov 7, 2026 · forecasts are opinions, not guarantees · not financial advice.
+
+**Hashtags:** #shorts #reels #bitcoin #xrp #crypto #btc #ripple #cryptocurrency #2030 #investing
+
+**Tags:** bitcoin, xrp, bitcoin price prediction, xrp price prediction, bitcoin 2030, xrp 2030, crypto, cryptocurrency, crypto news, bitcoin news, xrp news, ripple, ripple xrp, crypto predictions, crypto market, ark invest bitcoin, will bitcoin make me rich, investing for beginners, the money map
+
+**Pinned comment:** Drop your 2030 price for BTC and XRP 👇
+
+---
+
 ## Posting tips
 - **Cover:** on YouTube Shorts, pick the cover in the mobile app's thumbnail picker. On Instagram, upload `cover-*.png` as the Reel cover. On TikTok, use "Select cover" and upload the image.
 - **Timing:** Reels 1 and 2 are breaking news, so post them as soon as possible: today or tomorrow, at about **9:00–11:00 PM PKT** (US lunchtime) or **5:00–7:00 AM PKT** (US evening). Reel 3 is evergreen-ish, so it can go any day this week.
@@ -61,4 +78,5 @@ Forecasts are opinions, not guarantees · not financial advice.
 - Rally: [Motley Fool](https://www.fool.com/coverage/stock-market-today/2026/11/04/stock-market-today-nov-4-dow-surges-3-in-biggest-post-midterm-rally-in-44-years/), [yourNEWS](https://yournews.com/2026/11/04/7252959/dow-surges-1569-points-as-democratic-midterm-sweep-sparks-wall/), [CNBC](https://www.cnbc.com/2026/11/04/stock-market-rally-trump-midterms.html), [TheStreet](https://www.thestreet.com/stock-market-today/stock-market-today-dow-jones-sp-500-nasdaq-updates-nov-04-2026)
 - Musk: [Yahoo Finance](https://uk.finance.yahoo.com/news/spacex-teslas-midterm-stock-drop-125332803.html), [Washington Examiner](https://www.washingtonexaminer.com/policy/finance-and-economy/4793207/elon-musk-net-worth-drops-billion-democrats-sweep-midterms/), [Benzinga](https://www.benzinga.com/news/politics/26/11/62875824/elon-musk-gets-double-miss-from-2026-midterm-elections-474-million-donated-net-worth-drops-by-23-billion)
 - Predictions: [Fortune (Capital Economics)](https://fortune.com/2026/09/13/stock-market-outlook-late-stage-bubble-crash-2027-treasury-yields-5-percent/), [Yahoo Finance (Rosenberg)](https://finance.yahoo.com/news/top-economist-says-sees-very-094501278.html), [Kalshi](https://kalshi.com/markets/kxrecssnber/recession/kxrecssnber-27)
+- Crypto: [Fortune (BTC price)](https://fortune.com/article/price-of-bitcoin-11-06-2026/), [CoinDesk (XRP)](https://www.coindesk.com/price/xrp), [The Block (ARK 2030)](https://www.theblock.co/post/351967/ark-invest-raises-2030-bull-case-bitcoin-price-projection-to-2-4-million-on-aggressive-modeling)
 - Photos: Library of Congress (Highsmith Archive), NASA Image Library, White House official portrait. See `assets/credits.json`.

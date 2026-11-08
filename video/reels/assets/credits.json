@@ -61,5 +61,26 @@
   "creator": "Official White House photo by Shealah Craighead",
   "rights": "Public domain (work of the U.S. federal government)",
   "credit": "Official White House photo by Shealah Craighead"
+ },
+ "wallst": {
+  "source": "https://www.loc.gov/pictures/item/2010630629/",
+  "title": "George Washington statue in front of Federal Hall on Wall Street, New York, New York",
+  "creator": "Highsmith, Carol M., 1946-, photographer",
+  "rights": "No known restrictions on publication.",
+  "credit": "Carol M. Highsmith / Library of Congress"
+ },
+ "fed": {
+  "source": "https://www.loc.gov/pictures/item/2010630382/",
+  "title": "Federal Reserve Bank, Cleveland, Ohio",
+  "creator": "Highsmith, Carol M., 1946-, photographer",
+  "rights": "No known restrictions on publication.",
+  "credit": "Carol M. Highsmith / Library of Congress"
+ },
+ "servers": {
+  "source": "https://images.nasa.gov/details/ARC-2008-ACD08-0272-001",
+  "title": "NAS Supercomputer Pleiades (cropped)",
+  "creator": "NASA/Dominic Hart",
+  "rights": "NASA imagery is generally not subject to copyright (public domain); no NASA endorsement implied",
+  "credit": "NASA/Dominic Hart"
  }
 }

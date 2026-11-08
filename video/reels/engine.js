@@ -111,6 +111,21 @@ function coinSVG(x, y, r = 18, op = 1) {
   return `<g opacity="${op}"><ellipse cx="${x}" cy="${y + r * 0.18}" rx="${r}" ry="${r * 0.9}" fill="#A16207"/><circle cx="${x}" cy="${y}" r="${r}" fill="${C.gold}" stroke="#CA8A04" stroke-width="3"/>
     ${svgText(x, y + r * 0.42, '$', r * 1.15, '#854D0E')}</g>`;
 }
+const BTC = '#F7931A';
+/* spinning 3D coin: kind 'btc' | 'xrp'; spin = angle in radians */
+function cryptoCoin(kind, x, y, r, spin = 0, op = 1) {
+  const sx = Math.max(0.08, Math.abs(Math.cos(spin))), back = Math.cos(spin) < 0;
+  const face = kind === 'btc' ? ['#FFD08A', BTC, '#9A5A07'] : ['#E2E8F0', '#64748B', '#0F172A'];
+  const id = 'cg' + kind;
+  const sym = kind === 'btc' ? svgText(0, r * 0.36, '₿', r * 1.05, '#fff', 900, 'middle', 'style="paint-order:stroke" stroke="#7C3D00" stroke-width="4"')
+    : svgText(0, r * 0.2, 'XRP', r * 0.56, '#fff', 900, 'middle', 'letter-spacing="1"');
+  let edge = ''; for (let i = 1; i <= 7; i++) edge += `<ellipse cx="${i * (1 - sx) * 2.2 * (back ? -1 : 1)}" cy="${i * 0.6}" rx="${r}" ry="${r}" fill="${face[2]}"/>`;
+  return `<g opacity="${op}" transform="translate(${x} ${y}) scale(${sx} 1)">
+    <defs><radialGradient id="${id}" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="${face[0]}"/><stop offset=".55" stop-color="${face[1]}"/><stop offset="1" stop-color="${face[2]}"/></radialGradient></defs>
+    <circle r="${r * 1.25}" fill="${face[1]}" opacity=".25" filter="url(#blur8)"/>${edge}
+    <circle r="${r}" fill="url(#${id})"/><circle r="${r * 0.84}" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="3"/>
+    ${back ? '' : sym}</g>`;
+}
 function confettiSVG(T, t0, cx, cy, n = 60, op = 1) {
   if (T < t0) return ''; let g = ''; const r = (s => () => { s = (s * 48271) % 2147483647; return s / 2147483647; })(99);
   const k = T - t0; const cols = [C.gold, C.green, C.cyan, C.red, '#fff', C.purple];

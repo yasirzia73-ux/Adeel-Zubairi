@@ -63,6 +63,27 @@ def events(rid, s, e):
         a(s[8] - 0.1, 'whooshD', 0.35)
         for i in range(3): a(s[8] + 0.9 + i * 1.1, 'tickhi', 0.35); a(s[8] + 0.92 + i * 1.1, 'dingpro', 0.25, 0, pitch=1 + i * 0.12)
         a(s[9] - 0.1, 'whooshD', 0.35); a(s[9] + 0.2, 'poppro', 0.55); a(s[9] + 0.5, 'dingpro', 0.45)
+    if rid == 'crypto':
+        a(0.0, 'impact', 0.7)
+        for i in range(16): a(0.5 + i * 0.28, 'coin', 0.16, -0.6 + (i % 6) * 0.24)
+        a(e[0] - 0.4, 'cashpro', 0.4)
+        a(s[1] - 0.1, 'whooshD', 0.35); a(s[1] + 0.1, 'poppro', 0.4, -0.3); a(s[1] + 0.3, 'poppro', 0.4, 0.3, pitch=1.2)
+        a(s[1] + 0.8, 'swell', 0.35); a(s[1] + 0.9 + 0.0, 'impact', 0.5)
+        for i in (2, 3):
+            t = s[i] + (e[i] - s[i]) * 0.85
+            a(s[i] - 0.1, 'whooshD', 0.3); a(t - 1.2, 'swell', 0.35); a(t, 'impact', 0.75); a(t + 0.02, 'glitch', 0.3)
+        a(s[4], 'whooshD', 0.4); a(s[4] + 0.6, 'whooshD', 0.3, 0.4); a(s[4] + 1.2, 'whooshD', 0.3, -0.4)
+        a(s[5] - 0.1, 'shutter', 0.45)
+        for i in range(12): a(s[5] + 0.4 + i * 0.13, 'tickhi', 0.16)
+        a(s[5] + (e[5] - s[5]) * 0.55, 'poppro', 0.45)
+        a(s[6] - 0.1, 'shutter', 0.45); a(s[6] + 0.6, 'poppro', 0.4, -0.3); a(s[6] + 1.1, 'poppro', 0.4, 0.3)
+        a(s[6] + (e[6] - s[6]) * 0.6, 'stamp', 0.6)
+        a(s[7] - 0.1, 'whooshD', 0.35); a(s[7] + 1.0, 'swell', 0.3)
+        for i in range(3): a(s[7] + 1.3 + i * 0.4, 'poppro', 0.4, 0, pitch=0.9 + i * 0.15)
+        a(s[7] + 3.0, 'dingpro', 0.4)
+        a(s[8], 'sub', 0.55); a(s[8] + 1.2, 'heart', 0.4); a(s[8] + 2.0, 'heart', 0.35)
+        a(s[9] + 0.6, 'poppro', 0.5); a(s[9] + 2.4, 'dingpro', 0.3); a(s[9] + 3.4, 'dingpro', 0.3, 0, pitch=1.12)
+        a(s[10], 'poppro', 0.45); a(s[10] + 1.6, 'poppro', 0.55); a(s[10] + 1.9, 'dingpro', 0.45)
     return ev
 
 def build(rid, sync, out):

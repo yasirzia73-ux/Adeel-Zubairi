@@ -274,11 +274,12 @@ function cryptoScene(T) {
   let v = vis(T, 0, 0);
   if (v > 0) {
     const p = easeOut(at(T, 0, 0.4, en(0) - st(0) - 0.6));
-    const [cg] = glowChart(BTC_PTS, p, 50, 400, 620, 420, BTC, v);
-    g += cg + cryptoCoin('btc', 360, 330, 70, (T - st(0)) * 4, v);
-    o += big3d(money(lerp(1000, 200000, Math.pow(p, 2.2))), 430, 108, '#FFE4B5', BTC, '#7C3D00', v, 1 + (p >= 1 ? 0.06 * Math.sin((T - st(0)) * 10) : 0));
-    o += chip('2015', 120, 800, '#334155', '#fff', 30, v, -4, 1);
-    if (p > 0.95) o += chip('TODAY', 600, 400, C.green, '#052E16', 32, v, 4, pop(T, en(0) - 0.6));
+    photo('floor', { op: v, x: 30, y: 240, w: 660, h: 330, p: (T - st(0)) / 4, z0: 1.3, z1: 1.1, y0: -3, y1: 0, glow: BTC, tilt: -5 + 5 * at(T, 0, 0, 1.2) });
+    const [cg] = glowChart(BTC_PTS, p, 50, 610, 620, 250, BTC, v);
+    g += cg;
+    o += big3d(money(lerp(1000, 200000, Math.pow(p, 2.2))), 470, 112, '#FFE4B5', BTC, '#7C3D00', v, 1 + (p >= 1 ? 0.06 * Math.sin((T - st(0)) * 10) : 0));
+    o += chip('2015', 110, 850, '#334155', '#fff', 30, v, -4, 1);
+    if (p > 0.95) o += chip('TODAY 🚀', 590, 640, C.green, '#052E16', 32, v, 4, pop(T, en(0) - 0.6));
   }
   v = vis(T, 1, 1);
   if (v > 0) {
@@ -356,12 +357,13 @@ function cryptoScene(T) {
   }
   v = vis(T, 8, 8);
   if (v > 0) {
-    o += big3d('NOT PROMISES', 270, 76, '#fff', '#F87171', '#7F1D1D', v, pop(T, st(8)));
+    photo('floor', { op: v, x: 30, y: 250, w: 660, h: 610, p: (T - st(8)) / 5, z0: 1.1, z1: 1.3, glow: C.red, filter: 'saturate(.35) brightness(.5) sepia(.5) hue-rotate(-35deg)' });
+    o += big3d('NOT PROMISES', 290, 76, '#fff', '#F87171', '#7F1D1D', v, pop(T, st(8)));
     [['btc', 'BITCOIN &middot; 2022', '&minus;77%'], ['xrp', 'XRP &middot; 2018&ndash;20', '&minus;90%+']].forEach(([k, lab, val], i) => {
       const p = pop(T, st(8) + 1.2 + i * 0.8, 0.35); if (p <= 0) return;
       o += glass(60, 420 + i * 190, 600, 160, `<div style="position:absolute;left:140px;top:28px;font-size:30px;font-weight:800;color:${C.grey}">${lab}</div>
         <div style="position:absolute;left:140px;top:66px;font-size:66px;font-weight:900;color:#F87171">${val}</div>`, v * clamp(p), 'rgba(239,68,68,.6)', `transform:scale(${p})`);
-      g += cryptoCoin(k, 135, 500 + i * 190, 46 * clamp(p), (T - st(8)) * 2, v * clamp(p));
+      o += `<div style="position:absolute;left:89px;top:${454 + i * 190}px;width:92px;height:92px;border-radius:50%;opacity:${v * clamp(p)};transform:scale(${p});background:radial-gradient(circle at 35% 30%,${k === 'btc' ? '#FFD08A,#F7931A 55%,#9A5A07' : '#E2E8F0,#64748B 55%,#0F172A'});box-shadow:0 6px 0 ${k === 'btc' ? '#7C3D00' : '#020617'},0 0 30px ${k === 'btc' ? '#F7931A88' : '#94A3B888'};color:#fff;font-weight:900;text-align:center;line-height:92px;font-size:${k === 'btc' ? 54 : 28}px">${k === 'btc' ? '₿' : 'XRP'}</div>`;
     });
   }
   v = vis(T, 9, 9);
@@ -393,7 +395,7 @@ const REELS = {
     head: 'SPENT $474M &rarr;<br><span class="r">LOST $33B IN A DAY</span>', disc: 'Bloomberg estimates &amp; news reports as of Nov 4, 2026 &middot; Not financial advice', shakes: [1], flashes: [1] },
   crash: { scene: crashScene, theme: ['#DC2626', '#0EA5E9', '#140A0E'], photos: ['floor'],
     head: 'EXPERTS PREDICT A<br><span class="r">21% CRASH</span> IN 2027', disc: 'Forecasts are opinions, not guarantees &middot; Not financial advice', shakes: [], flashes: [0.02] },
-  crypto: { scene: cryptoScene, theme: ['#F7931A', '#0EA5E9', '#0D0905'], photos: ['servers', 'fed'],
+  crypto: { scene: cryptoScene, theme: ['#F7931A', '#0EA5E9', '#0D0905'], photos: ['floor', 'servers', 'fed'],
     head: 'CAN BITCOIN &amp; XRP<br><span class="y">MAKE YOU RICH BY 2030?</span>', disc: 'Prices approx. as of Nov 7, 2026 &middot; Not financial advice', shakes: [], flashes: [0.02] },
 };
 const SCRIPTS = window.SCRIPTS;

@@ -54,13 +54,19 @@ const COV = {
    o += big3d('CRASH IN 2027?', 960, 74, '#fff', '#CBD5E1', '#334155', 1);
    o += chip('EXPERTS WARN', 360, 1120, '#FACC15', '#0B1020', 40, 1, -3, 1);
    return [cg, o]; } },
-  crypto: { theme: ['#F7931A', '#0EA5E9', '#0D0905'], photos: [], draw() {
-   const [cg] = glowChart([[0, .05], [.15, .08], [.3, .15], [.45, .12], [.6, .35], [.75, .5], [.88, .8], [1, .95]], 1, 40, 560, 640, 380, '#22C55E', 1);
-   let g = cg + cryptoCoin('btc', 230, 330, 150, 0.35, 1) + cryptoCoin('xrp', 520, 380, 110, -0.4, 1);
-   for (let i = 0; i < 9; i++) g += coinSVG(60 + i * 75, 140 + (i * 37) % 90, 16, 0.7);
-   let o = big3d('RICH BY', 700, 110, '#fff', '#CBD5E1', '#334155', 1);
-   o += big3d('2030?', 810, 210, '#FFE4B5', '#F7931A', '#7C3D00', 1);
-   o += chip('BITCOIN + XRP', 360, 1100, '#FACC15', '#0B1020', 46, 1, -3, 1);
+  crypto: { theme: ['#F7931A', '#0EA5E9', '#0D0905'], photos: ['floor'], draw() {
+   photo('floor', { op: 0.6, x: 0, y: 0, w: 720, h: 1280, p: 0, z0: 1.25, z1: 1.25, r: 0, credit: false, filter: 'saturate(.6) brightness(.45) sepia(.6) hue-rotate(-12deg)' });
+   let g = `<defs><radialGradient id="sun" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#FFB547" stop-opacity=".95"/><stop offset=".45" stop-color="#F7931A" stop-opacity=".35"/><stop offset="1" stop-color="#F7931A" stop-opacity="0"/></radialGradient></defs>`;
+   for (let i = 0; i < 18; i++) { const a0 = i / 18 * Math.PI * 2, a1 = a0 + 0.09; g += `<polygon points="330,520 ${330 + Math.cos(a0) * 700},${520 + Math.sin(a0) * 700} ${330 + Math.cos(a1) * 700},${520 + Math.sin(a1) * 700}" fill="#FFC86B" opacity=".13"/>`; }
+   g += `<circle cx="330" cy="520" r="330" fill="url(#sun)"/>`;
+   const [cg] = glowChart([[0, .05], [.2, .1], [.35, .2], [.5, .18], [.65, .45], [.8, .62], [.92, .9], [1, 1]], 1, 30, 600, 660, 300, '#22C55E', 1);
+   g += cg + cryptoCoin('btc', 320, 520, 185, 0.3, 1) + cryptoCoin('xrp', 560, 690, 100, -0.45, 1);
+   for (let i = 0; i < 10; i++) g += coinSVG(50 + i * 70, 250 + ((i * 53) % 120), 18, 0.85);
+   let o = `<div class="ov" style="left:0;top:58px;width:720px"><span style="display:inline-block;padding:12px 30px;border-radius:22px;background:rgba(2,6,23,.85);border:4px solid #22C55E;box-shadow:0 0 40px rgba(34,197,94,.55);font-size:66px;color:#fff">$1,000 <span style="color:#FACC15">&#10140;</span> <span class="g">$200,000</span></span></div>`;
+   o += `<div class="ov" style="left:560px;top:270px;width:140px;font-size:96px;transform:rotate(12deg)">🚀</div>`;
+   o += big3d('RICH BY', 800, 118, '#fff', '#CBD5E1', '#334155', 1);
+   o += big3d('2030?', 915, 218, '#FFF3C4', '#FACC15', '#A16207', 1, 1, 'filter:drop-shadow(0 0 30px rgba(250,204,21,.55))');
+   o += chip('BITCOIN + XRP 🔥', 360, 1195, '#EF4444', '#fff', 46, 1, -3, 1);
    return [g, o]; } },
 };
 const R = COV[ID];

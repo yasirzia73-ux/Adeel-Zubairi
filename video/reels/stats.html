@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>Crypto stats 20s</title>
+<style>
+  html, body { margin: 0; padding: 0; background: #05070D; overflow: hidden; }
+  #stage { position: relative; width: 720px; height: 1280px; overflow: hidden; font-family: "Montserrat", sans-serif; color: #F8FAFC; }
+  #cam, #bg, #svg, #photos, #ov { position: absolute; inset: 0; }
+  #svg svg { position: absolute; left: 0; top: 0; }
+  .ph { position: absolute; overflow: hidden; background: #000; transform-origin: 50% 50%; }
+  .ph img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform-origin: 50% 50%; }
+  .ph .vig { position: absolute; inset: 0; background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.55) 100%), linear-gradient(180deg, rgba(0,0,0,0) 60%, rgba(0,0,0,.55) 100%); }
+  .ph .credit { position: absolute; right: 10px; bottom: 8px; font-size: 12px; font-weight: 700; color: rgba(255,255,255,.75); text-shadow: 0 1px 2px #000; }
+  .ov { position: absolute; text-align: center; font-weight: 900; line-height: 1.05; }
+  .glass { position: absolute; border-radius: 26px; border: 2px solid rgba(255,255,255,.18); background: linear-gradient(160deg, rgba(255,255,255,.14), rgba(255,255,255,.04));
+           backdrop-filter: blur(14px); box-shadow: 0 20px 50px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.25); box-sizing: border-box; }
+  .chip { position: absolute; font-weight: 900; padding: 10px 22px; border-radius: 999px; white-space: nowrap; box-shadow: 0 8px 0 rgba(0,0,0,.35), 0 16px 30px rgba(0,0,0,.45); }
+  .stamp { position: absolute; font-weight: 900; padding: 8px 22px; border: 7px solid; border-radius: 16px; background: rgba(5,7,13,.82); white-space: nowrap; letter-spacing: 1px; }
+  .ticker { position: absolute; left: 0; width: 720px; height: 54px; background: rgba(2,6,23,.85); border-top: 2px solid #334155; border-bottom: 2px solid #334155; overflow: hidden; white-space: nowrap; font-weight: 900; font-size: 26px; line-height: 54px; }
+  .head { position: absolute; left: 26px; right: 26px; top: 46px; text-align: center; font-weight: 900; font-size: 42px; line-height: 1.12; padding: 18px 10px;
+          background: linear-gradient(160deg, rgba(15,23,42,.85), rgba(2,6,23,.9)); border: 2px solid rgba(250,204,21,.5); border-radius: 26px; box-shadow: 0 16px 40px rgba(0,0,0,.5); }
+  .y { color: #FACC15; } .g { color: #4ADE80; } .r { color: #F87171; } .c { color: #22D3EE; }
+  .cap { position: absolute; left: 24px; right: 24px; top: 905px; text-align: center; font-weight: 900; font-size: 56px; line-height: 1.25; }
+  .cap .w { display: inline-block; margin: 0 6px; padding: 0 8px; border-radius: 12px; color: #fff;
+            text-shadow: 0 0 6px #000, 0 4px 0 #000, 3px 3px 0 #000, -3px 3px 0 #000, 3px -3px 0 #000, -3px -3px 0 #000; }
+  .cap .w.cur { background: #FACC15; color: #0B1020; text-shadow: none; box-shadow: 0 6px 0 #A16207; }
+  .prog { position: absolute; left: 0; top: 0; width: 720px; height: 10px; background: rgba(255,255,255,.08); }
+  .prog div { height: 10px; background: linear-gradient(90deg, #FACC15, #F97316); }
+  .disc { position: absolute; left: 0; right: 0; top: 1168px; text-align: center; font-size: 16px; font-weight: 800; color: rgba(148,163,184,.85); }
+  .follow { position: absolute; left: 360px; top: 640px; background: linear-gradient(180deg,#F87171,#DC2626); color: #fff; font-weight: 900; font-size: 52px; padding: 20px 56px; border-radius: 999px; box-shadow: 0 10px 0 #7F1D1D, 0 30px 60px rgba(220,38,38,.5); white-space: nowrap; }
+  .cursor { position: absolute; font-size: 64px; color: #fff; transform: rotate(-60deg); text-shadow: 0 4px 10px #000; }
+  #flash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; }
+</style>
+<style>
+  .live { position:absolute; left:26px; right:26px; top:40px; height:96px; border-radius:24px; background:linear-gradient(160deg,rgba(15,23,42,.9),rgba(2,6,23,.92)); border:2px solid rgba(247,147,26,.6);
+          box-shadow:0 16px 40px rgba(0,0,0,.5); font-weight:900; display:flex; align-items:center; justify-content:center; gap:16px; font-size:34px; }
+  .dot { width:22px; height:22px; border-radius:50%; background:#EF4444; box-shadow:0 0 18px #EF4444; }
+  .lab { position:absolute; font-weight:900; text-align:center; left:0; width:720px; }
+</style></head>
+<body><div id="stage"><div id="cam"><div id="bg"></div><div id="svg"></div><div id="photos"></div><div id="ov"></div></div><div id="flash"></div></div>
+<script src="data.js"></script>
+<script src="engine.js"></script>
+<script>
+/* scene windows (seconds) */
+const S = [0, 2.2, 5.6, 9.0, 11.8, 15.0, 18.0], END = 20.5;
+TIM = S.map((t, i) => [t, i + 1 < S.length ? S[i + 1] : END]); TOTAL = END; LINES = S.map(() => '');
+const sv = (T, i) => { const a = S[i], b = i + 1 < S.length ? S[i + 1] : END + 1; if (T < a - 0.02 || T >= b) return 0; return clamp(Math.min((T - a) / 0.12, (b - T) / 0.08)); };
+const zoomIn = (T, i) => 1 + 0.25 * (1 - easeOut((T - S[i]) / 0.35));       // punch-in on every cut
+const pct = (a, b) => (b >= a ? '+' : '&minus;') + Math.abs((b - a) / a * 100).toFixed(1) + '%';
+const THEME = ['#F7931A', '#0EA5E9', '#0D0905'];
+
+function scene(T) {
+  let g = '', o = '';
+  // 0: hook
+  let v = sv(T, 0);
+  if (v > 0) {
+    const s = pop(T, 0.05, 0.45);
+    g += cryptoCoin('btc', 230 - 200 * (1 - s), 480, 120, T * 5, v) + cryptoCoin('xrp', 490 + 200 * (1 - s), 480, 120, T * 5 + 1.3, v);
+    g += svgText(360, 500, 'VS', 64, '#fff', 900, 'middle', `opacity="${v * s}"`);
+    o += big3d('THIS WEEK IN CRYPTO', 690, 58, '#fff', '#FDE68A', '#854D0E', v, pop(T, 0.5));
+    o += chip('📉 UP OR DOWN? 📈', 360, 830, '#EF4444', '#fff', 38, v * clamp(pop(T, 1.0)), -3, pop(T, 1.0));
+  }
+  // 1: bitcoin now
+  v = sv(T, 1);
+  if (v > 0) {
+    const z = zoomIn(T, 1), p = easeOut(at(T, 1, 0.1, 1.6));
+    const pts = [[0, .78], [.12, .9], [.22, .82], [.34, .7], [.45, .74], [.56, .55], [.66, .6], [.76, .42], [.86, .3], [.93, .34], [1, .26]];
+    const [cg] = glowChart(pts, p, 50, 540, 620, 330, C.red, v);
+    g += cg + cryptoCoin('btc', 110, 222, 46, T * 4, v);
+    o += `<div class="lab" style="top:192px;left:170px;width:400px;text-align:left;font-size:48px;color:${BTC};opacity:${v}">BITCOIN</div>`;
+    o += big3d(money(lerp(81000, 75835, p)), 270, 112, '#FFE4B5', BTC, '#7C3D00', v, z);
+    o += chip('24H &minus;0.3%', 190, 455, C.red, '#fff', 30, v * clamp(pop(T, S[1] + 0.5)), -3, pop(T, S[1] + 0.5));
+    o += chip('30D &minus;7.4%', 520, 455, C.red, '#fff', 30, v * clamp(pop(T, S[1] + 0.8)), 3, pop(T, S[1] + 0.8));
+    o += stamp('5TH RED WEEK IN A ROW?', 360, 930, '#F87171', 36, pop(T, S[1] + 1.9), -4);
+  }
+  // 2: xrp now
+  v = sv(T, 2);
+  if (v > 0) {
+    const z = zoomIn(T, 2), p = easeOut(at(T, 2, 0.1, 1.6));
+    const pts = [[0, .5], [.14, .62], [.26, .86], [.36, .7], [.48, .58], [.6, .62], [.72, .44], [.84, .36], [1, .24]];
+    const [cg] = glowChart(pts, p, 50, 540, 620, 330, C.red, v);
+    g += cg + cryptoCoin('xrp', 110, 222, 46, T * 4, v);
+    o += `<div class="lab" style="top:192px;left:170px;width:400px;text-align:left;font-size:48px;color:#CBD5E1;opacity:${v}">XRP</div>`;
+    o += big3d('$' + lerp(1.31, 1.17, p).toFixed(2), 270, 130, '#F1F5F9', '#64748B', '#0F172A', v, z);
+    o += chip('FROM $1.31 (NOV 5) &minus;11%', 360, 455, C.red, '#fff', 30, v * clamp(pop(T, S[2] + 0.5)), -2, pop(T, S[2] + 0.5));
+    o += stamp('&minus;68% FROM $3.65 PEAK', 360, 930, '#F87171', 36, pop(T, S[2] + 1.9), 4);
+  }
+  // 3: ETF outflows
+  v = sv(T, 3);
+  if (v > 0) {
+    const z = zoomIn(T, 3), k = T - S[3];
+    o += big3d('&minus;$' + (1.28 * easeOut(at(T, 3, 0.1, 1.0))).toFixed(2) + 'B', 300, 140, '#FCA5A5', '#DC2626', '#7F1D1D', v, z);
+    o += `<div class="lab" style="top:480px;font-size:38px;line-height:1.2;opacity:${v}">LEFT US SPOT BITCOIN ETFs<br><span class="r">IN ONE WEEK</span></div>`;
+    for (let i = 0; i < 14; i++) { const f = ((k * 0.9 + i / 14) % 1); g += coinSVG(80 + (i * 97) % 560, 600 + f * 300, 18, v * (1 - f)); }
+    g += `<g opacity="${v}"><path d="M300 640 L420 640 L400 700 L320 700 Z" fill="#334155"/><rect x="330" y="700" width="60" height="16" fill="#1E293B"/></g>`;
+  }
+  // 4: BTC predictions
+  v = sv(T, 4);
+  if (v > 0) {
+    const p = easeOut(at(T, 4, 0.3, 1.2));
+    o += `<div class="lab" style="top:190px;font-size:40px;color:${BTC};opacity:${v}">BITCOIN &middot; END-2026 TARGETS</div>`;
+    const bars = [['NOW', 75835, '#64748B', '$76K', ''], ['STANDARD<br>CHARTERED', 100000, C.blue, '$100K', pct(75835, 100000)], ['BERNSTEIN', 125000, C.green, '$125K', pct(75835, 125000)]];
+    bars.forEach(([lab, val, col, txt, ch], i) => {
+      const x = 140 + i * 215, h = 360 * val / 125000 * (i ? clamp(p * 1.4 - i * 0.2) : 1);
+      g += isoBar(x, 880, 130, Math.max(4, h), col, v);
+      o += `<div class="lab" style="left:${x - 110}px;width:220px;top:${892}px;font-size:22px;line-height:1.1;color:${C.grey};opacity:${v}">${lab}</div>`;
+      if (h > 30) o += `<div class="lab" style="left:${x - 100}px;width:220px;top:${880 - h - 150}px;font-size:40px;opacity:${v}">${txt}${ch ? `<div style="font-size:28px;color:#4ADE80">${ch}</div>` : ''}</div>`;
+    });
+  }
+  // 5: XRP predictions
+  v = sv(T, 5);
+  if (v > 0) {
+    o += `<div class="lab" style="top:196px;font-size:36px;color:#CBD5E1;opacity:${v}">XRP &middot; LATEST MODEL FORECASTS</div>`;
+    [['NOW', '$1.17', '', '#64748B'], ['END-2026 &middot; CRYPTO.NEWS MODEL', '$1.39', pct(1.17, 1.39), C.green], ['NOV 2026 RANGE &middot; CHANGELLY', '$1.22&ndash;$1.51', pct(1.17, 1.51), C.cyan]].forEach(([lab, val, ch, col], i) => {
+      const q = pop(T, S[5] + 0.15 + i * 0.5, 0.35); if (q <= 0) return;
+      o += glass(60, 300 + i * 200, 600, 165, `<div style="position:absolute;left:0;top:0;bottom:0;width:14px;border-radius:26px 0 0 26px;background:${col}"></div>
+        <div style="position:absolute;left:40px;top:22px;font-size:24px;font-weight:800;color:${C.grey}">${lab}</div>
+        <div style="position:absolute;left:40px;top:${val.length > 8 ? 66 : 58}px;font-size:${val.length > 8 ? 58 : 72}px;font-weight:900">${val}</div>
+        <div style="position:absolute;right:28px;top:84px;font-size:38px;font-weight:900;color:#4ADE80">${ch}</div>`, v * clamp(q), col, `transform:scale(${q})`);
+    });
+  }
+  // 6: end card
+  v = sv(T, 6);
+  if (v > 0) {
+    const s = pop(T, S[6], 0.45);
+    g += cryptoCoin('btc', 230, 360, 90 * s, T * 5, v) + cryptoCoin('xrp', 490, 360, 90 * s, T * 5 + 1.3, v);
+    o += big3d('UP OR DOWN<br>BY NEW YEAR?', 500, 70, '#fff', '#FDE68A', '#854D0E', v, pop(T, S[6] + 0.3));
+    o += chip('💬 COMMENT YOUR PRICE', 360, 740, BTC, '#1C1002', 36, v * clamp(pop(T, S[6] + 0.8)), -3, pop(T, S[6] + 0.8));
+    o += big3d('THE MONEY <span style="color:#FACC15">MAP</span>', 820, 50, '#fff', '#CBD5E1', '#334155', v * at(T, 6, 1.1));
+  }
+  return [g, o];
+}
+const CUTS = S.slice(1);
+function frame(T) {
+  const [g, o] = scene(T);
+  let sh = 0; for (const t0 of CUTS) { const k = T - t0; if (k >= 0 && k < 0.3) sh = Math.max(sh, (1 - k / 0.3) * 12); }
+  document.getElementById('cam').style.transform = sh ? `translate(${Math.sin(T * 91) * sh}px,${Math.cos(T * 77) * sh}px)` : '';
+  let fl = 0; for (const t0 of [0, ...CUTS]) { const k = T - t0; if (k >= 0 && k < 0.22) fl = Math.max(fl, 0.55 * (1 - k / 0.22)); }
+  document.getElementById('flash').style.opacity = fl;
+  document.getElementById('svg').innerHTML = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${DEFS}${background(T, THEME)}${g}</svg>`;
+  const tk = [['BTC $75,835 (−0.3% 24H)', C.red], ['XRP $1.17 (−3% 24H)', C.red], ['ETF FLOWS −$1.28B', C.red], ['BTC TARGET $100K–$125K', C.green], ['XRP MODEL $1.39', C.green]];
+  document.getElementById('ov').innerHTML = o +
+    `<div class="prog"><div style="width:${clamp(T / END) * 100}%"></div></div>` +
+    `<div class="live"><div class="dot" style="opacity:${0.4 + 0.6 * (Math.sin(T * 8) > 0)}"></div>LIVE CRYPTO UPDATE <span style="color:#94A3B8;font-size:26px">NOV 8, 2026</span></div>` +
+    ticker(T, tk, 1000, 1) +
+    `<div class="disc" style="top:1068px">Prices approx. as of Nov 7&ndash;8, 2026 &middot; Forecasts are not guarantees &middot; Not financial advice</div>`;
+}
+window.TOTAL = END;
+window.READY = false;
+document.fonts.ready.then(() => { frame(0.5); window.READY = true; });
+window.render = T => frame(T);
+</script>
+</body></html>

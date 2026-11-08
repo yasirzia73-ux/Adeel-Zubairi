@@ -1,0 +1,212 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><style>html,body{margin:0;background:#0F172A}#s{position:relative;width:1280px;height:720px;overflow:hidden;font-family:Montserrat,sans-serif}svg{position:absolute;left:0;top:0}</style></head><body><div id="s"></div><script>
+const W=1280,H=720;const GREEN='#22C55E',GREY='#94A3B8',GOLD='#EAB308',RED='#EF4444',NAVY='#0F172A',WHITE='#F8FAFC',SLATE='#1E293B',BLUE='#1D4ED8';
+/* ---------- helpers ---------- */
+const clamp = (x, a=0, b=1) => Math.max(a, Math.min(b, x));
+const ease = x => { x = clamp(x); return x < .5 ? 4*x*x*x : 1 - Math.pow(-2*x+2, 3)/2; };
+const easeOut = x => 1 - Math.pow(1 - clamp(x), 3);
+const P = (t, a, d) => ease((t - a) / d);
+const lerp = (a, b, p) => a + (b - a) * p;
+const money = n => '$' + Math.round(n).toLocaleString('en-US');
+const pop = (t, a, d=0.45) => { const x = clamp((t - a) / d); return x === 0 ? 0 : 1 + 0.25*Math.sin(x*Math.PI) * (1 - x) + (easeOut(x) - 1); };
+const fin = (T, k, d=0.4) => clamp((T - C(k)) / d);             // fade-in at cue k
+const fout = (T, k, d=0.4) => 1 - clamp((T - C(k)) / d);        // fade-out at cue k
+const scaleAt = (cx, cy, s) => `translate(${cx},${cy}) scale(${s}) translate(${-cx},${-cy})`;
+
+function text(x, y, s, size, color=WHITE, weight=900, anchor='middle', extra='') {
+  return `<text x="${x}" y="${y}" font-family="Montserrat" font-weight="${weight}" font-size="${size}"
+           fill="${color}" text-anchor="${anchor}" ${extra}>${s}</text>`;
+}
+function ov(html, x, y, w, size, color=WHITE, opacity=1, extra='') {
+  return `<div class="ov" style="left:${x}px;top:${y}px;width:${w}px;font-size:${size}px;color:${color};opacity:${opacity};${extra}">${html}</div>`;
+}
+function badge(s, x, y, color=GOLD, fg=NAVY, size=24, op=1) {
+  const w = s.length * size * 0.66 + 40;
+  return `<g opacity="${op}"><rect x="${x - w/2}" y="${y - size - 8}" width="${w}" height="${size + 26}" rx="${(size+26)/2}" fill="${color}"/>
+          ${text(x, y + 5, s, size, fg, 900)}</g>`;
+}
+const floorLine = (y=600) => `<line x1="80" y1="${y}" x2="1200" y2="${y}" stroke="#334155" stroke-width="4"/>`;
+const check = (x, y, s, color=WHITE, prog=1, w=4) =>
+  `<path d="M${x-10*s} ${y} L${x-3*s} ${y+7*s} L${x+11*s} ${y-9*s}" stroke="${color}" stroke-width="${w}" fill="none"
+     stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="${40*s}" stroke-dashoffset="${40*s*(1-prog)}"/>`;
+const cross = (x, y, r, color=RED, w=12, op=1) =>
+  `<g opacity="${op}"><line x1="${x-r}" y1="${y-r}" x2="${x+r}" y2="${y+r}" stroke="${color}" stroke-width="${w}" stroke-linecap="round"/>
+   <line x1="${x+r}" y1="${y-r}" x2="${x-r}" y2="${y+r}" stroke="${color}" stroke-width="${w}" stroke-linecap="round"/></g>`;
+
+/* ---------- characters & props ---------- */
+function person(kind, x, y, s=1, o={}) {
+  const maya = kind === 'maya';
+  const skin = maya ? '#C68642' : '#F1C27D';
+  const hair = maya ? '#2B1B17' : '#6B4423';
+  const top = o.color || (maya ? GREEN : GREY);
+  const op = o.opacity == null ? 1 : o.opacity;
+  let g = `<g transform="translate(${x},${y}) scale(${s})" opacity="${op}">`;
+  g += `<ellipse cx="0" cy="0" rx="48" ry="8" fill="#020617" opacity="0.5"/>`;
+  g += `<rect x="-22" y="-72" width="17" height="70" rx="6" fill="${SLATE}"/><rect x="5" y="-72" width="17" height="70" rx="6" fill="${SLATE}"/>`;
+  g += `<ellipse cx="-15" cy="-3" rx="15" ry="7" fill="#0B1120"/><ellipse cx="15" cy="-3" rx="15" ry="7" fill="#0B1120"/>`;
+  if (maya) g += `<circle cx="-30" cy="-196" r="15" fill="${hair}"/><circle cx="30" cy="-196" r="15" fill="${hair}"/>`;
+  g += `<rect x="-41" y="-178" width="82" height="112" rx="30" fill="${top}"/>`;
+  const armA = o.wave ? -40 + Math.sin((o.t || 0) * 9) * 10 : 0;
+  g += `<g transform="rotate(${armA} -45 -165)"><rect x="-56" y="-168" width="19" height="84" rx="9" fill="${top}"/><circle cx="-46" cy="-84" r="10" fill="${skin}"/></g>`;
+  if (o.clip) {
+    g += `<g transform="rotate(-8 60 -120)"><rect x="34" y="-158" width="64" height="84" rx="8" fill="#92400E"/>
+          <rect x="40" y="-148" width="52" height="68" rx="4" fill="${WHITE}"/><rect x="52" y="-164" width="28" height="12" rx="4" fill="#64748B"/>`;
+    for (let i = 0; i < 4; i++) {
+      const done = (o.ticks || 0) > i;
+      g += `<rect x="46" y="${-140 + i*15}" width="9" height="9" rx="2" fill="${done ? GREEN : 'none'}" stroke="${done ? GREEN : '#94A3B8'}" stroke-width="2"/>
+            <rect x="60" y="${-137 + i*15}" width="26" height="4" rx="2" fill="#CBD5E1"/>`;
+    }
+    g += `</g><rect x="37" y="-168" width="19" height="70" rx="9" fill="${top}"/><circle cx="48" cy="-100" r="10" fill="${skin}"/>`;
+  } else {
+    g += `<rect x="37" y="-168" width="19" height="84" rx="9" fill="${top}"/><circle cx="46" cy="-84" r="10" fill="${skin}"/>`;
+  }
+  if (!maya) g += `<path d="M-30 -176 Q 0 -150 30 -176" stroke="#64748B" stroke-width="7" fill="none"/>`;
+  g += `<rect x="-9" y="-194" width="18" height="22" fill="${skin}"/>`;
+  g += `<circle cx="0" cy="-226" r="37" fill="${skin}"/>`;
+  if (maya) {
+    for (const [cx, cy, r] of [[-30,-244,16],[-17,-259,16],[0,-265,17],[17,-259,16],[30,-244,16],[-37,-222,13],[37,-222,13]])
+      g += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${hair}"/>`;
+  } else {
+    g += `<path d="M-37 -230 Q -36 -272 0 -268 Q 36 -272 37 -230 Q 22 -250 0 -248 Q -22 -250 -37 -230Z" fill="${hair}"/>`;
+  }
+  g += `<circle cx="-12" cy="-224" r="4.5" fill="${NAVY}"/><circle cx="12" cy="-224" r="4.5" fill="${NAVY}"/>`;
+  g += o.sad ? `<path d="M-11 -204 Q 0 -212 11 -204" stroke="${NAVY}" stroke-width="3.5" fill="none" stroke-linecap="round"/>`
+             : `<path d="M-12 -209 Q 0 -198 12 -209" stroke="${NAVY}" stroke-width="3.5" fill="none" stroke-linecap="round"/>`;
+  if (o.party) g += `<path d="M-14 -258 L0 -312 L14 -258Z" fill="${GOLD}"/><circle cx="0" cy="-314" r="7" fill="${RED}"/>`;
+  return g + '</g>';
+}
+function coin(x, y, r=13, op=1) {
+  return `<g opacity="${op}"><circle cx="${x}" cy="${y}" r="${r}" fill="${GOLD}" stroke="#A16207" stroke-width="3"/>
+          ${text(x, y + r*0.42, '$', r*1.15, '#854D0E', 900)}</g>`;
+}
+function jar(x, y, fill, label, opacity=1, color=GOLD) {   // x center, y bottom
+  const h = 170, w = 130, fh = clamp(fill) * (h - 14);
+  let g = `<g opacity="${opacity}">`;
+  g += `<rect x="${x-w/2}" y="${y-h}" width="${w}" height="${h}" rx="22" fill="#1E293B" opacity="0.55"/>`;
+  g += `<rect x="${x-w/2+7}" y="${y-7-fh}" width="${w-14}" height="${fh}" rx="14" fill="${color}"/>`;
+  for (let yy = y - 7 - 14; yy > y - 7 - fh + 4; yy -= 14)
+    g += `<line x1="${x-w/2+12}" y1="${yy}" x2="${x+w/2-12}" y2="${yy}" stroke="#000" stroke-width="2" opacity="0.18"/>`;
+  g += `<rect x="${x-w/2}" y="${y-h}" width="${w}" height="${h}" rx="22" fill="none" stroke="#CBD5E1" stroke-width="5"/>`;
+  g += `<rect x="${x-w/2-8}" y="${y-h-16}" width="${w+16}" height="20" rx="8" fill="#64748B"/>`;
+  if (label) g += text(x, y + 40, label, 30, '#E2E8F0', 900);
+  return g + '</g>';
+}
+function calendar(cx, cy, s, month, day, sub='', op=1, sy=1) {
+  return `<g transform="translate(${cx},${cy}) scale(${s},${s*sy})" opacity="${op}">
+   <rect x="-112" y="-115" width="240" height="270" rx="24" fill="#020617" opacity="0.4"/>
+   <rect x="-120" y="-125" width="240" height="270" rx="24" fill="${WHITE}"/>
+   <path d="M-120 -101 Q-120 -125 -96 -125 L96 -125 Q120 -125 120 -101 L120 -50 L-120 -50Z" fill="${RED}"/>
+   ${text(0, -76, month, 30, WHITE)}
+   ${text(0, sub ? 62 : 72, day, 128, NAVY)}
+   ${sub ? text(0, 118, sub, 28, '#64748B', 900) : ''}
+   <rect x="-70" y="-142" width="16" height="36" rx="8" fill="#64748B"/><rect x="54" y="-142" width="16" height="36" rx="8" fill="#64748B"/>
+  </g>`;
+}
+function alarmClock(cx, cy, s, rot=0, ring=false) {
+  let g = `<g transform="translate(${cx},${cy}) rotate(${rot}) scale(${s})">
+   <line x1="-40" y1="50" x2="-58" y2="80" stroke="#475569" stroke-width="10" stroke-linecap="round"/>
+   <line x1="40" y1="50" x2="58" y2="80" stroke="#475569" stroke-width="10" stroke-linecap="round"/>
+   <circle cx="-50" cy="-58" r="26" fill="${GOLD}"/><circle cx="50" cy="-58" r="26" fill="${GOLD}"/>
+   <circle cx="0" cy="0" r="72" fill="${RED}"/><circle cx="0" cy="0" r="56" fill="${WHITE}"/>
+   <line x1="0" y1="0" x2="-5" y2="-30" stroke="${NAVY}" stroke-width="8" stroke-linecap="round"/>
+   <line x1="0" y1="0" x2="-10" y2="-46" stroke="${NAVY}" stroke-width="5" stroke-linecap="round"/>
+   <circle cx="0" cy="0" r="7" fill="${NAVY}"/>`;
+  if (ring) g += `<path d="M-92 -92 L-110 -110 M-104 -60 L-128 -64 M92 -92 L110 -110 M104 -60 L128 -64" stroke="${GOLD}" stroke-width="7" stroke-linecap="round"/>`;
+  return g + '</g>';
+}
+function hourglass(cx, cy, s, u, op=1) {
+  const t = 1 - clamp(u), b = clamp(u), wb = 0.35 + 0.65 * b;
+  let g = `<g transform="translate(${cx},${cy}) scale(${s})" opacity="${op}">
+   <path d="M-56 -92 L56 -92 L8 0 L56 92 L-56 92 L-8 0 Z" fill="#CBD5E1" opacity="0.18" stroke="#CBD5E1" stroke-width="4" stroke-linejoin="round"/>`;
+  if (t > 0.01) g += `<path d="M${-46*t} ${-4-80*t} L${46*t} ${-4-80*t} L0 -4 Z" fill="${GOLD}"/>`;
+  g += `<path d="M${-50*wb} 88 L${50*wb} 88 L0 ${88 - 70*b - 4}Z" fill="${GOLD}"/>`;
+  if (t > 0.01) g += `<line x1="0" y1="-4" x2="0" y2="86" stroke="${GOLD}" stroke-width="4"/>`;
+  g += `<rect x="-72" y="-112" width="144" height="20" rx="7" fill="#92400E"/><rect x="-72" y="92" width="144" height="20" rx="7" fill="#92400E"/>`;
+  return g + '</g>';
+}
+function tile(x, y, w, h, op=1, stroke='#334155') {
+  return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="20" fill="${SLATE}" stroke="${stroke}" stroke-width="4" opacity="${op}"/>`;
+}
+
+/* ---------- math: missed match ($150/mo from 25 to 65 at 7%) ---------- */
+const R = 0.07 / 12, MATCH = [0];
+for (let k = 1; k <= 480; k++) MATCH.push(MATCH[k - 1] * (1 + R) + 150);
+const matchAt = age => { const m = clamp((age - 25) * 12, 0, 480), i = Math.floor(m), f = m - i; return i >= 480 ? MATCH[480] : MATCH[i] * (1 - f) + MATCH[i + 1] * f; };
+
+/* section header: pill + title */
+function section(label, title, T, scene, pillColor=GOLD) {
+  const a = clamp((T - SCENES[scene].start - 0.1) / 0.4), w = label.length * 15 + 44;
+  const g = `<g opacity="${a}"><rect x="30" y="34" width="${w}" height="48" rx="24" fill="${pillColor}"/>${text(30 + w / 2, 66, label, 22, NAVY)}</g>`;
+  return [g, title ? ov(title, 240, 36, 800, 44, WHITE, a) : ''];
+}
+function giftBox(cx, by, s, lid) {
+  const lx = cx - 135, ly = by - 236 - 75 * lid;
+  return `<g transform="translate(${cx},${by}) scale(${s}) translate(${-cx},${-by})">
+    <rect x="${cx - 120}" y="${by - 190}" width="240" height="190" rx="12" fill="${RED}"/>
+    <rect x="${cx - 17}" y="${by - 190}" width="34" height="190" fill="${GOLD}"/>
+    <g transform="rotate(${-22 * lid} ${lx} ${ly + 46})">
+      <rect x="${lx}" y="${ly}" width="270" height="48" rx="10" fill="#DC2626"/><rect x="${cx - 19}" y="${ly}" width="38" height="48" fill="${GOLD}"/>
+      <ellipse cx="${cx - 34}" cy="${ly - 16}" rx="36" ry="20" fill="${GOLD}" transform="rotate(-20 ${cx - 34} ${ly - 16})"/>
+      <ellipse cx="${cx + 34}" cy="${ly - 16}" rx="36" ry="20" fill="${GOLD}" transform="rotate(20 ${cx + 34} ${ly - 16})"/>
+      <circle cx="${cx}" cy="${ly - 8}" r="14" fill="#CA8A04"/></g></g>`;
+}
+function paycheck(x, y, w=220, h=120, op=1, label='PAYCHECK', amt='') {
+  return `<g opacity="${op}"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="14" fill="${WHITE}"/>
+    <rect x="${x}" y="${y}" width="18" height="${h}" rx="8" fill="${GREEN}"/>
+    ${text(x + w / 2 + 8, y + 50, label, 24, NAVY)}${amt ? text(x + w / 2 + 8, y + 88, amt, 26, '#15803D') : ''}</g>`;
+}
+function building(x, y, w, h, col='#64748B') {
+  let g = `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="4" fill="${col}"/>`;
+  for (let r = 0; r < Math.floor((h - 10) / 16); r++) for (let c = 0; c < Math.floor((w - 8) / 14); c++)
+    g += `<rect x="${x + 6 + c * 14}" y="${y + 8 + r * 16}" width="7" height="8" fill="${GOLD}" opacity="0.85"/>`;
+  return g;
+}
+function formCard(x, y, s, op=1) {
+  return `<g transform="translate(${x},${y}) scale(${s})" opacity="${op}">
+    <rect x="-150" y="-190" width="300" height="380" rx="16" fill="${WHITE}"/>
+    <rect x="-150" y="-190" width="300" height="70" rx="16" fill="${BLUE}"/><rect x="-150" y="-140" width="300" height="20" fill="${BLUE}"/>
+    ${text(0, -145, '401(k) ENROLLMENT', 24, WHITE)}
+    ${text(-120, -80, 'Contribution:', 20, NAVY, 800, 'start')}<rect x="20" y="-104" width="70" height="34" rx="6" fill="none" stroke="#94A3B8" stroke-width="3"/>${text(102, -80, '%', 22, NAVY, 800, 'start')}
+    ${text(-120, -20, 'Investment:', 20, NAVY, 800, 'start')}<rect x="-120" y="-6" width="240" height="30" rx="6" fill="none" stroke="#94A3B8" stroke-width="3"/>
+    <rect x="-120" y="50" width="240" height="8" rx="4" fill="#CBD5E1"/><rect x="-120" y="74" width="200" height="8" rx="4" fill="#CBD5E1"/>
+    <rect x="-120" y="98" width="220" height="8" rx="4" fill="#CBD5E1"/>
+    ${text(-120, 160, 'Signature: ______', 18, '#64748B', 800, 'start')}</g>`;
+}
+function trashCan(cx, by, op=1) {
+  return `<g opacity="${op}"><rect x="${cx - 52}" y="${by - 130}" width="104" height="130" rx="10" fill="#475569"/>
+    <rect x="${cx - 62}" y="${by - 146}" width="124" height="20" rx="6" fill="#64748B"/>
+    ${[-26, 0, 26].map(d => `<rect x="${cx + d - 4}" y="${by - 112}" width="8" height="96" rx="4" fill="#334155"/>`).join('')}</g>`;
+}
+
+
+const T=(x,y,s,size,fill,sw=16,anchor='middle')=>`<text x="${x}" y="${y}" font-family="Montserrat" font-weight="900" font-size="${size}" fill="${fill}" text-anchor="${anchor}" stroke="#020617" stroke-width="${sw}" stroke-linejoin="round" paint-order="stroke fill">${s}</text>`;
+function stack(x,b,h,col,w=170){let s=`<rect x="${x-w/2+10}" y="${b-h+12}" width="${w}" height="${h}" rx="12" fill="#020617" opacity="0.5"/><rect x="${x-w/2}" y="${b-h}" width="${w}" height="${h}" rx="12" fill="${GOLD}"/>`;
+ for(let y=b-18;y>b-h+8;y-=18)s+=`<line x1="${x-w/2+8}" y1="${y}" x2="${x+w/2-8}" y2="${y}" stroke="#A16207" stroke-width="4"/>`;
+ return s+`<rect x="${x-w/2}" y="${b-h}" width="${w}" height="${h}" rx="12" fill="none" stroke="${col}" stroke-width="7"/>`;}
+const crown=(x,y,s)=>`<g transform="translate(${x},${y}) scale(${s})"><path d="M-60 30 L-70 -30 L-30 0 L0 -50 L30 0 L70 -30 L60 30Z" fill="${GOLD}" stroke="#A16207" stroke-width="6" stroke-linejoin="round"/><circle cx="0" cy="-50" r="10" fill="${RED}"/><circle cx="-70" cy="-30" r="8" fill="${RED}"/><circle cx="70" cy="-30" r="8" fill="${RED}"/></g>`;
+
+let g=`<defs>
+<linearGradient id="lp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#065F46"/><stop offset="1" stop-color="#022C22"/></linearGradient>
+<linearGradient id="rp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3F1D24"/><stop offset="1" stop-color="#140A0E"/></linearGradient>
+<radialGradient id="lg" cx="30%" cy="55%" r="55%"><stop offset="0" stop-color="#22C55E" stop-opacity=".45"/><stop offset="1" stop-color="#22C55E" stop-opacity="0"/></radialGradient></defs>
+<rect width="640" height="720" fill="url(#lp)"/><rect width="640" height="720" fill="url(#lg)"/>
+<rect x="640" width="640" height="720" fill="url(#rp)"/>`;
+// headers
+g+=T(320,92,'10 YEARS',92,'#4ADE80',16);
+g+=T(960,92,'33 YEARS',92,'#F87171',16);
+// Maya side
+g+=person('maya',125,720,1.25,{});
+g+=crown(125,362,0.5);
+g+=T(425,215,'PUT IN $48K',38,WHITE,10);
+g+=T(425,370,'$693K',118,'#4ADE80',18);
+g+=`<ellipse cx="425" cy="330" rx="200" ry="92" fill="none" stroke="${RED}" stroke-width="11" transform="rotate(-4 425 330)" stroke-linecap="round" stroke-dasharray="1180 50"/>`;
+g+=`<g transform="translate(300,560) rotate(35)"><rect x="-13" y="-6" width="26" height="120" rx="13" fill="${RED}" stroke="#020617" stroke-width="5"/><polygon points="-46,4 46,4 0,-52" fill="${RED}" stroke="#020617" stroke-width="5" stroke-linejoin="round"/></g>`;
+g+=`<g transform="translate(470,500) rotate(-4)"><rect x="-120" y="-40" width="240" height="72" rx="36" fill="${GOLD}" stroke="#020617" stroke-width="6"/>${text(0,14,'WINNER',40,NAVY)}</g>`;
+// Jake side
+g+=person('jake',1155,720,1.25,{sad:true,opacity:0.9});
+g+=T(860,215,'PUT IN $190K',38,WHITE,10);
+g+=T(860,370,'$618K',118,'#CBD5E1',18);
+g+=T(860,480,'STILL LESS!',62,'#F87171',12);
+// center divider + VS
+g+=`<rect x="634" y="0" width="12" height="720" fill="#F8FAFC"/><g transform="translate(640,640) rotate(-6)"><circle r="62" fill="${RED}" stroke="#020617" stroke-width="7"/>${text(0,20,'VS',56,WHITE)}</g>`;
+document.getElementById('s').innerHTML=`<svg width="1280" height="720" viewBox="0 0 1280 720">${g}</svg>`;
+</script></body></html>

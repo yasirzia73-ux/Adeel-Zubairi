@@ -19,6 +19,7 @@ for i in range(1, len(s)):
     if i in CHAP: continue
     a(s[i] - 0.12, 'whooshD', 0.16, (-1) ** i * 0.3)
 for t in HITS: a(t - 1.1, 'swell', 0.22); a(t, 'impact', 0.42)
+for i in CHAP: a(s[i] - 0.35, 'whooshD', 0.3, 0.4)
 for i in range(len(s)):  # card/chip pops
     if i in CHAP or i in (0, 3, 6, 81, 86): continue
     a(s[i] + 0.35, 'poppro', 0.16, 0.2 * math.sin(i)); a(fr(i, .45), 'poppro', 0.12, -0.2 * math.sin(i))

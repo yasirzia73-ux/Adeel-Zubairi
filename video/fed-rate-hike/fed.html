@@ -390,14 +390,26 @@ const HITS = [fr(0, 3, 0.15), st(6) + 0.05, st(16), st(22), st(32), st(39), st(4
 function frame(T) {
   for (const k in PH) PH[k].w.style.opacity = 0;
   let g = '', o = '';
-  for (let i = 0; i < S.length; i++) { if (!S[i]) continue; const v = vis(T, i); if (v <= 0) continue; const r = S[i](T, v); g += r[0]; o += r[1]; }
+  for (let i = 0; i < S.length; i++) { if (!S[i]) continue; const v = vis(T, i); if (v <= 0) continue; const r = S[i](T, v);
+    // slide-in transition: each new scene whips in from alternating sides with a little blur
+    const k = T - (st(i) - 0.15), q = 1 - easeOut(k / 0.42), dir = i % 2 ? 1 : -1, dx = q * 90 * dir, sc = 1 + q * 0.06, bl = q * 6;
+    g += `<g transform="translate(${dx} 0) translate(640 360) scale(${sc}) translate(-640 -360)">${r[0]}</g>`;
+    o += `<div style="position:absolute;inset:0;transform:translateX(${dx}px) scale(${sc});filter:${bl > 0.3 ? `blur(${bl.toFixed(1)}px)` : 'none'}">${r[1]}</div>`; }
   let si = 0; for (let i = 0; i < TIM.length; i++) if (T >= st(i) - 0.15) si = i; const sec = secOf(si);
   let sh = 0; for (const t0 of HITS) { const k = T - t0; if (k >= 0 && k < 0.35) sh = Math.max(sh, (1 - k / 0.35) * 9); }
-  document.getElementById('cam').style.transform = sh ? `translate(${Math.sin(T * 91) * sh}px,${Math.cos(T * 77) * sh}px)` : '';
+  // zoom-punch on every new paragraph
+  const kp = T - st(si), punch = kp >= 0 && kp < 0.4 ? (1 - easeOut(kp / 0.4)) * 0.035 : 0;
+  document.getElementById('cam').style.transform = `translate(${sh ? Math.sin(T * 91) * sh : 0}px,${sh ? Math.cos(T * 77) * sh : 0}px) scale(${1 + punch})`;
   let fl = 0; for (const t0 of HITS) { const k = T - t0; if (k >= 0 && k < 0.25) fl = Math.max(fl, 0.5 * (1 - k / 0.25)); }
   document.getElementById('flash').style.opacity = fl;
   document.getElementById('svg').innerHTML = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${DEFS}${background(T, sec[2])}${g}</svg>`;
-  document.getElementById('ov').innerHTML = o + `<div class="prog"><div style="width:${clamp(T / TOTAL) * 100}%"></div></div><div class="sec">${sec[1]}</div><div class="brand">THE MONEY <span class="y">MAP</span></div>` + captions(T);
+  document.getElementById('ov').innerHTML = o + `<div class="prog"><div style="width:${clamp(T / TOTAL) * 100}%"></div></div><div class="sec">${sec[1]}</div><div class="brand">THE MONEY <span class="y">MAP</span></div>` + captions(T) + wipe(T);
+}
+const CHAP = [16, 22, 31, 32, 39, 47, 51, 61, 67, 73, 81];
+function wipe(T) {   // diagonal colour wipe across the screen at each chapter change
+  for (const i of CHAP) { const k = T - (st(i) - 0.3); if (k < 0 || k > 0.6) continue; const x = lerp(-900, 1500, easeOut(k / 0.6)), col = secOf(i)[2][0];
+    return `<svg style="position:absolute;left:0;top:0" width="1280" height="720"><polygon points="${x},0 ${x + 380},0 ${x + 120},720 ${x - 260},720" fill="${col}" opacity=".92"/><polygon points="${x + 400},0 ${x + 460},0 ${x + 200},720 ${x + 140},720" fill="#FACC15" opacity=".95"/></svg>`; }
+  return '';
 }
 window.TOTAL = TOTAL; window.READY = false; window.HITS = HITS;
 CREDITS = window.CREDITS || {};

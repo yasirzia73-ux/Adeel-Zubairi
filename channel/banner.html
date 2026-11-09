@@ -182,7 +182,7 @@ let g=`<defs><radialGradient id="glow" cx="50%" cy="50%" r="50%"><stop offset="0
 <rect width="2560" height="1440" fill="${NAVY}"/><rect width="2560" height="1440" fill="url(#grid)" opacity="0.7"/>
 <ellipse cx="1280" cy="720" rx="1100" ry="520" fill="url(#glow)"/>`;
 // map route across the banner
-g+=`<path d="M-40 1180 C 300 1100 380 900 640 930 S 900 1150 1150 1060 S 1500 820 1800 900 S 2200 1120 2600 980" fill="none" stroke="${GOLD}" stroke-width="10" stroke-dasharray="4 26" stroke-linecap="round" opacity="0.8"/>`;
+g+=`<path d="M-40 1180 C 300 1100 380 1000 640 1030 S 900 1180 1150 1120 S 1500 1000 1800 1040 S 2200 1150 2600 1040" fill="none" stroke="${GOLD}" stroke-width="10" stroke-dasharray="4 26" stroke-linecap="round" opacity="0.8"/>`;
 g+=`<path d="M-40 300 C 260 380 420 520 700 470 S 1100 300 1400 360 S 1900 560 2200 440 S 2450 320 2600 360" fill="none" stroke="#334155" stroke-width="8" stroke-dasharray="4 22" stroke-linecap="round"/>`;
 // side decorations (visible on desktop / TV)
 g+=person('maya',300,1060,1.55,{})+person('jake',2260,1060,1.55,{color:GREEN});
@@ -190,12 +190,13 @@ const stack=(x,b,h)=>{let s=`<rect x="${x-60}" y="${b-h}" width="120" height="${
 g+=stack(470,1060,90)+stack(600,1060,160)+stack(1960,1060,160)+stack(2090,1060,250);
 g+=coin(180,420,34)+coin(420,330,26)+coin(2380,380,34)+coin(2150,300,26)+coin(760,240,22)+coin(1820,230,22);
 g+=pin(1330,1190,0.9,'#334155');
+g+=`<g opacity="0.9"><polygon points="760,330 800,270 840,330" fill="${GREEN}"/><rect x="785" y="330" width="30" height="60" fill="${GREEN}"/><polygon points="1760,270 1800,330 1840,270" fill="${RED}"/><rect x="1785" y="210" width="30" height="60" fill="${RED}"/></g>`;
 // safe area content (1546x423 centered: x 507-2053, y 508-931)
 g+=pin(650,712,2.15);
 g+=text(1430,738,'THE MONEY <tspan fill="'+GOLD+'">MAP</tspan>',132,WHITE,900);
-g+=text(1430,822,'Money, explained simply. One move at a time.',46,'#CBD5E1',800);
-const chips=['INVESTING','401(k)','BUDGETING','TAXES','DEBT'];let cx=1430-((chips.join('').length*19+chips.length*70-30)/2);
+g+=text(1430,822,'Money news, explained for YOUR wallet.',50,'#CBD5E1',800);
+const chips=['THE FED','INTEREST RATES','STOCKS','CRYPTO','SAVINGS'];let cx=1430-((chips.join('').length*19+chips.length*70-30)/2);
 chips.forEach(c=>{const w=c.length*19+40;g+=`<rect x="${cx}" y="858" width="${w}" height="52" rx="26" fill="${SLATE}" stroke="${GOLD}" stroke-width="3"/>`+text(cx+w/2,893,c,26,GOLD,900);cx+=w+30;});
-g+=`<rect x="1180" y="532" width="500" height="58" rx="29" fill="${RED}"/>`+text(1430,572,'NEW VIDEO EVERY WEEK',30,WHITE,900);
+g+=`<rect x="1180" y="532" width="500" height="58" rx="29" fill="${RED}"/>`+text(1430,572,'NEW VIDEOS EVERY WEEK',30,WHITE,900);
 document.getElementById('s').innerHTML=`<svg width="2560" height="1440" viewBox="0 0 2560 1440">${g}</svg>`;
 </script></body></html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><style>
+html,body{margin:0;background:#000}
+#s{position:relative;width:1280px;height:720px;overflow:hidden;font-family:Montserrat,sans-serif}
+#bg{position:absolute;inset:0;background:url(../video/fed-rate-hike/assets/fed-eccles.jpg) center 40%/cover;filter:saturate(.7) brightness(.55) contrast(1.15);transform:scale(1.12)}
+#tint{position:absolute;inset:0;background:radial-gradient(circle at 30% 55%,rgba(220,38,38,.15),rgba(2,6,23,.85) 70%),linear-gradient(0deg,rgba(69,10,10,.85),transparent 55%)}
+.t{position:absolute;font-weight:900;line-height:.92;paint-order:stroke fill;white-space:nowrap}
+svg{position:absolute;left:0;top:0}
+</style></head><body><div id="s"><div id="bg"></div><div id="tint"></div>
+<svg width="1280" height="720" viewBox="0 0 1280 720">
+ <defs><filter id="gl" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="16"/></filter></defs>
+ <!-- odds gauge -->
+ <g transform="translate(330 470)">
+  <path d="M-250 0 A250 250 0 0 1 250 0" stroke="#1E293B" stroke-width="70" fill="none" stroke-linecap="round"/>
+  <path d="M-250 0 A250 250 0 0 1 192 -160" stroke="#EF4444" stroke-width="110" fill="none" opacity=".35" filter="url(#gl)"/>
+  <path d="M-250 0 A250 250 0 0 1 192 -160" stroke="#EF4444" stroke-width="70" fill="none" stroke-linecap="round"/>
+  <line x1="0" y1="0" x2="150" y2="-126" stroke="#fff" stroke-width="16" stroke-linecap="round"/>
+  <circle r="26" fill="#fff"/>
+ </g>
+</svg>
+<div class="t" style="left:150px;top:500px;width:360px;text-align:center;font-size:150px;color:#fff;-webkit-text-stroke:12px #020617">77%</div>
+<div class="t" style="left:120px;top:648px;width:420px;text-align:center;font-size:34px;color:#FCA5A5;-webkit-text-stroke:6px #020617">ODDS OF A RATE HIKE</div>
+<!-- right side text -->
+<div class="t" style="left:690px;top:70px;font-size:120px;color:#FDE047;-webkit-text-stroke:12px #020617;transform:rotate(-3deg)">DEC 9</div>
+<div class="t" style="left:690px;top:215px;font-size:84px;color:#fff;-webkit-text-stroke:11px #020617">IT GETS</div>
+<div class="t" style="left:690px;top:305px;font-size:84px;color:#F87171;-webkit-text-stroke:11px #020617">MORE</div>
+<div class="t" style="left:690px;top:395px;font-size:84px;color:#F87171;-webkit-text-stroke:11px #020617">EXPENSIVE</div>
+<div style="position:absolute;left:700px;top:520px;display:flex;gap:16px">
+ <div style="padding:10px 22px;border-radius:18px;background:#0F172A;border:5px solid #F8FAFC;color:#fff;font-weight:900;font-size:36px">💳 22%</div>
+ <div style="padding:10px 22px;border-radius:18px;background:#0F172A;border:5px solid #F8FAFC;color:#fff;font-weight:900;font-size:36px">🏠 7.18%</div>
+</div>
+</div></body></html>

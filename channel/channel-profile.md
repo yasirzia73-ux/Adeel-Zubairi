@@ -5,7 +5,7 @@
 
 **Handle:** @TheMoneyMap. If it's taken, try @MoneyMapUSA, @TheMoneyMapHQ or @MoneyMapExplained. Use the same handle on YouTube, Instagram and TikTok.
 
-**Banner tagline:** Money, explained simply. One move at a time.
+**Banner tagline:** Money news, explained for YOUR wallet. (Banner updated Nov 9, 2026: topics THE FED · INTEREST RATES · STOCKS · CRYPTO · SAVINGS)
 
 **Backup name:** Quiet Wealth (@QuietWealthUS)
 

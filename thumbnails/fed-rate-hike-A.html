@@ -1,0 +1,35 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><style>
+html,body{margin:0;background:#000}
+#s{position:relative;width:1280px;height:720px;overflow:hidden;font-family:Montserrat,sans-serif}
+#bg{position:absolute;inset:0;background:url(../video/fed-rate-hike/assets/fed-eccles.jpg) center 38%/cover;filter:saturate(.8) brightness(.8) contrast(1.1);transform:scale(1.08)}
+#tint{position:absolute;inset:0;background:linear-gradient(90deg,rgba(2,6,23,.15) 0%,rgba(2,6,23,.35) 38%,rgba(127,29,29,.88) 62%,rgba(69,10,10,.96) 100%)}
+.t{position:absolute;font-weight:900;line-height:.95;letter-spacing:-1px;paint-order:stroke fill}
+svg{position:absolute;left:0;top:0}
+</style></head><body><div id="s"><div id="bg"></div><div id="tint"></div>
+<svg width="1280" height="720" viewBox="0 0 1280 720">
+ <defs>
+  <linearGradient id="ar" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#B91C1C"/><stop offset=".6" stop-color="#EF4444"/><stop offset="1" stop-color="#FCA5A5"/></linearGradient>
+  <filter id="gl" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="14" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+ </defs>
+ <!-- big red arrow smashing up through the Fed -->
+ <g filter="url(#gl)">
+  <path d="M60 690 L250 520 L300 575 L470 330 L430 300 L620 230 L585 430 L545 395 L360 650 L305 600 L120 760 Z" fill="url(#ar)" stroke="#450A0A" stroke-width="10" stroke-linejoin="round"/>
+ </g>
+ <!-- credit card being hit -->
+ <g transform="translate(150 285) rotate(-12)">
+  <rect x="0" y="0" width="230" height="145" rx="18" fill="#1E293B" stroke="#F8FAFC" stroke-width="6"/>
+  <rect x="0" y="28" width="230" height="30" fill="#0F172A"/>
+  <rect x="22" y="78" width="44" height="34" rx="6" fill="#EAB308"/>
+  <text x="208" y="128" font-family="Montserrat" font-weight="900" font-size="40" fill="#F87171" text-anchor="end" stroke="#020617" stroke-width="6" paint-order="stroke fill">22%</text>
+ </g>
+</svg>
+<!-- calendar badge -->
+<div style="position:absolute;left:690px;top:40px;width:250px;height:250px;border-radius:30px;background:#F8FAFC;box-shadow:0 18px 40px rgba(0,0,0,.6);transform:rotate(-5deg);overflow:hidden;border:6px solid #020617">
+ <div style="background:#DC2626;height:78px;color:#fff;font-weight:900;font-size:46px;text-align:center;line-height:78px">DEC</div>
+ <div style="color:#020617;font-weight:900;font-size:160px;text-align:center;line-height:170px">9</div>
+</div>
+<div class="t" style="left:965px;top:70px;font-size:96px;color:#FDE047;-webkit-text-stroke:10px #020617;transform:rotate(6deg)">⚠️</div>
+<div class="t" style="left:640px;top:318px;width:620px;text-align:center;white-space:nowrap;font-size:150px;color:#fff;-webkit-text-stroke:12px #020617">RATES</div>
+<div class="t" style="left:640px;top:462px;width:620px;text-align:center;white-space:nowrap;font-size:104px;color:#FDE047;-webkit-text-stroke:12px #020617">UP AGAIN</div>
+<div style="position:absolute;left:715px;top:600px;white-space:nowrap;padding:10px 30px;border-radius:999px;background:#DC2626;color:#fff;font-weight:900;font-size:38px;border:5px solid #020617;box-shadow:0 8px 0 #450A0A">YOUR MONEY IN 2027 💸</div>
+</div></body></html>

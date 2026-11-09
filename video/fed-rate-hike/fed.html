@@ -173,10 +173,11 @@ const S = [];
 const D = (i, f) => { S[i] = f; };
 // 0 hook: the Fed building + 12 people + Dec 9
 D(0, (T, v) => { full('fed-eccles', T, 0, { op: v, filter: 'saturate(.9) brightness(.55)', z0: 1.25, z1: 1.05 });
-  let g = '', o = icCal(1010, 70, 1.0, 'DEC', '9', v * clamp(pop(T, st(0) + 0.6)));
-  for (let k = 0; k < 12; k++) g += person(330 + k * 56, 470, 1.1, k % 2 ? '#CBD5E1' : '#F8FAFC', v * clamp((T - st(0) - 2.2 - k * 0.08) / 0.2));
+  let g = '', o = icCal(1030, 110, 0.95, 'DEC', '9', v * clamp(pop(T, st(0) + 0.6)));
+  for (let k = 0; k < 12; k++) g += person(332 + k * 56, 470, 1.1, k % 2 ? '#FDE68A' : '#F8FAFC', v * clamp((T - st(0) - 2.2 - k * 0.08) / 0.2));
+  o += `<svg style="position:absolute;left:0;top:0" width="1280" height="720">${g}</svg>`;   // above the photo layer
   if (T > st(0) + 2.2) o += ov('12 PEOPLE', 0, 520, W, 40, C.gold, v * at(T, 0, 2.6));
-  return [g, o]; });
+  return ['', o]; });
 D(1, (T, v) => { let g = ''; [[icCard, 'YOUR CREDIT CARD'], [icCar, 'YOUR CAR LOAN'], [icHouse, 'YOUR MORTGAGE']].forEach(([ic, lab], k) => {
   const s = pop(T, st(1) + k * 0.9, 0.45); if (s <= 0) return; g += `<g opacity="${v}">${ic(260 + k * 380, 300, 1.4 * s)}${svgT(260 + k * 380, 450, lab, 30, C.white)}</g>`; }); return [g, '']; });
 D(2, (T, v) => { const p = easeOut(at(T, 2, 0.4, 1.6)) * 0.77;
@@ -293,7 +294,7 @@ D(37, (T, v) => { let g = '', o = ''; for (let k = 0; k < 2; k++) { const s = po
 D(38, (T, v) => { const k = T - st(38), sh = Math.sin(k * 30) * 8 * (k % 1.2 < 0.5 ? 1 : 0);
   let g = `<g opacity="${v}" transform="translate(${640 + sh} 280)"><path d="M-90 60 Q-90 -90 0 -90 Q90 -90 90 60 Z" fill="${C.red}" stroke="#fff" stroke-width="6"/><rect x="-110" y="56" width="220" height="24" rx="10" fill="${C.red}" stroke="#fff" stroke-width="6"/><circle cx="0" cy="100" r="18" fill="#fff"/></g>`;
   return [g, bigc('YOUR LOUDEST ALARM', 0, 430, W, 60, 'red', v) + chip('→ MOVE #1', 640, 540, C.gold, '#0B1020', 28, v * clamp(pop(T, fr(T, 38, .5))), 0, pop(T, fr(T, 38, .5)))]; });
-D(39, (T, v) => { full('suburb', T, 39, { op: v }); const [g, o] = chapter(T, 39, '2', 'YOUR MORTGAGE', C.blue); return [`<g opacity="${v}">${g}</g>`, `<div style="opacity:${v}">${o}</div>`]; });
+D(39, (T, v) => { full('suburb', T, 39, { op: v }); const [g, o] = chapter(T, 39, '2', 'YOUR MORTGAGE', C.blue); return ['', `<div style="opacity:${v}"><svg style="position:absolute;left:0;top:0" width="1280" height="720">${g}</svg>${o}</div>`]; });
 D(40, (T, v) => { let o = card(160, 150, 420, 160, `<div style="text-align:center;margin-top:34px;font-size:40px;font-weight:900">THE FED</div><div style="text-align:center;font-size:26px;color:#F87171;font-weight:900">does NOT set it ✗</div>`, v * clamp(pop(T, st(40) + 0.3)), 'rgba(239,68,68,.6)', pop(T, st(40) + 0.3));
   o += card(700, 150, 420, 160, `<div style="text-align:center;margin-top:34px;font-size:36px;font-weight:900">10-YEAR TREASURY</div><div style="text-align:center;font-size:26px;color:#4ADE80;font-weight:900">mortgages follow this ✓</div>`, v * clamp(pop(T, fr(T, 40, .3))), 'rgba(34,197,94,.6)', pop(T, fr(T, 40, .3)));
   return [`<g opacity="${v}">${icHouse(640, 450, 1.1)}</g>`, o + chip('+ LONG-TERM INFLATION EXPECTATIONS', 640, 560, '#334155', '#fff', 22, v * clamp(pop(T, fr(T, 40, .6))), 0, pop(T, fr(T, 40, .6)))]; });
@@ -310,7 +311,7 @@ D(45, (T, v) => ['', card(150, 140, 450, 300, `<div style="text-align:center;mar
 D(46, (T, v) => { photo('suburb', { op: v, x: 80, y: 120, w: 520, h: 380, p: (T - st(46)) / du(46), glow: C.cyan }); const p = easeOut(at(T, 46, 0.5, 2.5));
   const [cg] = lineChart([[0, .2], [.2, .45], [.4, .65], [.6, .75], [.8, .8], [1, .83]], p, 680, 160, 480, 300, C.green, v);
   return [cg, chip('HOME PRICES: SLOWER GROWTH', 920, 130, C.green, '#052E16', 22, v, 0, 1) + stamp('A CRASH? DON\'T BET ON IT', 920, 520, '#F87171', 28, pop(T, fr(T, 46, .6)), -3)]; });
-D(47, (T, v) => { full('cars', T, 47, { op: v }); const [g, o] = chapter(T, 47, '3', 'YOUR CAR LOAN', C.orange); return [`<g opacity="${v}">${g}</g>`, `<div style="opacity:${v}">${o}</div>`]; });
+D(47, (T, v) => { full('cars', T, 47, { op: v }); const [g, o] = chapter(T, 47, '3', 'YOUR CAR LOAN', C.orange); return ['', `<div style="opacity:${v}"><svg style="position:absolute;left:0;top:0" width="1280" height="720">${g}</svg>${o}</div>`]; });
 D(48, (T, v) => { photo('cars', { op: v, x: 100, y: 130, w: 560, h: 360, p: (T - st(48)) / du(48), glow: C.orange }); return ['', card(740, 170, 440, 260, `<div style="text-align:center;margin-top:40px;font-size:64px">🔒🚗</div><div style="text-align:center;font-size:32px;font-weight:900;margin-top:10px">ALREADY HAVE A LOAN?</div><div style="text-align:center;font-size:30px;color:#4ADE80;font-weight:900">PAYMENT DOESN'T CHANGE</div>`, v * clamp(pop(T, st(48) + 0.4)), 'rgba(34,197,94,.6)', pop(T, st(48) + 0.4))]; });
 D(49, (T, v) => { const p = easeOut(at(T, 49, du(49) * 0.45, 1.2)); return [`<g opacity="${v}">${icCar(330, 320, 1.6)}</g>`, card(640, 160, 520, 290, `<div style="margin:30px 34px 0;font-size:22px;color:#94A3B8;font-weight:800">$35,000 · 5-YEAR LOAN</div><div style="margin:10px 34px 0;font-size:30px;font-weight:900">QUARTER-POINT HIKE =</div><div style="margin:10px 34px 0;font-size:90px;font-weight:900;color:#FBBF24">+$${Math.round(4 * p)}<span style="font-size:34px">/mo</span></div>`, v * clamp(pop(T, st(49) + 0.3)), 'rgba(251,191,36,.6)', pop(T, st(49) + 0.3))]; });
 D(50, (T, v) => { const p = easeOut(at(T, 50, 0.5, 1.4)); let g = bar3d(420, 470, 170, 180 * p, C.green, v) + bar3d(760, 470, 170, 257 * p, C.red, v);
@@ -335,7 +336,7 @@ D(58, (T, v) => { const p = easeOut(at(T, 58, du(58) * 0.3, 1.2)); let g = bar3d
 D(59, (T, v) => { const s = pop(T, st(59)), s2 = pop(T, fr(T, 59, .45)); return ['', bigc('SAVERS WIN', 0, 170, W, 110, 'green', v * clamp(s), s) + ov('…only if their money is somewhere that <span class="y">PAYS</span>', 0, 340, W, 40, C.white, v * clamp(s2))]; });
 D(60, (T, v) => { const p = easeOut(at(T, 60, du(60) * 0.25, 1.2)); let g = bar3d(330, 470, 170, 240 * p, C.green, v) + svgT(350, 515, 'NEW JOBS · OCT', 22, C.grey, 900, 'middle', `opacity="${v}"`);
   return [g, lab(Math.round(165 * p) + 'K', 330, 470, 240 * p, 170, 54, '#4ADE80', v) + card(620, 150, 560, 300, `<div style="margin:36px 36px 0;font-size:24px;color:#94A3B8;font-weight:800">STRONG JOB MARKET =</div><div style="margin:10px 36px 0;font-size:50px;font-weight:900">YOUR <span class="y">LEVERAGE</span></div><div style="margin:20px 36px 0;font-size:30px;font-weight:900">💼 ask for a raise<br>🚀 or a better-paying job</div>`, v * clamp(pop(T, fr(T, 60, .5))), 'rgba(250,204,21,.6)', pop(T, fr(T, 60, .5)))]; });
-D(61, (T, v) => { full('floor', T, 61, { op: v }); const [g, o] = chapter(T, 61, '4', 'STOCKS & CRYPTO', C.cyan); return [`<g opacity="${v}">${g}</g>`, `<div style="opacity:${v}">${o}</div>`]; });
+D(61, (T, v) => { full('floor', T, 61, { op: v }); const [g, o] = chapter(T, 61, '4', 'STOCKS & CRYPTO', C.cyan); return ['', `<div style="opacity:${v}"><svg style="position:absolute;left:0;top:0" width="1280" height="720">${g}</svg>${o}</div>`]; });
 D(62, (T, v) => { const k = T - st(62), tilt = lerp(0, -12, easeOut(at(T, 62, du(62) * 0.3, 1.5)));
   let g = `<g opacity="${v}" transform="rotate(${tilt} 640 400)"><rect x="240" y="392" width="800" height="16" rx="8" fill="#94A3B8"/><rect x="250" y="330" width="220" height="62" rx="12" fill="${C.green}"/>${svgT(360, 372, 'SAFE 4–5%', 26, '#052E16')}<rect x="810" y="330" width="220" height="62" rx="12" fill="${C.red}"/>${svgT(920, 372, 'STOCKS', 26, '#fff')}</g><polygon points="640,410 600,480 680,480" fill="#475569" opacity="${v}"/>`;
   return [g, chip('SHORT TERM: MARKETS GET NERVOUS', 640, 140, C.orange, '#1C1002', 26, v, 0, 1) + chip('TECH & HEAVY BORROWERS FEEL IT MOST', 640, 560, '#334155', '#fff', 22, v * clamp(pop(T, fr(T, 62, .65))), 0, pop(T, fr(T, 62, .65)))]; });
@@ -403,9 +404,13 @@ function frame(T) {
   let fl = 0; for (const t0 of HITS) { const k = T - t0; if (k >= 0 && k < 0.25) fl = Math.max(fl, 0.5 * (1 - k / 0.25)); }
   document.getElementById('flash').style.opacity = fl;
   document.getElementById('svg').innerHTML = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${DEFS}${background(T, sec[2])}${g}</svg>`;
-  document.getElementById('ov').innerHTML = o + `<div class="prog"><div style="width:${clamp(T / TOTAL) * 100}%"></div></div><div class="sec">${sec[1]}</div><div class="brand">THE MONEY <span class="y">MAP</span></div>` + captions(T) + wipe(T);
+  document.getElementById('ov').innerHTML = o + `<div class="prog"><div style="width:${clamp(T / TOTAL) * 100}%"></div></div><div class="sec">${sec[1]}</div><div class="brand">THE MONEY <span class="y">MAP</span></div>` + captions(T) + wipe(T) + disclaimer(T);
 }
 const CHAP = [16, 22, 31, 32, 39, 47, 51, 61, 67, 73, 81];
+function disclaimer(T) {   // first 7 seconds: educational disclaimer bar
+  if (T > 7.2) return ''; const op = clamp(Math.min((T - 0.15) / 0.3, (7.2 - T) / 0.5));
+  return `<div style="position:absolute;left:50%;top:58px;transform:translateX(-50%);opacity:${op};padding:8px 20px;border-radius:12px;background:rgba(2,6,23,.82);border:2px solid rgba(250,204,21,.6);font-weight:800;font-size:17px;white-space:nowrap;color:#F8FAFC">⚠️ <span class="y">Educational content only, not financial advice.</span> Rates &amp; market odds as of Nov 9, 2026.</div>`;
+}
 function wipe(T) {   // diagonal colour wipe across the screen at each chapter change
   for (const i of CHAP) { const k = T - (st(i) - 0.3); if (k < 0 || k > 0.6) continue; const x = lerp(-900, 1500, easeOut(k / 0.6)), col = secOf(i)[2][0];
     return `<svg style="position:absolute;left:0;top:0" width="1280" height="720"><polygon points="${x},0 ${x + 380},0 ${x + 120},720 ${x - 260},720" fill="${col}" opacity=".92"/><polygon points="${x + 400},0 ${x + 460},0 ${x + 200},720 ${x + 140},720" fill="#FACC15" opacity=".95"/></svg>`; }

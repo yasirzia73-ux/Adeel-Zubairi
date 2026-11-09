@@ -13,15 +13,27 @@ du = lambda i: max(1, e[i] - s[i]); fr = lambda i, f: s[i] + du(i) * f
 ev = []
 def a(t, n, g=0.4, pan=0.0): ev.append((t, n, g, pan))
 CHAP = [16, 22, 31, 32, 39, 47, 51, 61, 67, 73, 81]
-HITS = [fr(3, .15), s[6] + .05] + [s[i] for i in [16, 22, 32, 39, 47, 51, 61, 73, 81]] + [fr(67, .3)]
-a(0.0, 'sub', 0.5); a(0.05, 'shutter', 0.3)
+HITS = [s[i] for i in [16, 22, 32, 39, 47, 51, 61, 73, 81]] + [fr(67, .3)]
+# ---- HOOK (paragraphs 0-6): cinematic, louder than the rest ----
+a(0.0, 'impact', 0.9); a(0.0, 'sub', 0.8); a(0.02, 'glitch', 0.45)
+a(s[0] + 0.6, 'stamp', 0.75)                                   # DEC 9 calendar slam
+for k in range(12): a(s[0] + 2.2 + k * 0.08, 'poppro', 0.32, -0.6 + k * 0.1)   # 12 people pop in
+for k in range(3): a(s[1] + k * 0.9, 'poppro', 0.5, (k - 1) * 0.5); a(s[1] + k * 0.9 + 0.02, 'shutter', 0.25)
+for k in range(16): a(s[2] + 0.4 + k * 0.1, 'tickhi', 0.16 + k * 0.012)        # gauge climbing
+a(s[2] + 2.0, 'impact', 0.7); a(s[2] + 2.05, 'heart', 0.5); a(s[2] + 2.9, 'heart', 0.45)
+a(s[3] + 0.45, 'whooshD', 0.5); a(s[3] + 0.55, 'shutter', 0.45)               # strike through "NOT CHEAPER"
+a(s[3] + 0.7, 'rewind', 0.55); a(s[3] + 0.9, 'impact', 0.95); a(s[3] + 0.92, 'glitch', 0.4)  # record scratch -> MORE EXPENSIVE
+a(s[4] + 0.3, 'buzzer', 0.35); a(fr(4, .3), 'dingpro', 0.45); a(fr(4, .55) - 0.8, 'swell', 0.4); a(fr(4, .55), 'sub', 0.55)
+for k in range(3): a(s[5] + 0.2 + k * 0.4, 'poppro', 0.4, (k - 1) * 0.5)
+a(fr(5, .45), 'whooshD', 0.4); a(fr(5, .6), 'dingpro', 0.4)
+a(s[6] - 1.4, 'swell', 0.6); a(s[6] + 0.05, 'impact', 1.0); a(s[6] + 0.4, 'cashpro', 0.45)  # "AGAIN." -> beat drop
 for i in range(1, len(s)):
-    if i in CHAP: continue
+    if i in CHAP or i <= 6: continue
     a(s[i] - 0.12, 'whooshD', 0.16, (-1) ** i * 0.3)
 for t in HITS: a(t - 1.1, 'swell', 0.22); a(t, 'impact', 0.42)
 for i in CHAP: a(s[i] - 0.35, 'whooshD', 0.3, 0.4)
 for i in range(len(s)):  # card/chip pops
-    if i in CHAP or i in (0, 3, 6, 81, 86): continue
+    if i in CHAP or i <= 6 or i in (81, 86): continue
     a(s[i] + 0.35, 'poppro', 0.16, 0.2 * math.sin(i)); a(fr(i, .45), 'poppro', 0.12, -0.2 * math.sin(i))
 for i in (2, 14, 34, 41, 43, 55, 56, 23):  # counters
     for k in range(10): a(s[i] + 0.4 + k * 0.12, 'tickhi', 0.07)

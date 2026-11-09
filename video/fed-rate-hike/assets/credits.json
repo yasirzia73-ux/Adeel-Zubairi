@@ -1,0 +1,72 @@
+{
+ "floor": {
+  "source": "https://www.loc.gov/item/2011630168/",
+  "title": "Trading floor, New York Stock Exchange, New York, New York",
+  "creator": "Highsmith, Carol M., 1946-, photographer",
+  "rights": "No known restrictions on publication.",
+  "credit": "Carol M. Highsmith / Library of Congress"
+ },
+ "nyse": {
+  "source": "https://www.loc.gov/item/2011632359/",
+  "title": "New York Stock Exchange, New York, New York",
+  "creator": "Highsmith, Carol M., 1946-, photographer",
+  "rights": "No known restrictions on publication.",
+  "credit": "Carol M. Highsmith / Library of Congress"
+ },
+ "capitol": {
+  "source": "https://www.loc.gov/item/2010630189/",
+  "title": "United States Capitol, Washington, D.C.",
+  "creator": "Highsmith, Carol M., 1946-, photographer",
+  "rights": "No known restrictions on publication.",
+  "credit": "Carol M. Highsmith / Library of Congress"
+ },
+ "whitehouse": {
+  "source": "https://www.loc.gov/item/2011633022/",
+  "title": "The White House, Washington, D.C.",
+  "creator": "Highsmith, Carol M., 1946-, photographer",
+  "rights": "No known restrictions on publication.",
+  "credit": "Carol M. Highsmith / Library of Congress"
+ },
+ "wallst": {
+  "source": "https://www.loc.gov/pictures/item/2010630629/",
+  "title": "George Washington statue in front of Federal Hall on Wall Street, New York, New York",
+  "creator": "Highsmith, Carol M., 1946-, photographer",
+  "rights": "No known restrictions on publication.",
+  "credit": "Carol M. Highsmith / Library of Congress"
+ },
+ "fed": {
+  "source": "https://www.loc.gov/pictures/item/2010630382/",
+  "title": "Federal Reserve Bank, Cleveland, Ohio",
+  "creator": "Highsmith, Carol M., 1946-, photographer",
+  "rights": "No known restrictions on publication.",
+  "credit": "Carol M. Highsmith / Library of Congress"
+ },
+ "suburb": {
+  "source": "https://www.loc.gov/pictures/item/2019690957/",
+  "title": "Aerial view of suburban sprawl near Franklin Park, north of Pittsburgh, Pennsylvania",
+  "creator": "Highsmith, Carol M., 1946-, photographer",
+  "rights": "No known restrictions on publication.",
+  "credit": "Carol M. Highsmith / Library of Congress"
+ },
+ "cars": {
+  "source": "https://www.loc.gov/pictures/item/2015631014/",
+  "title": "Used-car dealership in Grand Prairie, Texas",
+  "creator": "Highsmith, Carol M., 1946-, photographer",
+  "rights": "No known restrictions on publication.",
+  "credit": "Carol M. Highsmith / Library of Congress"
+ },
+ "bank": {
+  "source": "https://www.loc.gov/pictures/item/2018700370/",
+  "title": "Syracuse Savings Bank and Gridley Building, Clinton Square, Syracuse, New York",
+  "creator": "Highsmith, Carol M., 1946-, photographer",
+  "rights": "No known restrictions on publication.",
+  "credit": "Carol M. Highsmith / Library of Congress"
+ },
+ "fed-eccles": {
+  "source": "https://commons.wikimedia.org/wiki/File:Eccles_Building_(26088200676).jpg",
+  "title": "Eccles Building",
+  "creator": "Federal Reserve",
+  "rights": "Public domain (U.S. government work)",
+  "credit": "Federal Reserve (public domain)"
+ }
+}

@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>The Fed Is Raising Rates Again</title>
+<style>
+  html, body { margin: 0; padding: 0; background: #05070D; overflow: hidden; }
+  #stage { position: relative; width: 1280px; height: 720px; overflow: hidden; font-family: "Montserrat", sans-serif; color: #F8FAFC; }
+  #cam, #bg, #svg, #photos, #ov { position: absolute; inset: 0; }
+  #svg svg { position: absolute; left: 0; top: 0; }
+  .ph { position: absolute; overflow: hidden; background: #000; }
+  .ph img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform-origin: 50% 50%; }
+  .ph .vig { position: absolute; inset: 0; background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.5) 100%); }
+  .ph .credit { position: absolute; right: 10px; bottom: 7px; font-size: 11px; font-weight: 700; color: rgba(255,255,255,.75); text-shadow: 0 1px 2px #000; }
+  .ov { position: absolute; font-weight: 900; line-height: 1.08; }
+  .card { position: absolute; border-radius: 22px; border: 2px solid rgba(255,255,255,.18); background: linear-gradient(160deg, rgba(255,255,255,.13), rgba(255,255,255,.04));
+          backdrop-filter: blur(12px); box-shadow: 0 18px 44px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.22); box-sizing: border-box; }
+  .chip { position: absolute; font-weight: 900; padding: 8px 20px; border-radius: 999px; white-space: nowrap; box-shadow: 0 6px 0 rgba(0,0,0,.35), 0 14px 26px rgba(0,0,0,.4); transform-origin: 50% 50%; }
+  .stamp { position: absolute; font-weight: 900; padding: 6px 20px; border: 6px solid; border-radius: 14px; background: rgba(5,7,13,.85); white-space: nowrap; }
+  .y { color: #FACC15; } .g { color: #4ADE80; } .r { color: #F87171; } .c { color: #22D3EE; } .gr { color: #94A3B8; }
+  .cap { position: absolute; left: 90px; right: 90px; top: 616px; text-align: center; font-weight: 900; font-size: 31px; line-height: 1.3; }
+  .cap .w { display: inline-block; margin: 0 4px; padding: 0 6px; border-radius: 9px; color: #fff;
+            text-shadow: 0 0 5px #000, 0 3px 0 #000, 2px 2px 0 #000, -2px 2px 0 #000, 2px -2px 0 #000, -2px -2px 0 #000; }
+  .cap .w.cur { background: #FACC15; color: #0B1020; text-shadow: none; box-shadow: 0 4px 0 #A16207; }
+  .prog { position: absolute; left: 0; top: 0; width: 1280px; height: 6px; background: rgba(255,255,255,.08); }
+  .prog div { height: 6px; background: linear-gradient(90deg, #FACC15, #F97316); }
+  .sec { position: absolute; left: 22px; top: 20px; padding: 7px 16px; border-radius: 12px; background: rgba(2,6,23,.78); border: 2px solid rgba(250,204,21,.45); font-weight: 900; font-size: 17px; letter-spacing: .5px; }
+  .brand { position: absolute; right: 22px; top: 22px; font-weight: 900; font-size: 16px; color: rgba(248,250,252,.75); letter-spacing: 1px; }
+  #flash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; }
+</style></head>
+<body><div id="stage"><div id="cam"><div id="bg"></div><div id="svg"></div><div id="photos"></div><div id="ov"></div></div><div id="flash"></div></div>
+<script src="sync.js"></script>
+<script src="assets/credits.js"></script>
+<script>
+const W = 1280, H = 720;
+const C = { navy: '#0B1020', gold: '#FACC15', green: '#22C55E', red: '#EF4444', blue: '#3B82F6', cyan: '#22D3EE', white: '#F8FAFC', grey: '#94A3B8', orange: '#F97316', purple: '#A855F7', btc: '#F7931A' };
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const lerp = (a, b, p) => a + (b - a) * p;
+const ease = x => { x = clamp(x); return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
+const easeOut = x => 1 - Math.pow(1 - clamp(x), 3);
+const easeBack = x => { x = clamp(x); const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); };
+const pop = (T, t0, d = 0.4) => { const x = (T - t0) / d; return x <= 0 ? 0 : easeBack(x); };
+const money = n => '$' + Math.round(n).toLocaleString('en-US');
+const rnd = (s => () => { s = (s * 16807) % 2147483647; return s / 2147483647; })(42);
+
+/* ---------- timing ---------- */
+const SY = window.FED; const PARAS = SY.paras, TIM = SY.lines.map(l => [l.start, l.end]), TOTAL = SY.total;
+const st = i => TIM[i][0], en = i => TIM[i][1], du = i => Math.max(1, en(i) - st(i));
+function vis(T, i, j = i) { const a = st(i) - 0.15, b = j + 1 < TIM.length ? st(j + 1) - 0.12 : TOTAL + 1; if (T < a || T > b) return 0; return clamp(Math.min((T - a) / 0.22, (b - T) / 0.15)); }
+const at = (T, i, off = 0, d = 0.4) => clamp((T - st(i) - off) / d);
+const fr = (T, i, f) => st(i) + du(i) * f;   // time at fraction f of paragraph i
+
+/* ---------- photos ---------- */
+const PH = {}; const PHOTOS = ['fed-eccles', 'floor', 'nyse', 'capitol', 'whitehouse', 'wallst', 'fed', 'suburb', 'cars', 'bank'];
+let CREDITS = {};
+function initPhotos() {
+  const L = document.getElementById('photos');
+  for (const n of PHOTOS) {
+    const w = document.createElement('div'); w.className = 'ph'; w.style.opacity = 0;
+    const img = document.createElement('img'); img.src = `assets/${n}.jpg`; w.appendChild(img);
+    const vg = document.createElement('div'); vg.className = 'vig'; w.appendChild(vg);
+    const cr = document.createElement('div'); cr.className = 'credit'; cr.textContent = 'Photo: ' + ((CREDITS[n] || {}).credit || ''); w.appendChild(cr);
+    L.appendChild(w); PH[n] = { w, img };
+  }
+  return Promise.all(Object.values(PH).map(p => p.img.decode().catch(() => {})));
+}
+function photo(n, o) {
+  const P = PH[n]; if (!P || o.op <= 0) return; const s = P.w.style, p = clamp(o.p ?? 0);
+  s.opacity = o.op; s.left = o.x + 'px'; s.top = o.y + 'px'; s.width = o.w + 'px'; s.height = o.h + 'px'; s.borderRadius = (o.r ?? 22) + 'px';
+  s.boxShadow = o.glow ? `0 0 0 3px ${o.glow}, 0 0 44px ${o.glow}66, 0 26px 50px rgba(0,0,0,.6)` : '0 26px 50px rgba(0,0,0,.55)';
+  s.transform = `perspective(1400px) rotateY(${o.tilt ?? 0}deg)`; s.zIndex = o.z ?? 0;
+  const z = lerp(o.z0 ?? 1.05, o.z1 ?? 1.18, p), px = lerp(o.x0 ?? 0, o.x1 ?? 0, p), py = lerp(o.y0 ?? 0, o.y1 ?? 0, p);
+  P.img.style.transform = `translate(${px}%, ${py}%) scale(${z})`; P.img.style.filter = o.filter || 'saturate(1.08) contrast(1.05)';
+  P.w.querySelector('.credit').style.display = o.credit === false ? 'none' : 'block';
+}
+const full = (n, T, i, o = {}) => photo(n, Object.assign({ op: o.op ?? 1, x: 0, y: 0, w: W, h: H, r: 0, p: (T - st(i)) / Math.max(4, du(i)), z0: 1.06, z1: 1.2, filter: 'saturate(.85) brightness(.42) contrast(1.1)' }, o));
+
+/* ---------- building blocks ---------- */
+const svgT = (x, y, s, size, fill, weight = 900, anchor = 'middle', extra = '') =>
+  `<text x="${x}" y="${y}" font-family="Montserrat" font-weight="${weight}" font-size="${size}" fill="${fill}" text-anchor="${anchor}" ${extra}>${s}</text>`;
+const ov = (html, x, y, w, size, color = C.white, op = 1, extra = '') =>
+  `<div class="ov" style="left:${x}px;top:${y}px;width:${w}px;font-size:${size}px;color:${color};opacity:${op};text-align:center;${extra}">${html}</div>`;
+function big(html, x, y, w, size, from, to, depth, op = 1, s = 1, extra = '') {
+  let sh = ''; for (let i = 1; i <= 7; i++) sh += `0 ${i}px 0 ${depth},`; sh += '0 12px 16px rgba(0,0,0,.55)';
+  return `<div class="ov" style="left:${x}px;top:${y}px;width:${w}px;font-size:${size}px;opacity:${op};transform:scale(${s});text-align:center;${extra}"><span style="position:relative;display:inline-block">
+    <span style="position:absolute;left:0;top:0;width:100%;color:transparent;text-shadow:${sh}">${html}</span>
+    <span style="position:relative;background:linear-gradient(180deg,${from},${to});-webkit-background-clip:text;background-clip:text;color:transparent">${html}</span></span></div>`;
+}
+const BIG = { gold: ['#FEF3C7', '#EAB308', '#854D0E'], red: ['#FECACA', '#DC2626', '#7F1D1D'], green: ['#DCFCE7', '#16A34A', '#14532D'], white: ['#FFFFFF', '#CBD5E1', '#334155'], blue: ['#DBEAFE', '#3B82F6', '#1E3A8A'], cyan: ['#CFFAFE', '#06B6D4', '#164E63'] };
+const bigc = (html, x, y, w, size, col, op = 1, s = 1) => big(html, x, y, w, size, ...BIG[col], op, s);
+const card = (x, y, w, h, inner, op = 1, accent = 'rgba(255,255,255,.18)', s = 1) =>
+  `<div class="card" style="left:${x}px;top:${y}px;width:${w}px;height:${h}px;opacity:${op};border-color:${accent};transform:scale(${s})">${inner}</div>`;
+const chip = (txt, x, y, bg, fg, size = 24, op = 1, rot = 0, s = 1) =>
+  `<div class="chip" style="left:${x}px;top:${y}px;background:${bg};color:${fg};font-size:${size}px;opacity:${op};transform:translate(-50%,-50%) rotate(${rot}deg) scale(${s})">${txt}</div>`;
+const stamp = (txt, x, y, col, size, s, rot = -6) => s <= 0 ? '' :
+  `<div class="stamp" style="left:${x}px;top:${y}px;color:${col};border-color:${col};font-size:${size}px;opacity:${clamp(s)};transform:translate(-50%,-50%) rotate(${rot}deg) scale(${s})">${txt}</div>`;
+function lineChart(pts, p, x, y, w, h, color, op = 1, fill = true, sw = 6) {
+  const P = pts.map(([fx, fy]) => [x + fx * w, y + h - fy * h]); const n = Math.max(1, (P.length - 1) * clamp(p)); const k = Math.floor(n), f = n - k;
+  let d = `M${P[0][0]} ${P[0][1]}`; for (let i = 1; i <= k; i++) d += ` L${P[i][0]} ${P[i][1]}`;
+  let e = P[k]; if (k < P.length - 1 && f > 0) { e = [lerp(P[k][0], P[k + 1][0], f), lerp(P[k][1], P[k + 1][1], f)]; d += ` L${e[0]} ${e[1]}`; }
+  const id = 'ga' + color.slice(1) + Math.round(x);
+  const area = fill ? `<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${color}" stop-opacity=".5"/><stop offset="1" stop-color="${color}" stop-opacity="0"/></linearGradient></defs><path d="${d} L${e[0]} ${y + h} L${P[0][0]} ${y + h}Z" fill="url(#${id})"/>` : '';
+  return [`<g opacity="${op}">${area}<path d="${d}" stroke="${color}" stroke-width="${sw * 2.6}" fill="none" opacity=".22" filter="url(#b8)" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="${d}" stroke="${color}" stroke-width="${sw}" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="${e[0]}" cy="${e[1]}" r="9" fill="#fff" stroke="${color}" stroke-width="4"/></g>`, e];
+}
+function bar3d(cx, by, w, h, col, op = 1) {
+  const d = w * 0.3;
+  return `<g opacity="${op}"><polygon points="${cx - w / 2},${by} ${cx + w / 2},${by} ${cx + w / 2},${by - h} ${cx - w / 2},${by - h}" fill="${col}"/>
+    <polygon points="${cx + w / 2},${by} ${cx + w / 2 + d},${by - d} ${cx + w / 2 + d},${by - h - d} ${cx + w / 2},${by - h}" fill="${col}" style="filter:brightness(.62)"/>
+    <polygon points="${cx - w / 2},${by - h} ${cx + w / 2},${by - h} ${cx + w / 2 + d},${by - h - d} ${cx - w / 2 + d},${by - h - d}" fill="${col}" style="filter:brightness(1.35)"/></g>`;
+}
+function gauge(cx, cy, R, val, col, op = 1, label = '') {
+  const a0 = Math.PI, a1 = Math.PI + Math.PI * clamp(val), arc = (a, b) => `M${cx + R * Math.cos(a)} ${cy + R * Math.sin(a)} A${R} ${R} 0 ${b - a > Math.PI ? 1 : 0} 1 ${cx + R * Math.cos(b)} ${cy + R * Math.sin(b)}`;
+  const na = a1, nx = cx + (R - 30) * Math.cos(na), ny = cy + (R - 30) * Math.sin(na);
+  return `<g opacity="${op}"><path d="${arc(a0, 2 * Math.PI - 0.001)}" stroke="#1E293B" stroke-width="44" fill="none" stroke-linecap="round"/>
+    ${val > 0.005 ? `<path d="${arc(a0, a1)}" stroke="${col}" stroke-width="44" fill="none" stroke-linecap="round"/><path d="${arc(a0, a1)}" stroke="${col}" stroke-width="70" fill="none" opacity=".2" filter="url(#b8)"/>` : ''}
+    <line x1="${cx}" y1="${cy}" x2="${nx}" y2="${ny}" stroke="#fff" stroke-width="8" stroke-linecap="round"/><circle cx="${cx}" cy="${cy}" r="16" fill="#fff"/>
+    ${svgT(cx, cy + 70, label, 26, C.grey)}</g>`;
+}
+const lab = (t, cx, by, h, w, size, col, op) => ov(t, cx - 170, by - h - w * 0.3 - size - 18, 340, size, col, op);
+/* icons (SVG) */
+const icCard = (x, y, s = 1, col = '#1E293B', txt = '') => `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-80" y="-50" width="160" height="100" rx="14" fill="${col}" stroke="#F8FAFC" stroke-width="5"/><rect x="-80" y="-30" width="160" height="20" fill="#020617"/><rect x="-62" y="2" width="32" height="24" rx="5" fill="#EAB308"/>${txt ? svgT(66, 38, txt, 26, '#F87171', 900, 'end') : ''}</g>`;
+const icHouse = (x, y, s = 1, col = C.blue) => `<g transform="translate(${x} ${y}) scale(${s})"><polygon points="-80,-10 0,-80 80,-10" fill="${col}" stroke="#F8FAFC" stroke-width="5" stroke-linejoin="round"/><rect x="-62" y="-14" width="124" height="84" fill="#E2E8F0" stroke="#F8FAFC" stroke-width="5"/><rect x="-16" y="20" width="32" height="50" fill="#475569"/><rect x="-50" y="2" width="26" height="24" fill="#93C5FD"/><rect x="24" y="2" width="26" height="24" fill="#93C5FD"/></g>`;
+const icCar = (x, y, s = 1, col = C.red) => `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-90 20 L-80 -10 Q-70 -40 -40 -42 L40 -42 Q70 -40 80 -10 L90 20 Z" fill="${col}" stroke="#F8FAFC" stroke-width="5" stroke-linejoin="round"/><rect x="-90" y="10" width="180" height="30" rx="10" fill="${col}" stroke="#F8FAFC" stroke-width="5"/><path d="M-55 -12 L-45 -34 L-5 -34 L-5 -12 Z M5 -12 L5 -34 L45 -34 L55 -12 Z" fill="#BAE6FD"/><circle cx="-50" cy="42" r="20" fill="#0F172A" stroke="#F8FAFC" stroke-width="5"/><circle cx="50" cy="42" r="20" fill="#0F172A" stroke="#F8FAFC" stroke-width="5"/></g>`;
+const icPiggy = (x, y, s = 1) => `<g transform="translate(${x} ${y}) scale(${s})"><ellipse cx="0" cy="0" rx="90" ry="66" fill="#F9A8D4" stroke="#F8FAFC" stroke-width="5"/><circle cx="84" cy="-6" r="24" fill="#F472B6" stroke="#F8FAFC" stroke-width="4"/><circle cx="78" cy="-8" r="4" fill="#831843"/><circle cx="90" cy="-8" r="4" fill="#831843"/><circle cx="40" cy="-26" r="7" fill="#0F172A"/><polygon points="-10,-60 10,-92 26,-58" fill="#F472B6"/><rect x="-60" y="52" width="22" height="34" rx="6" fill="#F472B6"/><rect x="34" y="52" width="22" height="34" rx="6" fill="#F472B6"/><rect x="-26" y="-70" width="52" height="10" rx="5" fill="#831843"/></g>`;
+const icBTC = (x, y, r = 50, op = 1) => `<g opacity="${op}"><circle cx="${x + 5}" cy="${y + 6}" r="${r}" fill="#9A5A07"/><circle cx="${x}" cy="${y}" r="${r}" fill="${C.btc}" stroke="#FFD08A" stroke-width="4"/>${svgT(x, y + r * 0.36, '₿', r * 1.05, '#fff')}</g>`;
+const coin = (x, y, r = 16, op = 1) => `<g opacity="${op}"><ellipse cx="${x}" cy="${y + r * 0.2}" rx="${r}" ry="${r * 0.9}" fill="#A16207"/><circle cx="${x}" cy="${y}" r="${r}" fill="${C.gold}" stroke="#CA8A04" stroke-width="3"/>${svgT(x, y + r * 0.42, '$', r * 1.1, '#854D0E')}</g>`;
+const person = (x, y, s, col, op = 1) => `<g opacity="${op}" transform="translate(${x} ${y}) scale(${s})"><circle cx="0" cy="-34" r="16" fill="${col}"/><path d="M-26 20 Q-26 -14 0 -14 Q26 -14 26 20 Z" fill="${col}"/></g>`;
+const icCal = (x, y, s, mon, day, op = 1) => card(x, y, 200 * s, 200 * s, `<div style="background:#DC2626;height:${60 * s}px;border-radius:20px 20px 0 0;font-size:${38 * s}px;font-weight:900;line-height:${60 * s}px;text-align:center">${mon}</div><div style="color:#0B1020;background:#F8FAFC;height:${136 * s}px;border-radius:0 0 20px 20px;font-size:${110 * s}px;font-weight:900;line-height:${136 * s}px;text-align:center">${day}</div>`, op, 'rgba(255,255,255,.5)');
+function check(ok) { return `<span style="display:inline-block;width:42px;height:42px;border-radius:50%;background:${ok ? C.green : C.red};color:${ok ? '#052E16' : '#fff'};text-align:center;line-height:42px;font-size:28px;margin-right:14px;vertical-align:middle">${ok ? '✓' : '✗'}</span>`; }
+const row = (T, t0, x, y, w, html, accent, size = 30, h = 76) => { const s = pop(T, t0, 0.35); return s <= 0 ? '' : card(x, y, w, h, `<div style="position:absolute;left:22px;right:18px;top:50%;transform:translateY(-50%);font-size:${size}px;font-weight:900">${html}</div>`, clamp(s), accent, s); };
+function chapter(T, i, num, title, col = C.gold) {
+  const k = T - st(i), s = pop(T, st(i), 0.5);
+  let g = `<g opacity="${clamp(s)}"><circle cx="640" cy="290" r="${150 + 10 * Math.sin(k * 3)}" fill="${col}" opacity=".08"/><circle cx="640" cy="290" r="${110 + 6 * Math.sin(k * 3 + 1)}" fill="${col}" opacity=".12"/></g>`;
+  let o = (num ? `<div class="ov" style="left:540px;top:${210}px;width:200px;height:160px;font-size:130px;color:${col};text-align:center;transform:scale(${s});text-shadow:0 0 40px ${col}88">${num}</div>` : '') +
+    bigc(title, 0, num ? 400 : 250, W, num ? 64 : 76, 'white', clamp(pop(T, st(i) + 0.25)), pop(T, st(i) + 0.25));
+  return [g, o];
+}
+
+/* ---------- background ---------- */
+const PARTS = Array.from({ length: 50 }, () => [rnd() * W, rnd() * H, 2 + rnd() * 6, 8 + rnd() * 30, rnd() * 6.28]);
+function background(T, theme) {
+  const [c1, c2] = theme, gx = 30 + 20 * Math.sin(T * 0.21), gy = 35 + 15 * Math.cos(T * 0.17);
+  document.getElementById('bg').style.background = `radial-gradient(circle at ${gx}% ${gy}%, ${c1}66 0%, transparent 46%), radial-gradient(circle at ${100 - gx}% ${85 - gy * 0.5}%, ${c2}55 0%, transparent 50%), linear-gradient(180deg, #0B1430 0%, #05070D 100%)`;
+  let g = '';
+  for (let i = -12; i <= 12; i++) g += `<line x1="640" y1="420" x2="${640 + i * 150}" y2="720" stroke="${c1}" stroke-opacity=".13" stroke-width="1.5"/>`;
+  for (let k = 0; k < 7; k++) { const f = (k + (T * 0.5) % 1) / 7, y = 420 + Math.pow(f, 2.2) * 300; g += `<line x1="0" y1="${y}" x2="1280" y2="${y}" stroke="${c1}" stroke-opacity="${0.04 + 0.15 * f}" stroke-width="1.5"/>`; }
+  for (const [x, y, r, sp, ph] of PARTS) { const yy = ((y - T * sp) % H + H) % H; g += `<circle cx="${x + Math.sin(T * .5 + ph) * 10}" cy="${yy}" r="${r}" fill="${c2}" opacity="${0.1 + 0.1 * Math.sin(T + ph)}"/>`; }
+  const sx = ((T * 140) % 2200) - 500; g += `<rect x="${sx}" y="-200" width="140" height="1200" fill="url(#sw)" transform="rotate(18 ${sx} 360)" opacity=".3"/>`;
+  return g;
+}
+const DEFS = `<defs><filter id="b8" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="8"/></filter>
+ <linearGradient id="sw" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".15"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>`;
+
+/* ---------- captions ---------- */
+function captions(T) {
+  let k = -1; for (let i = 0; i < TIM.length; i++) if (T >= st(i) - 0.05 && T <= en(i) + 0.25) k = i;
+  if (k < 0) return '';
+  const words = PARAS[k].replace(/\s+/g, ' ').split(' '), a = st(k), b = en(k), total = PARAS[k].length;
+  const times = []; let acc = 0; for (const w of words) { times.push(a + (b - a) * acc / total); acc += w.length + 1; }
+  const chunks = []; let cur = [];
+  words.forEach((w, i) => { cur.push(i); if (cur.length >= 8 || /[.?!:]$/.test(w) || (cur.length >= 5 && /,$/.test(w))) { chunks.push(cur); cur = []; } }); if (cur.length) chunks.push(cur);
+  let ci = 0; for (let c = 0; c < chunks.length; c++) if (T >= times[chunks[c][0]] - 0.05) ci = c;
+  let wi = 0; for (let i = 0; i < words.length; i++) if (T >= times[i]) wi = i;
+  return `<div class="cap">${chunks[ci].map(i => `<span class="w${i === wi ? ' cur' : ''}">${words[i]}</span>`).join(' ')}</div>`;
+}
+
+/* ---------- sections ---------- */
+const SECS = [[0, 'DECEMBER 9 · THE VOTE', [C.red, C.blue]], [7, 'WHAT IS HAPPENING', [C.blue, C.red]], [16, 'WHY THE FED WOULD DO THIS', [C.orange, C.blue]], [22, 'WHAT HAPPENED LAST TIME', [C.purple, C.cyan]],
+  [31, 'YOUR MONEY', [C.gold, C.blue]], [32, '① YOUR CREDIT CARD', [C.red, C.purple]], [39, '② YOUR MORTGAGE', [C.blue, C.cyan]], [47, '③ YOUR CAR LOAN', [C.orange, C.red]], [51, '④ THE WINNERS: SAVERS', [C.green, C.cyan]],
+  [61, '⑤ STOCKS & CRYPTO', [C.cyan, C.purple]], [67, '⑥ THREE WAYS 2027 COULD GO', [C.purple, C.blue]], [73, '⑦ 7 MOVES BEFORE DEC 9', [C.green, C.gold]], [81, 'THE BOTTOM LINE', [C.gold, C.blue]]];
+const secOf = i => { let s = SECS[0]; for (const x of SECS) if (i >= x[0]) s = x; return s; };
+
+/* ---------- scenes: one per paragraph ---------- */
+const S = [];
+const D = (i, f) => { S[i] = f; };
+// 0 hook: the Fed building + 12 people + Dec 9
+D(0, (T, v) => { full('fed-eccles', T, 0, { op: v, filter: 'saturate(.9) brightness(.55)', z0: 1.25, z1: 1.05 });
+  let g = '', o = icCal(1010, 70, 1.0, 'DEC', '9', v * clamp(pop(T, st(0) + 0.6)));
+  for (let k = 0; k < 12; k++) g += person(330 + k * 56, 470, 1.1, k % 2 ? '#CBD5E1' : '#F8FAFC', v * clamp((T - st(0) - 2.2 - k * 0.08) / 0.2));
+  if (T > st(0) + 2.2) o += ov('12 PEOPLE', 0, 520, W, 40, C.gold, v * at(T, 0, 2.6));
+  return [g, o]; });
+D(1, (T, v) => { let g = ''; [[icCard, 'YOUR CREDIT CARD'], [icCar, 'YOUR CAR LOAN'], [icHouse, 'YOUR MORTGAGE']].forEach(([ic, lab], k) => {
+  const s = pop(T, st(1) + k * 0.9, 0.45); if (s <= 0) return; g += `<g opacity="${v}">${ic(260 + k * 380, 300, 1.4 * s)}${svgT(260 + k * 380, 450, lab, 30, C.white)}</g>`; }); return [g, '']; });
+D(2, (T, v) => { const p = easeOut(at(T, 2, 0.4, 1.6)) * 0.77;
+  return [gauge(640, 430, 210, p, C.red, v, 'ODDS OF A DECEMBER HIKE'), bigc(Math.round(p * 100) + '%', 440, 300, 400, 110, 'red', v) + chip('BETTING MARKETS', 640, 96, '#334155', '#fff', 24, v, 0, 1)]; });
+D(3, (T, v) => { const s1 = pop(T, st(3)), s2 = pop(T, st(3) + 0.9); let g = `<line x1="300" y1="215" x2="${300 + 680 * clamp((T - st(3) - 0.5) / 0.3)}" y2="215" stroke="${C.red}" stroke-width="14" stroke-linecap="round" opacity="${v}"/>`;
+  return [g, bigc('NOT CHEAPER.', 0, 160, W, 90, 'white', v * clamp(s1), s1) + bigc('MORE EXPENSIVE', 0, 330, W, 110, 'red', v * clamp(s2), s2)]; });
+D(4, (T, v) => { let o = '';
+  o += card(120, 120, 480, 220, `<div style="text-align:center;margin-top:40px;font-size:62px;font-weight:900;color:#F87171">BAD NEWS</div><div style="text-align:center;font-size:26px;color:#CBD5E1;font-weight:800">for borrowers</div>`, v * clamp(pop(T, st(4) + 0.3)), 'rgba(239,68,68,.7)', pop(T, st(4) + 0.3));
+  o += card(680, 120, 480, 220, `<div style="text-align:center;margin-top:40px;font-size:62px;font-weight:900;color:#4ADE80">GOOD NEWS</div><div style="text-align:center;font-size:26px;color:#CBD5E1;font-weight:800">for one group…</div>`, v * clamp(pop(T, fr(T, 4, .3))), 'rgba(34,197,94,.7)', pop(T, fr(T, 4, .3)));
+  let g = ''; const s = pop(T, fr(T, 4, .55)); for (let k = 0; k < 5; k++) g += person(520 + k * 60, 470, 1.3 * s, '#334155', v);
+  if (s > 0) o += ov('?', 560, 380, 160, 120, C.gold, v * clamp(s)) + ov('WHO GETS RICHER?', 0, 520, W, 34, C.gold, v * clamp(s));
+  return [g, o]; });
+D(5, (T, v) => { let o = ''; ['2027 · PATH 1', '2027 · PATH 2', '2027 · PATH 3'].forEach((t, k) => { const s = pop(T, st(5) + 0.2 + k * 0.4); o += card(100 + k * 230, 140, 200, 280, `<div style="text-align:center;margin-top:90px;font-size:78px;font-weight:900;color:${[C.green, C.orange, C.red][k]}">?</div><div style="text-align:center;font-size:20px;font-weight:900">${t}</div>`, v * clamp(s), 'rgba(168,85,247,.6)', s); });
+  const s2 = pop(T, fr(T, 5, .45)); o += card(820, 110, 360, 360, [1, 2, 3, 4, 5, 6, 7].map(n => `<div style="margin:8px 24px;font-size:26px;font-weight:900;${n === 5 ? 'color:#FACC15' : ''}">${n === 5 ? '★' : '✓'} MOVE ${n}${n === 5 ? ' ← nobody does it' : ''}</div>`).join(''), v * clamp(s2), 'rgba(34,197,94,.6)', s2);
+  return ['', o]; });
+D(6, (T, v) => { const s = pop(T, st(6), 0.5); return ['', bigc('THE FED IS RAISING RATES', 0, 200, W, 70, 'white', v * clamp(s), s) + bigc('AGAIN.', 0, 300, W, 120, 'red', v * clamp(pop(T, st(6) + 0.4)), pop(T, st(6) + 0.4))]; });
+D(7, (T, v) => { photo('fed-eccles', { op: v, x: 80, y: 90, w: 640, h: 420, p: (T - st(7)) / du(7), z0: 1.05, z1: 1.2, glow: C.gold });
+  return ['', chip('FEDERAL RESERVE', 400, 540, C.gold, '#0B1020', 28, v, -2, 1) + card(780, 140, 420, 300, `<div style="margin:36px 30px 0;font-size:24px;color:#94A3B8;font-weight:800">THE RATE THEY SET</div><div style="margin:12px 30px 0;font-size:46px;font-weight:900;line-height:1.1">FEDERAL<br>FUNDS RATE</div><div style="margin:16px 30px 0;font-size:22px;font-weight:800;color:#FACC15">"the most important interest rate in the world"</div>`, v * clamp(pop(T, fr(T, 7, .35))), 'rgba(250,204,21,.6)', pop(T, fr(T, 7, .35)))]; });
+D(8, (T, v) => { let g = '', o = ''; const L = [['FED RATE', C.gold], ['PRIME RATE', C.orange], ['CREDIT CARDS', C.red], ['CAR LOANS', C.purple], ['SAVINGS', C.green]];
+  L.forEach(([t, c], k) => { const s = pop(T, st(8) + 0.3 + k * 0.7, 0.35); if (s <= 0) return; const w = 520 - k * 70, y = 470 - k * 78; o += `<div class="card" style="left:${640 - w / 2}px;top:${y}px;width:${w}px;height:66px;border-color:${c};opacity:${v * clamp(s)};transform:scale(${s});text-align:center;font-size:28px;font-weight:900;line-height:62px;color:${c}">${t}</div>`; });
+  const s = at(T, 8, du(8) * 0.6, 0.6); if (s > 0) g += `<g opacity="${v * s}"><path d="M1040 520 L1040 160" stroke="${C.red}" stroke-width="14" stroke-linecap="round"/><polygon points="1010,180 1040,120 1070,180" fill="${C.red}"/></g>` + svgT(1040, 560, 'YOU PAY', 28, C.red, 900, 'middle', `opacity="${v * s}"`);
+  return [g, o]; });
+D(9, (T, v) => { const p = easeOut(at(T, 9, 0.3, du(9) * 0.75)); const pts = [[0, .9], [.18, .88], [.35, .7], [.55, .52], [.72, .48], [.85, .47], [1, .55]];
+  const [cg] = lineChart(pts, p, 140, 140, 1000, 380, p > 0.86 ? C.red : C.cyan, v);
+  let g = cg + `<g opacity="${v}">${['2023', '2024', '2025', '2026'].map((y, k) => svgT(140 + k * 333, 560, y, 24, C.grey)).join('')}</g>`;
+  if (p < 0.9) g += `<path d="M990 330 L1140 450" stroke="#64748B" stroke-width="4" stroke-dasharray="10 10" opacity="${v}"/>` + svgT(1080, 470, 'expected', 20, C.grey, 800, 'middle', `opacity="${v}"`);
+  return [g, p > 0.9 ? chip('FIRST HIKE SINCE 2023 · SEPT 2026', 860, 250, C.red, '#fff', 26, v, -3, pop(T, fr(T, 9, .85))) : '']; });
+D(10, (T, v) => { let g = `<g opacity="${v * 0.5}"><polygon points="0,560 240,300 400,450 600,230 820,470 1000,320 1280,560" fill="#1E293B"/><polygon points="600,230 640,280 560,280" fill="#F8FAFC"/></g>`;
+  return [g, chip('JACKSON HOLE · AUGUST 2026', 640, 120, '#334155', '#fff', 24, v, 0, 1) + card(240, 180, 800, 230, `<div style="margin:30px 40px 0;font-size:24px;color:#94A3B8;font-weight:800">FED CHAIR KEVIN WARSH</div><div style="margin:14px 40px 0;font-size:54px;font-weight:900;white-space:nowrap">"We have <span class="y">work to do.</span>"</div><div style="margin:14px 40px 0;font-size:24px;font-weight:800;color:#F87171">Inflation still too high</div>`, v * clamp(pop(T, st(10) + 0.4)), 'rgba(250,204,21,.6)', pop(T, st(10) + 0.4))]; });
+D(11, (T, v) => { let g = ''; for (let k = 0; k < 12; k++) { const hike = k >= 10, s = pop(T, st(11) + 0.3 + k * 0.08, 0.3); g += `<g opacity="${v * clamp(s)}"><circle cx="${250 + k * 71}" cy="300" r="28" fill="${hike ? C.red : C.blue}"/>${svgT(250 + k * 71, 360, hike ? 'HIKE' : 'HOLD', 16, hike ? C.red : C.grey)}</g>`; }
+  return [g, ov('OCTOBER VOTE', 0, 150, W, 40, C.white, v) + stamp('2 WANTED A HIKE NOW', 640, 470, '#F87171', 36, pop(T, fr(T, 11, .45)), -4)]; });
+D(12, (T, v) => { let g = '', o = ''; const p = easeOut(at(T, 12, 0.3, 1));
+  g += bar3d(450, 500, 180, 300 * p, C.blue, v) + svgT(470, 545, 'TODAY', 26, C.grey, 900, 'middle', `opacity="${v}"`);
+  const p2 = easeOut(at(T, 12, du(12) * 0.5, 1)); g += bar3d(830, 500, 180, 330 * p2, C.red, v) + svgT(850, 545, 'IF THEY HIKE', 26, C.grey, 900, 'middle', `opacity="${v}"`);
+  o += lab('3.75–4.00%', 450, 500, 300 * p, 180, 40, C.white, v * clamp(p));
+  if (p2 > 0) o += lab('4.00–4.25%', 830, 500, 330 * p2, 180, 40, '#F87171', v * clamp(p2 * 2));
+  return [g, o]; });
+D(13, (T, v) => { let g = '', o = ''; const p = easeOut(at(T, 13, du(13) * 0.3, 1)), p2 = easeOut(at(T, 13, du(13) * 0.5, 1.2));
+  g += bar3d(420, 500, 170, 110 * p, '#64748B', v) + svgT(440, 545, 'EXPECTED', 24, C.grey, 900, 'middle', `opacity="${v}"`);
+  g += bar3d(760, 500, 170, 260 * p2, C.green, v) + svgT(780, 545, 'ACTUAL', 24, C.grey, 900, 'middle', `opacity="${v}"`);
+  o += ov('OCTOBER JOBS REPORT', 0, 58, W, 34, C.white, v) + lab('~60K', 420, 500, 110 * p, 170, 44, C.white, v * clamp(p * 2)) + lab(Math.round(165 * p2) + 'K', 760, 500, 260 * p2, 170, 56, '#4ADE80', v * clamp(p2 * 2));
+  o += chip('UNEMPLOYMENT 4.1%', 1080, 300, C.green, '#052E16', 26, v * clamp(pop(T, fr(T, 13, .8))), 3, pop(T, fr(T, 13, .8)));
+  return [g, o]; });
+D(14, (T, v) => { const p = lerp(0.67, 0.77, easeOut(at(T, 14, du(14) * 0.55, 1.4)));
+  return [gauge(640, 440, 210, p, C.red, v, 'DECEMBER HIKE ODDS'), bigc(Math.round(p * 100) + '%', 440, 310, 400, 100, 'red', v) + chip('HOT JOBS + HIGH INFLATION', 640, 110, C.orange, '#1C1002', 26, v * clamp(pop(T, st(14) + 0.5)), -2, pop(T, st(14) + 0.5))]; });
+D(15, (T, v) => { const s = pop(T, fr(T, 15, .45)); return ['', ov('"WILL RATES GO UP?"', 0, 170, W, 50, C.grey, v * (1 - 0.6 * clamp(s)), `text-decoration:${s > 0 ? 'line-through' : 'none'}`) + bigc('WHAT DOES IT DO TO ME?', 0, 300, W, 76, 'gold', v * clamp(s), s)]; });
+D(16, (T, v) => { const [g, o] = chapter(T, 16, '', 'WHY WOULD THE FED<br>DO THIS?', C.orange); return [`<g opacity="${v}">${g}</g>`, `<div style="opacity:${v}">${o}</div>`]; });
+D(17, (T, v) => ['', `<div style="opacity:${v}">${row(T, st(17) + 0.5, 240, 180, 800, `${check(true)}JOB 1: KEEP PEOPLE EMPLOYED`, 'rgba(34,197,94,.7)', 34, 90)}${row(T, fr(T, 17, .45), 240, 320, 800, `${check(false)}JOB 2: KEEP PRICES STABLE`, 'rgba(239,68,68,.7)', 34, 90)}</div>`]);
+D(18, (T, v) => { let g = '', o = ''; const p = easeOut(at(T, 18, 0.4, 1.2));
+  g += bar3d(380, 470, 170, 240 * p, C.red, v) + bar3d(620, 470, 170, 130 * p, C.green, v);
+  o += lab('3.7%', 380, 470, 240 * p, 170, 54, '#F87171', v * clamp(p * 2)) + lab('2%', 620, 470, 130 * p, 170, 54, '#4ADE80', v * clamp(p * 2));
+  g += svgT(400, 515, 'INFLATION (SEPT)', 22, C.grey, 900, 'middle', `opacity="${v}"`) + svgT(640, 515, 'FED TARGET', 22, C.grey, 900, 'middle', `opacity="${v}"`);
+  ['⛽ GAS', '🚚 SHIPPING', '🛒 GROCERIES', '✈️ FLIGHTS'].forEach((t, k) => o += chip(t, 1000, 170 + k * 85, k ? '#334155' : C.red, '#fff', 26, v * clamp(pop(T, fr(T, 18, .4 + k * .12))), 0, pop(T, fr(T, 18, .4 + k * .12))));
+  return [g, o]; });
+D(19, (T, v) => { const k = T - st(19), brake = k > du(19) * 0.45; const sp = brake ? lerp(0.9, 0.45, easeOut((k - du(19) * 0.45) / 2)) : lerp(0.3, 0.9, easeOut(k / 2.5));
+  let g = gauge(470, 440, 190, sp, sp > 0.7 ? C.red : C.gold, v, 'ECONOMY SPEED');
+  g += `<g opacity="${v}" transform="translate(930 ${brake ? 420 : 380})"><rect x="-70" y="-30" width="140" height="70" rx="14" fill="#334155" stroke="#F8FAFC" stroke-width="4"/>${svgT(0, 15, 'BRAKE', 30, '#F87171')}</g>`;
+  return [g, chip('INTEREST RATES = BRAKES', 640, 110, C.gold, '#0B1020', 30, v, 0, 1) + (brake ? chip('PRICES COOL DOWN', 930, 520, C.green, '#052E16', 24, v, 0, 1) : '')]; });
+D(20, (T, v) => { let g = '', o = ''; const p = easeOut(at(T, 20, 0.3, du(20) * 0.6));
+  g += `<g opacity="${v}"><line x1="160" y1="320" x2="${160 + 960 * p}" y2="320" stroke="${C.gold}" stroke-width="10" stroke-linecap="round"/>${[0, .33, .66, 1].map(f => `<circle cx="${160 + 960 * f}" cy="320" r="${f <= p ? 16 : 8}" fill="${f <= p ? C.gold : '#475569'}"/>`).join('')}</g>`;
+  o += ov('RATE HIKE', 60, 360, 200, 26, C.white, v) + ov('3 MONTHS', 380, 360, 200, 24, C.grey, v) + ov('6 MONTHS', 700, 360, 200, 24, C.grey, v) + ov('12+ MONTHS:<br><span class="y">FULL EFFECT</span>', 1000, 360, 240, 26, C.white, v * clamp(p * 1.2));
+  o += chip('THE BRAKES ARE SLOW', 640, 190, C.red, '#fff', 30, v * clamp(pop(T, st(20) + 0.4)), -2, pop(T, st(20) + 0.4));
+  return [g, o]; });
+D(21, (T, v) => { photo('whitehouse', { op: v, x: 90, y: 130, w: 470, h: 330, p: (T - st(21)) / du(21), glow: C.blue });
+  photo('fed-eccles', { op: v, x: 720, y: 130, w: 470, h: 330, p: (T - st(21)) / du(21), glow: C.red });
+  return ['', chip('WANTS LOWER RATES', 325, 500, C.blue, '#fff', 26, v, -2, 1) + chip('ECONOMY CAN HANDLE HIKES', 955, 500, C.red, '#fff', 26, v * clamp(pop(T, fr(T, 21, .5))), 2, pop(T, fr(T, 21, .5))) + ov('VS', 590, 250, 100, 60, C.gold, v)]; });
+D(22, (T, v) => { const [g, o] = chapter(T, 22, '', 'WHAT HAPPENED<br><span style="color:#C084FC">LAST TIME</span>', C.purple); return [`<g opacity="${v}">${g}</g>`, `<div style="opacity:${v}">${o}</div>` + chip('2022 – 2023', 640, 560, C.purple, '#fff', 28, v, 0, 1)]; });
+D(23, (T, v) => { const p = easeOut(at(T, 23, 0.3, du(23) * 0.8)); const pts = [[0, .02], [.08, .05], [.16, .15], [.25, .3], [.34, .45], [.42, .58], [.5, .68], [.58, .76], [.66, .82], [.74, .86], [.85, .9], [1, .92]];
+  const [cg] = lineChart(pts, p, 160, 130, 960, 400, C.red, v); let g = cg + svgT(160, 570, 'MAR 2022 · ~0%', 22, C.grey, 900, 'start', `opacity="${v}"`) + svgT(1120, 570, 'JUL 2023 · 5%+', 22, C.grey, 900, 'end', `opacity="${v}"`);
+  const hikes = Math.min(11, Math.floor(p * 11.5));
+  return [g, bigc(hikes + ' HIKES', 120, 150, 500, 70, 'red', v) + (p > 0.95 ? chip('FASTEST IN ~40 YEARS', 900, 140, C.gold, '#0B1020', 26, v, 3, pop(T, fr(T, 23, .85))) : '')]; });
+D(24, (T, v) => { full('suburb', T, 24, { op: v }); return ['', bigc('WHAT IT DID TO<br>REGULAR PEOPLE', 0, 220, W, 70, 'white', v * clamp(pop(T, st(24))), pop(T, st(24)))]; });
+D(25, (T, v) => { photo('suburb', { op: v, x: 60, y: 110, w: 520, h: 400, p: (T - st(25)) / du(25), glow: C.blue });
+  const p = easeOut(at(T, 25, 0.6, 1.6)); let g = bar3d(780, 500, 140, 110, C.green, v) + bar3d(1020, 500, 140, 110 + 180 * p, C.red, v);
+  g += svgT(800, 545, '2021', 24, C.grey, 900, 'middle', `opacity="${v}"`) + svgT(1040, 545, 'FALL 2023', 24, C.grey, 900, 'middle', `opacity="${v}"`);
+  return [g, lab('~3%', 780, 500, 110, 140, 44, '#4ADE80', v) + lab(lerp(3, 7.8, p).toFixed(1) + '%', 1020, 500, 110 + 180 * p, 140, 50, '#F87171', v) + chip('MORTGAGE RATES MORE THAN DOUBLED', 900, 578, C.red, '#fff', 22, v, 0, 1)]; });
+D(26, (T, v) => { let o = ''; const p = easeOut(at(T, 26, du(26) * 0.45, 1.6)); const [cg] = lineChart([[0, .9], [.2, .8], [.35, .85], [.5, .6], [.65, .7], [.8, .5], [1, .55]], p, 700, 180, 480, 300, C.red, v);
+  o += row(T, st(26) + 0.2, 90, 160, 520, `💳 CARD RATES: <span class="r">RECORD HIGHS</span>`, 'rgba(239,68,68,.6)', 26) + row(T, fr(T, 26, .2), 90, 260, 520, `🚗 CAR LOANS: <span class="r">PRICIER</span>`, 'rgba(249,115,22,.6)', 26);
+  if (p > 0) o += chip('S&P 500: ~ −25%', 940, 140, C.red, '#fff', 28, v, 0, 1);
+  return [cg, `<div style="opacity:${v}">${o}</div>`]; });
+D(27, (T, v) => { const p = easeOut(at(T, 27, du(27) * 0.4, 1.4)); let g = `<g opacity="${v}">${icPiggy(300, 340, 1.3)}</g>` + bar3d(760, 500, 150, 18, '#64748B', v) + bar3d(1000, 500, 150, 20 + 240 * p, C.green, v);
+  for (let k = 0; k < 6; k++) { const f = ((T - st(27)) * 0.7 + k / 6) % 1; g += coin(280 + Math.sin(k * 2) * 40, 120 + f * 140, 14, v * (1 - f)); }
+  return [g, lab('~0%', 760, 500, 18, 150, 40, C.grey, v) + lab(lerp(0.5, 5, p).toFixed(1) + '%', 1000, 500, 20 + 240 * p, 150, 48, '#4ADE80', v) + chip('SAVERS FINALLY GOT PAID', 880, 578, C.green, '#052E16', 26, v, 0, 1)]; });
+D(28, (T, v) => { const p = easeOut(at(T, 28, 0.3, du(28) * 0.5)); const [cg] = lineChart([[0, .6], [.15, .45], [.3, .3], [.45, .38], [.6, .55], [.75, .7], [.88, .85], [1, .95]], p, 120, 140, 620, 360, C.green, v);
+  let o = p > 0.9 ? chip('NEW ALL-TIME HIGHS · 2024', 560, 130, C.green, '#052E16', 24, v, -3, 1) : '';
+  o += row(T, fr(T, 28, .45), 800, 190, 400, `😱 SOLD IN PANIC → <span class="r">LOST</span>`, 'rgba(239,68,68,.6)', 24) + row(T, fr(T, 28, .7), 800, 300, 400, `😎 KEPT INVESTING → <span class="g">WON</span>`, 'rgba(34,197,94,.6)', 24);
+  return [cg, `<div style="opacity:${v}">${o}</div>`]; });
+D(29, (T, v) => ['', `<div style="opacity:${v}">${ov('THE LESSON', 0, 90, W, 40, C.gold, 1)}${row(T, st(29) + 0.6, 240, 170, 800, `${check(false)}BORROWERS: HURT RIGHT AWAY`, 'rgba(239,68,68,.6)', 32, 86)}${row(T, fr(T, 29, .35), 240, 280, 800, `${check(true)}SAVERS: REWARDED RIGHT AWAY`, 'rgba(34,197,94,.6)', 32, 86)}${row(T, fr(T, 29, .65), 240, 390, 800, `☂️ INVESTORS: A STORM TO SIT THROUGH`, 'rgba(59,130,246,.6)', 32, 86)}</div>`]);
+D(30, (T, v) => { let g = ''; const p = easeOut(at(T, 30, 0.4, 1.4));
+  for (let k = 0; k < 5; k++) g += bar3d(200 + k * 70, 500, 50, 20 + k * 55 * p, C.purple, v);
+  for (let k = 0; k < 5; k++) g += bar3d(760 + k * 70, 500, 50, 220 + k * 30 * p, C.red, v);
+  return [g, ov('2022: STARTED AT ~0%', 120, 540, 440, 26, C.grey, v) + ov('2026: STARTING AT ~4%', 700, 540, 440, 26, '#F87171', v) + chip('EVERY HIKE LANDS ON TOP OF HIGH RATES', 640, 120, C.red, '#fff', 26, v * clamp(pop(T, fr(T, 30, .5))), 0, pop(T, fr(T, 30, .5)))]; });
+D(31, (T, v) => { let g = ''; [icCard, icHouse, icCar, icPiggy].forEach((ic, k) => { const s = pop(T, st(31) + 0.4 + k * 0.3); g += `<g opacity="${v * clamp(s)}">${ic(250 + k * 260, 400, 0.9 * s)}</g>`; });
+  return [g, bigc('YOUR MONEY', 0, 130, W, 96, 'gold', v * clamp(pop(T, st(31))), pop(T, st(31)))]; });
+D(32, (T, v) => { const [g, o] = chapter(T, 32, '1', 'YOUR CREDIT CARD', C.red); return [`<g opacity="${v}">${g}</g>`, `<div style="opacity:${v}">${o}</div>`]; });
+D(33, (T, v) => { let o = ''; [['THE FED', C.gold], ['PRIME RATE', C.orange], ['YOUR CARD APR', C.red]].forEach(([t, c], k) => { const s = pop(T, st(33) + 0.4 + k * 1.2); o += `<div class="card" style="left:${110 + k * 380}px;top:200px;width:300px;height:110px;border-color:${c};opacity:${v * clamp(s)};transform:scale(${s});text-align:center;font-size:${t.length > 10 ? 28 : 34}px;font-weight:900;line-height:106px;white-space:nowrap;color:${c}">${t}</div>`; if (k) o += ov('➜', 50 + k * 380, 220, 80, 60, C.white, v * clamp(s)); });
+  o += chip('RISES WITHIN 1–2 BILLING CYCLES', 640, 400, '#334155', '#fff', 26, v * clamp(pop(T, fr(T, 33, .55))), 0, pop(T, fr(T, 33, .55)));
+  const s = pop(T, fr(T, 33, .8)); o += card(980, 420, 220, 130, `<div style="margin:16px;font-size:12px;color:#94A3B8;line-height:1.5">NOTICE OF CHANGE IN TERMS… your APR will increase to…</div><div style="margin:0 16px;font-size:20px;color:#F87171;font-weight:900">tiny print 🔍</div>`, v * clamp(s), 'rgba(255,255,255,.4)', s);
+  return ['', o]; });
+D(34, (T, v) => { const p = easeOut(at(T, 34, 0.2, 1.2)); return [`<g opacity="${v}">${icCard(300, 330, 1.8, '#1E293B')}</g>`, bigc((22.5 * p).toFixed(1) + '%', 560, 190, 600, 150, 'red', v) + ov('AVERAGE NEW CARD OFFER', 560, 370, 600, 30, C.white, v) + chip('APR', 860, 150, C.red, '#fff', 26, v, 0, 1)]; });
+D(35, (T, v) => { const p = clamp((T - st(35) - du(35) * 0.35) / (du(35) * 0.55)); const bal = 6000 * (1 - p), months = Math.round(45 * p), interest = 2900 * easeOut(p);
+  let g = `<g opacity="${v}"><rect x="140" y="300" width="1000" height="60" rx="14" fill="#1E293B"/><rect x="140" y="300" width="${1000 * bal / 6000}" height="60" rx="14" fill="${C.red}"/></g>`;
+  let o = card(140, 120, 300, 130, `<div style="margin:18px 24px 0;font-size:20px;color:#94A3B8;font-weight:800">YOU OWE</div><div style="margin:4px 24px;font-size:52px;font-weight:900">$6,000</div>`, v, 'rgba(255,255,255,.3)') + card(490, 120, 300, 130, `<div style="margin:18px 24px 0;font-size:20px;color:#94A3B8;font-weight:800">YOU PAY</div><div style="margin:4px 24px;font-size:52px;font-weight:900">$200<span style="font-size:24px">/mo</span></div>`, v * clamp(pop(T, fr(T, 35, .15))), 'rgba(255,255,255,.3)');
+  o += ov(`MONTH ${months}`, 140, 380, 300, 34, C.white, v * clamp(p * 4), 'text-align:left') + ov(`INTEREST PAID: <span class="r">${money(interest)}</span>`, 640, 380, 500, 34, C.white, v * clamp(p * 4), 'text-align:right');
+  if (p >= 1) o += chip('≈ 45 MONTHS · ALMOST 4 YEARS', 640, 480, C.gold, '#0B1020', 28, v, -2, 1);
+  return [g, o]; });
+D(36, (T, v) => { const p = easeOut(at(T, 36, 0.2, 1.2)), R = 170, cx = 460, cy = 330, L = 2 * Math.PI * R, f = 2900 / 8900;
+  let g = `<g opacity="${v}" transform="rotate(-90 ${cx} ${cy})"><circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="#3B82F6" stroke-width="90"/><circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="${C.red}" stroke-width="100" stroke-dasharray="${L * f * p} ${L}"/></g>`;
+  return [g, ov('BORROWED<br><span style="color:#93C5FD;font-size:54px">$6,000</span>', 760, 190, 400, 30, C.white, v, 'text-align:left') + ov('INTEREST<br><span class="r" style="font-size:54px">$2,900</span>', 760, 330, 400, 30, C.white, v * clamp(p * 2), 'text-align:left') + chip('NEARLY HALF, GONE', 640, 600 - 90, C.red, '#fff', 26, v * clamp(pop(T, st(36) + 1)), -3, pop(T, st(36) + 1))]; });
+D(37, (T, v) => { let g = '', o = ''; for (let k = 0; k < 2; k++) { const s = pop(T, fr(T, 37, .2 + k * .45), 0.4); if (s <= 0) continue; g += bar3d(560 + k * 0, 500 - k * 70, 220, 70 * s, k ? C.red : C.orange, v); o += ov(k ? 'HIKE #2 (DEC?)' : 'HIKE #1 (SEPT)', 700, 440 - k * 70, 300, 24, C.white, v, 'text-align:left'); }
+  g += bar3d(560, 570, 220, 70, '#475569', v); o += ov('ALREADY ~22.5%', 700, 510, 300, 24, C.grey, v, 'text-align:left');
+  o += chip('+$15 A YEAR… PER HIKE', 380, 160, C.orange, '#1C1002', 26, v * clamp(pop(T, st(37) + 0.4)), -2, pop(T, st(37) + 0.4)) + stamp('HIKES RARELY COME ALONE', 880, 160, '#F87171', 30, pop(T, fr(T, 37, .4)), 3);
+  return [g, o]; });
+D(38, (T, v) => { const k = T - st(38), sh = Math.sin(k * 30) * 8 * (k % 1.2 < 0.5 ? 1 : 0);
+  let g = `<g opacity="${v}" transform="translate(${640 + sh} 280)"><path d="M-90 60 Q-90 -90 0 -90 Q90 -90 90 60 Z" fill="${C.red}" stroke="#fff" stroke-width="6"/><rect x="-110" y="56" width="220" height="24" rx="10" fill="${C.red}" stroke="#fff" stroke-width="6"/><circle cx="0" cy="100" r="18" fill="#fff"/></g>`;
+  return [g, bigc('YOUR LOUDEST ALARM', 0, 430, W, 60, 'red', v) + chip('→ MOVE #1', 640, 540, C.gold, '#0B1020', 28, v * clamp(pop(T, fr(T, 38, .5))), 0, pop(T, fr(T, 38, .5)))]; });
+D(39, (T, v) => { full('suburb', T, 39, { op: v }); const [g, o] = chapter(T, 39, '2', 'YOUR MORTGAGE', C.blue); return [`<g opacity="${v}">${g}</g>`, `<div style="opacity:${v}">${o}</div>`]; });
+D(40, (T, v) => { let o = card(160, 150, 420, 160, `<div style="text-align:center;margin-top:34px;font-size:40px;font-weight:900">THE FED</div><div style="text-align:center;font-size:26px;color:#F87171;font-weight:900">does NOT set it ✗</div>`, v * clamp(pop(T, st(40) + 0.3)), 'rgba(239,68,68,.6)', pop(T, st(40) + 0.3));
+  o += card(700, 150, 420, 160, `<div style="text-align:center;margin-top:34px;font-size:36px;font-weight:900">10-YEAR TREASURY</div><div style="text-align:center;font-size:26px;color:#4ADE80;font-weight:900">mortgages follow this ✓</div>`, v * clamp(pop(T, fr(T, 40, .3))), 'rgba(34,197,94,.6)', pop(T, fr(T, 40, .3)));
+  return [`<g opacity="${v}">${icHouse(640, 450, 1.1)}</g>`, o + chip('+ LONG-TERM INFLATION EXPECTATIONS', 640, 560, '#334155', '#fff', 22, v * clamp(pop(T, fr(T, 40, .6))), 0, pop(T, fr(T, 40, .6)))]; });
+D(41, (T, v) => { const p = easeOut(at(T, 41, 0.2, 1.2)); const [cg] = lineChart([[0, .3], [.25, .7], [.5, .9], [.7, .8], [.85, .7], [1, .62]], easeOut(at(T, 41, 1, 2)), 700, 180, 460, 260, C.cyan, v);
+  return [cg, bigc((7.18 * p).toFixed(2) + '%', 80, 170, 560, 130, 'cyan', v) + ov('30-YEAR FIXED · FREDDIE MAC', 80, 330, 560, 26, C.white, v) + chip('↓ 3 WEEKS IN A ROW', 930, 150, C.green, '#052E16', 24, v * clamp(pop(T, fr(T, 41, .45))), 0, pop(T, fr(T, 41, .45))) + chip('1 YEAR AGO: 6.22%', 360, 420, '#334155', '#fff', 26, v * clamp(pop(T, fr(T, 41, .7))), 0, pop(T, fr(T, 41, .7)))]; });
+D(42, (T, v) => { let o = '', g = ''; [['6.22%', 2455, C.green, .2], ['7.18%', 2710, C.red, .55]].forEach(([r, pay, c, f], k) => { const s = pop(T, fr(T, 42, f)); if (s <= 0) return;
+  g += `<g opacity="${v * clamp(s)}">${icHouse(330 + k * 620, 250, 1.1 * s, c)}</g>`; o += ov(`AT ${r}`, 130 + k * 620, 360, 400, 30, C.grey, v * clamp(s)) + ov(money(pay) + '<span style="font-size:26px">/mo</span>', 130 + k * 620, 400, 400, 58, c === C.red ? '#F87171' : '#4ADE80', v * clamp(s)); });
+  return [g, o + chip('$400,000 LOAN · PRINCIPAL + INTEREST', 640, 110, '#334155', '#fff', 24, v, 0, 1)]; });
+D(43, (T, v) => { const p = easeOut(at(T, 43, du(43) * 0.35, 1.8)); return ['', bigc('+$255', 0, 120, W, 130, 'red', v * clamp(pop(T, st(43))), pop(T, st(43))) + ov('EVERY MONTH', 0, 290, W, 34, C.white, v) + (p > 0 ? bigc('+' + money(91800 * p), 0, 360, W, 96, 'gold', v) + ov('OVER 30 YEARS · SAME HOUSE', 0, 490, W, 30, C.white, v * clamp(p * 2)) : '')]; });
+D(44, (T, v) => { const [cg] = lineChart([[0, .5], [.3, .52], [.5, .5], [.7, .53], [1, .54]], easeOut(at(T, 44, 0.5, 2)), 500, 220, 650, 220, C.cyan, v);
+  return [cg, icCal(150, 150, 1.1, 'DEC', '9', v) + chip('MOSTLY "PRICED IN"', 820, 160, '#334155', '#fff', 26, v * clamp(pop(T, fr(T, 44, .3))), 0, pop(T, fr(T, 44, .3))) + stamp('WATCH: WHAT THEY SAY ABOUT 2027', 820, 500, C.gold, 28, pop(T, fr(T, 44, .6)), -3)]; });
+D(45, (T, v) => ['', card(150, 140, 450, 300, `<div style="text-align:center;margin-top:40px;font-size:70px">🔒</div><div style="text-align:center;font-size:34px;font-weight:900">FIXED-RATE</div><div style="text-align:center;font-size:30px;color:#4ADE80;font-weight:900;margin-top:8px">NO CHANGE</div>`, v * clamp(pop(T, st(45) + 0.3)), 'rgba(34,197,94,.7)', pop(T, st(45) + 0.3)) +
+  card(680, 140, 450, 300, `<div style="text-align:center;margin-top:40px;font-size:70px">⚠️</div><div style="text-align:center;font-size:34px;font-weight:900">ARM / HELOC</div><div style="text-align:center;font-size:30px;color:#FBBF24;font-weight:900;margin-top:8px">CAN RISE WITH THE FED</div>`, v * clamp(pop(T, fr(T, 45, .45))), 'rgba(251,191,36,.7)', pop(T, fr(T, 45, .45)))]);
+D(46, (T, v) => { photo('suburb', { op: v, x: 80, y: 120, w: 520, h: 380, p: (T - st(46)) / du(46), glow: C.cyan }); const p = easeOut(at(T, 46, 0.5, 2.5));
+  const [cg] = lineChart([[0, .2], [.2, .45], [.4, .65], [.6, .75], [.8, .8], [1, .83]], p, 680, 160, 480, 300, C.green, v);
+  return [cg, chip('HOME PRICES: SLOWER GROWTH', 920, 130, C.green, '#052E16', 22, v, 0, 1) + stamp('A CRASH? DON\'T BET ON IT', 920, 520, '#F87171', 28, pop(T, fr(T, 46, .6)), -3)]; });
+D(47, (T, v) => { full('cars', T, 47, { op: v }); const [g, o] = chapter(T, 47, '3', 'YOUR CAR LOAN', C.orange); return [`<g opacity="${v}">${g}</g>`, `<div style="opacity:${v}">${o}</div>`]; });
+D(48, (T, v) => { photo('cars', { op: v, x: 100, y: 130, w: 560, h: 360, p: (T - st(48)) / du(48), glow: C.orange }); return ['', card(740, 170, 440, 260, `<div style="text-align:center;margin-top:40px;font-size:64px">🔒🚗</div><div style="text-align:center;font-size:32px;font-weight:900;margin-top:10px">ALREADY HAVE A LOAN?</div><div style="text-align:center;font-size:30px;color:#4ADE80;font-weight:900">PAYMENT DOESN'T CHANGE</div>`, v * clamp(pop(T, st(48) + 0.4)), 'rgba(34,197,94,.6)', pop(T, st(48) + 0.4))]; });
+D(49, (T, v) => { const p = easeOut(at(T, 49, du(49) * 0.45, 1.2)); return [`<g opacity="${v}">${icCar(330, 320, 1.6)}</g>`, card(640, 160, 520, 290, `<div style="margin:30px 34px 0;font-size:22px;color:#94A3B8;font-weight:800">$35,000 · 5-YEAR LOAN</div><div style="margin:10px 34px 0;font-size:30px;font-weight:900">QUARTER-POINT HIKE =</div><div style="margin:10px 34px 0;font-size:90px;font-weight:900;color:#FBBF24">+$${Math.round(4 * p)}<span style="font-size:34px">/mo</span></div>`, v * clamp(pop(T, st(49) + 0.3)), 'rgba(251,191,36,.6)', pop(T, st(49) + 0.3))]; });
+D(50, (T, v) => { const p = easeOut(at(T, 50, 0.5, 1.4)); let g = bar3d(420, 470, 170, 180 * p, C.green, v) + bar3d(760, 470, 170, 257 * p, C.red, v);
+  g += svgT(440, 515, '5 YEARS', 26, C.grey, 900, 'middle', `opacity="${v}"`) + svgT(780, 515, '7 YEARS', 26, C.grey, 900, 'middle', `opacity="${v}"`);
+  return [g, lab('$7,080', 420, 470, 180 * p, 170, 40, '#4ADE80', v * clamp(p * 2)) + lab('$10,095', 760, 470, 257 * p, 170, 40, '#F87171', v * clamp(p * 2)) + ov('TOTAL INTEREST · $35K at 7.5% (example)', 0, 560 - 30, W, 22, C.grey, v) +
+    row(T, fr(T, 50, .55), 960, 200, 280, '✓ NEGOTIATE PRICE', 'rgba(34,197,94,.6)', 24, 70) + row(T, fr(T, 50, .7), 960, 290, 280, '✓ KEEP IT SHORT', 'rgba(34,197,94,.6)', 24, 70)]; });
+D(51, (T, v) => { const s = pop(T, fr(T, 51, .5)); let g = ''; for (let k = 0; k < 14; k++) { const f = ((T - st(51)) * 0.6 + k / 14) % 1; g += coin(100 + k * 80, 120 + f * 420, 16, v * (1 - f) * 0.8); }
+  return [g, bigc('THE WINNERS', 0, 160, W, 100, 'green', v * clamp(pop(T, st(51))), pop(T, st(51))) + bigc('🏆', 0, 300, W, 120, 'gold', v * clamp(s), s)]; });
+D(52, (T, v) => { const s = pop(T, st(52) + 0.2); return [`<g opacity="${v}">${icPiggy(640, 410, 1.2 * s)}</g>`, bigc('HAVE CASH? A RATE HIKE IS A <span>GIFT 🎁</span>', 0, 140, W, 58, 'green', v * clamp(s), s)]; });
+D(53, (T, v) => { photo('bank', { op: v, x: 120, y: 110, w: 560, h: 400, p: (T - st(53)) / du(53), glow: C.green }); return ['', card(760, 170, 420, 250, `<div style="text-align:center;margin-top:40px;font-size:30px;font-weight:900">BANKS PAY YOU MORE</div><div style="text-align:center;font-size:30px;font-weight:900;margin-top:10px">WHEN RATES RISE…</div><div style="text-align:center;font-size:30px;color:#F87171;font-weight:900;margin-top:20px">but most savings sit<br>in the WRONG place</div>`, v * clamp(pop(T, st(53) + 0.4)), 'rgba(34,197,94,.6)', pop(T, st(53) + 0.4))]; });
+D(54, (T, v) => { const p = easeOut(at(T, 54, 0.4, 1.2)), p2 = easeOut(at(T, 54, du(54) * 0.35, 1.4)); let g = bar3d(420, 480, 180, 24 * p, '#64748B', v) + bar3d(820, 480, 180, 250 * p2, C.green, v);
+  g += svgT(440, 525, 'NATIONAL AVERAGE', 22, C.grey, 900, 'middle', `opacity="${v}"`) + svgT(840, 525, 'TOP HIGH-YIELD', 22, C.grey, 900, 'middle', `opacity="${v}"`);
+  return [g, lab('0.57%', 420, 480, 24 * p, 180, 44, C.white, v * clamp(p * 2)) + lab((4.35 * p2).toFixed(2) + '%', 820, 480, 250 * p2, 180, 54, '#4ADE80', v * clamp(p2 * 2)) + chip('SAME FDIC INSURANCE', 640, 590 - 30, C.cyan, '#083344', 24, v * clamp(pop(T, fr(T, 54, .75))), 0, pop(T, fr(T, 54, .75))) + chip('BANKRATE · NOV 2026', 1130, 110, '#334155', '#fff', 18, v, 0, 1)]; });
+D(55, (T, v) => { const p = easeOut(at(T, 55, du(55) * 0.2, 1.2)), p2 = easeOut(at(T, 55, du(55) * 0.45, 1.6));
+  return ['', ov('$10,000 IN SAVINGS · 1 YEAR', 0, 100, W, 36, C.white, v) + card(160, 190, 420, 230, `<div style="text-align:center;margin-top:30px;font-size:24px;color:#94A3B8;font-weight:800">AVERAGE ACCOUNT</div><div style="text-align:center;font-size:90px;font-weight:900">$${Math.round(57 * p)}</div>`, v, 'rgba(255,255,255,.25)') +
+    card(700, 190, 420, 230, `<div style="text-align:center;margin-top:30px;font-size:24px;color:#94A3B8;font-weight:800">HIGH-YIELD ACCOUNT</div><div style="text-align:center;font-size:90px;font-weight:900;color:#4ADE80">$${Math.round(435 * p2)}</div>`, v * clamp(pop(T, fr(T, 55, .4))), 'rgba(34,197,94,.7)', pop(T, fr(T, 55, .4))) + chip('≈ 8× MORE', 640, 470, C.gold, '#0B1020', 34, v * clamp(pop(T, fr(T, 55, .75))), -3, pop(T, fr(T, 55, .75)))]; });
+D(56, (T, v) => { const p = easeOut(at(T, 56, du(56) * 0.2, 1.2)); return ['', chip('U.S. TREASURY · I BONDS', 640, 110, '#1E3A8A', '#fff', 28, v, 0, 1) + bigc((5.51 * p).toFixed(2) + '%', 0, 160, W, 160, 'gold', v) + ov('NOV 2026 – APR 2027', 0, 350, W, 32, C.white, v) + chip('FIXED PART 1.40% · HIGHEST SINCE 2006', 640, 470, C.green, '#052E16', 28, v * clamp(pop(T, fr(T, 56, .65))), -2, pop(T, fr(T, 56, .65)))]; });
+D(57, (T, v) => ['', `<div style="opacity:${v}">${ov('I BOND RULES', 0, 90, W, 38, C.gold)}${row(T, st(57) + 0.3, 200, 160, 880, '🔒 LOCKED FOR 1 YEAR', 'rgba(250,204,21,.5)', 30)}${row(T, fr(T, 57, .25), 200, 250, 880, '⚠️ SELL BEFORE 5 YEARS → LOSE 3 MONTHS OF INTEREST', 'rgba(251,191,36,.6)', 28)}${row(T, fr(T, 57, .5), 200, 340, 880, '💵 UP TO $10,000 A YEAR PER PERSON', 'rgba(34,197,94,.5)', 30)}${row(T, fr(T, 57, .78), 200, 430, 880, '<span class="r">✗ NOT AN EMERGENCY FUND</span>', 'rgba(239,68,68,.6)', 30)}</div>`]);
+D(58, (T, v) => { const p = easeOut(at(T, 58, du(58) * 0.3, 1.2)); let g = bar3d(500, 480, 170, 250 * p, C.green, v) + bar3d(800, 480, 170, 106 * p, '#64748B', v);
+  g += svgT(520, 525, 'TOP CDs', 24, C.grey, 900, 'middle', `opacity="${v}"`) + svgT(820, 525, 'AVG 1-YEAR CD', 24, C.grey, 900, 'middle', `opacity="${v}"`);
+  return [g, lab('~5%', 500, 480, 250 * p, 170, 50, '#4ADE80', v * clamp(p * 2)) + lab('~2%', 800, 480, 106 * p, 170, 50, C.white, v * clamp(p * 2)) + chip('CDs: LOCK IN TODAY\'S RATES', 640, 578, C.cyan, '#083344', 26, v, 0, 1) + stamp('SHOP AROUND', 1100, 400, C.gold, 30, pop(T, fr(T, 58, .75)), -5)]; });
+D(59, (T, v) => { const s = pop(T, st(59)), s2 = pop(T, fr(T, 59, .45)); return ['', bigc('SAVERS WIN', 0, 170, W, 110, 'green', v * clamp(s), s) + ov('…only if their money is somewhere that <span class="y">PAYS</span>', 0, 340, W, 40, C.white, v * clamp(s2))]; });
+D(60, (T, v) => { const p = easeOut(at(T, 60, du(60) * 0.25, 1.2)); let g = bar3d(330, 470, 170, 240 * p, C.green, v) + svgT(350, 515, 'NEW JOBS · OCT', 22, C.grey, 900, 'middle', `opacity="${v}"`);
+  return [g, lab(Math.round(165 * p) + 'K', 330, 470, 240 * p, 170, 54, '#4ADE80', v) + card(620, 150, 560, 300, `<div style="margin:36px 36px 0;font-size:24px;color:#94A3B8;font-weight:800">STRONG JOB MARKET =</div><div style="margin:10px 36px 0;font-size:50px;font-weight:900">YOUR <span class="y">LEVERAGE</span></div><div style="margin:20px 36px 0;font-size:30px;font-weight:900">💼 ask for a raise<br>🚀 or a better-paying job</div>`, v * clamp(pop(T, fr(T, 60, .5))), 'rgba(250,204,21,.6)', pop(T, fr(T, 60, .5)))]; });
+D(61, (T, v) => { full('floor', T, 61, { op: v }); const [g, o] = chapter(T, 61, '4', 'STOCKS & CRYPTO', C.cyan); return [`<g opacity="${v}">${g}</g>`, `<div style="opacity:${v}">${o}</div>`]; });
+D(62, (T, v) => { const k = T - st(62), tilt = lerp(0, -12, easeOut(at(T, 62, du(62) * 0.3, 1.5)));
+  let g = `<g opacity="${v}" transform="rotate(${tilt} 640 400)"><rect x="240" y="392" width="800" height="16" rx="8" fill="#94A3B8"/><rect x="250" y="330" width="220" height="62" rx="12" fill="${C.green}"/>${svgT(360, 372, 'SAFE 4–5%', 26, '#052E16')}<rect x="810" y="330" width="220" height="62" rx="12" fill="${C.red}"/>${svgT(920, 372, 'STOCKS', 26, '#fff')}</g><polygon points="640,410 600,480 680,480" fill="#475569" opacity="${v}"/>`;
+  return [g, chip('SHORT TERM: MARKETS GET NERVOUS', 640, 140, C.orange, '#1C1002', 26, v, 0, 1) + chip('TECH & HEAVY BORROWERS FEEL IT MOST', 640, 560, '#334155', '#fff', 22, v * clamp(pop(T, fr(T, 62, .65))), 0, pop(T, fr(T, 62, .65)))]; });
+D(63, (T, v) => { photo('nyse', { op: v, x: 120, y: 110, w: 620, h: 400, p: (T - st(63)) / du(63), glow: C.red }); const [cg] = lineChart([[0, .8], [.25, .7], [.5, .72], [.75, .45], [1, .4]], easeOut(at(T, 63, 0.4, 2)), 820, 200, 360, 220, C.red, v);
+  return [cg, chip('SELL-OFF', 1000, 160, C.red, '#fff', 28, v, -3, 1) + chip('🔄 MONEY ROTATING', 1000, 480, '#334155', '#fff', 22, v, 0, 1)]; });
+D(64, (T, v) => { const p = easeOut(at(T, 64, 0.3, 1.2)); return [icBTC(300, 300, 120 * clamp(pop(T, st(64))), v), bigc('~$76K', 520, 170, 600, 110, 'gold', v) + chip('−40% FROM RECORD', 820, 330, C.red, '#fff', 28, v * clamp(pop(T, fr(T, 64, .3))), -2, pop(T, fr(T, 64, .3))) + card(560, 400, 520, 120, `<div style="text-align:center;margin-top:22px;font-size:24px;color:#94A3B8;font-weight:800">US BITCOIN FUNDS · ONE WEEK</div><div style="text-align:center;font-size:44px;color:#F87171;font-weight:900">−$1B+ PULLED OUT</div>`, v * clamp(pop(T, fr(T, 64, .55))), 'rgba(239,68,68,.6)', pop(T, fr(T, 64, .55)))]; });
+D(65, (T, v) => { const p = easeOut(at(T, 65, 0.3, du(65) * 0.7)); const pts = [[0, .05], [.1, .1], [.18, .08], [.28, .2], [.36, .16], [.45, .3], [.52, .25], [.62, .42], [.7, .38], [.8, .6], [.88, .55], [1, .9]];
+  const [cg] = lineChart(pts, p, 140, 140, 1000, 380, C.green, v); let o = '';
+  [['HIKES', .2, C.red], ['RECESSION', .36, C.orange], ['CUTS', .52, C.blue], ['BOOM', .8, C.green]].forEach(([t, f, c]) => { if (p > f) o += chip(t, 140 + f * 1000, 520 - 380 * pts.find(q => q[0] >= f)[1] - 60, c, '#fff', 18, v, 0, 1); });
+  return [cg, o + chip('THE LONG RUN: UP ↗', 640, 110, C.green, '#052E16', 28, v, 0, 1)]; });
+D(66, (T, v) => { let g = `<g opacity="${v}"><rect x="760" y="260" width="300" height="220" rx="20" fill="#1E3A8A" stroke="#F8FAFC" stroke-width="5"/>${svgT(910, 360, 'INDEX', 40, '#fff')}${svgT(910, 410, 'FUND', 40, '#fff')}</g>`;
+  for (let k = 0; k < 6; k++) { const f = ((T - st(66)) * 0.5 + k / 6) % 1; g += coin(360 + f * 400, 330 - Math.sin(f * Math.PI) * 120, 18, v * (f < .95 ? 1 : 0)); }
+  return [g, ov('EVERY MONTH 📅', 200, 200, 300, 34, C.white, v) + chip('A DIP = A DISCOUNT', 640, 560, C.gold, '#0B1020', 30, v * clamp(pop(T, fr(T, 66, .55))), -2, pop(T, fr(T, 66, .55))) + chip('RATE HIKE = MOSTLY NOISE', 640, 120, '#334155', '#fff', 26, v, 0, 1)]; });
+D(67, (T, v) => { const s = pop(T, fr(T, 67, .3)); return ['', bigc('RECESSION?', 0, 180, W, 140, 'red', v * clamp(s), s * (1 + 0.02 * Math.sin(T * 10))) + ov("LET'S TALK ABOUT 2027", 0, 380, W, 40, C.white, v * clamp(pop(T, fr(T, 67, .6))))]; });
+D(68, (T, v) => { let o = ''; [['1', C.green, 'SOFT LANDING'], ['2', C.orange, 'HIGHER FOR LONGER'], ['3', C.red, 'FED OVERDOES IT']].forEach(([n, c, t], k) => { const s = pop(T, fr(T, 68, .4 + k * .15)); o += card(130 + k * 350, 160, 320, 320, `<div style="text-align:center;margin-top:50px;font-size:110px;font-weight:900;color:${c}">${n}</div><div style="text-align:center;font-size:${s > .5 ? 26 : 26}px;font-weight:900">${t}</div>`, v * clamp(s), c, s); });
+  return ['', o + ov('NOBODY KNOWS THE FUTURE.', 0, 90, W, 32, C.grey, v)]; });
+const scen = (T, v, i, n, col, title, items) => { let o = chip(`SCENARIO ${n}`, 640, 100, col, '#fff', 26, v, 0, 1) + bigc(title, 0, 130, W, 66, n === 1 ? 'green' : n === 2 ? 'gold' : 'red', v);
+  items.forEach((t, k) => o += row(T, fr(T, i, .15 + k * .17), 240, 250 + k * 82, 800, t, col, 26, 70)); return o; };
+D(69, (T, v) => { const k = T - st(69); let g = `<g opacity="${v * 0.6}" transform="translate(${100 + k * 18} ${200 + k * 8}) rotate(14)"><path d="M0 0 L80 -8 L100 0 L80 8 Z" fill="#E2E8F0"/><path d="M40 -4 L20 -40 L30 -40 L60 -4 Z M40 4 L20 40 L30 40 L60 4 Z" fill="#CBD5E1"/></g>`;
+  return [g, scen(T, v, 69, 1, C.green, 'THE SOFT LANDING', ['✈️ HIKE IN DECEMBER, THEN PAUSE', '📉 INFLATION COOLS TOWARD THE HIGH 2s', '💼 JOBS STAY SOLID', '✂️ MAYBE CUTS BY LATE 2027'])]; });
+D(70, (T, v) => ['', scen(T, v, 70, 2, C.orange, 'HIGHER FOR LONGER', ['📌 INFLATION STUCK ABOVE 3.5%', '⬆️ ANOTHER HIKE IN EARLY 2027', '💳 CARD RATES CLIMB EVEN HIGHER', '🏠 MORTGAGES STAY ABOVE 7%'])]);
+D(71, (T, v) => { const p = easeOut(at(T, 71, du(71) * 0.5, 1.4)) * 0.22; let o = scen(T, v, 71, 3, C.red, 'THE FED OVERDOES IT', ['🛑 BRAKES TOO HARD', '📉 ECONOMY TIPS INTO RECESSION']);
+  return [p > 0 ? gauge(1110, 500, 90, p, C.gold, v, '') : '', o + (p > 0 ? ov(`~${Math.round(p * 100)}%`, 1010, 420, 200, 38, C.gold, v) + ov('RECESSION ODDS (TRADERS)', 930, 530, 360, 16, C.grey, v) : '')]; });
+D(72, (T, v) => ['', `<div style="opacity:${v}">${ov('IN ALL 3 SCENARIOS, THESE PEOPLE WIN:', 0, 100, W, 36, C.gold)}${row(T, fr(T, 72, .3), 240, 180, 800, `${check(true)}LOW DEBT`, 'rgba(34,197,94,.6)', 34, 86)}${row(T, fr(T, 72, .45), 240, 290, 800, `${check(true)}AN EMERGENCY FUND`, 'rgba(34,197,94,.6)', 34, 86)}${row(T, fr(T, 72, .6), 240, 400, 800, `${check(true)}SAVINGS THAT EARN INTEREST`, 'rgba(34,197,94,.6)', 34, 86)}</div>`]);
+D(73, (T, v) => { const [g, o] = chapter(T, 73, '7', 'MOVES BEFORE DEC 9', C.green); return [`<g opacity="${v}">${g}</g>`, `<div style="opacity:${v}">${o}</div>`]; });
+const MOVES = [['💳', 'ATTACK CARD DEBT', ['Pay the highest rate first', '0% balance-transfer card if your credit is good']],
+  ['🏦', 'MOVE YOUR SAVINGS', ['Under 1%? Switch to high-yield', '~10 minutes → hundreds more a year']],
+  ['🛟', 'BUILD YOUR EMERGENCY FUND', ['3–6 months of expenses', 'Aim higher if your job feels shaky']],
+  ['🔍', 'SHOPPING FOR A LOAN? COMPARE', ['Get quotes from at least 3 lenders', 'Credit unions often beat big banks']],
+  ['📞', 'CALL & ASK FOR A LOWER RATE', ['The one almost nobody does', 'One 5-minute call can cut your APR']],
+  ['⚠️', 'FIND YOUR VARIABLE-RATE DEBT', ['ARMs, HELOCs, some student & personal loans', 'Pay those down first']],
+  ['📈', 'KEEP INVESTING, DON\'T PANIC', ['Stick to your plan', 'Time in the market > timing the market']]];
+MOVES.forEach(([ic, t, sub], n) => D(74 + n, (T, v) => { const i = 74 + n, s = pop(T, st(i) + 0.1, 0.45), special = n === 4;
+  let g = ''; if (special) { const k = T - st(i); for (let r = 0; r < 3; r++) { const f = (k * 0.8 + r / 3) % 1; g += `<circle cx="300" cy="330" r="${90 + f * 140}" fill="none" stroke="${C.gold}" stroke-width="4" opacity="${v * (1 - f)}"/>`; } }
+  let o = `<div class="ov" style="left:160px;top:230px;width:280px;font-size:150px;text-align:center;opacity:${v * clamp(s)};transform:scale(${s}) rotate(${special ? Math.sin(T * 20) * 6 : 0}deg)">${ic}</div>`;
+  o += `<div class="ov" style="left:470px;top:130px;width:120px;height:120px;border-radius:50%;background:${special ? C.gold : C.green};color:#0B1020;font-size:76px;text-align:center;line-height:120px;opacity:${v * clamp(s)};transform:scale(${s})">${n + 1}</div>`;
+  o += ov(t, 470, 270, 780, t.length > 24 ? 38 : 46, special ? C.gold : C.white, v * clamp(pop(T, st(i) + 0.3)), 'text-align:left;white-space:nowrap');
+  sub.forEach((x, k) => o += ov('→ ' + x, 470, 350 + k * 56, 780, x.length > 38 ? 24 : 30, '#CBD5E1', v * clamp(pop(T, fr(T, i, .3 + k * .25))), 'text-align:left;font-weight:800'));
+  if (special) o += stamp('THE SECRET MOVE', 1000, 150, C.gold, 28, pop(T, st(i) + 0.6), 6);
+  return [g, o]; }));
+D(81, (T, v) => { const s = pop(T, st(81)); return ['', bigc('THE BOTTOM LINE', 0, 220, W, 100, 'gold', v * clamp(s), s)]; });
+D(82, (T, v) => ['', `<div style="opacity:${v}">${icCal(80, 170, 1.0, 'DEC', '9', 1)}${row(T, fr(T, 82, .2), 340, 140, 840, '🏦 FED VERY LIKELY HIKES AGAIN', 'rgba(250,204,21,.5)', 28, 74)}${row(T, fr(T, 82, .35), 340, 230, 840, '<span class="r">💳 BORROWERS PAY MORE</span>', 'rgba(239,68,68,.6)', 28, 74)}${row(T, fr(T, 82, .5), 340, 320, 840, '<span class="g">💰 SAVERS WHO MOVE THEIR MONEY EARN MORE</span>', 'rgba(34,197,94,.6)', 28, 74)}${row(T, fr(T, 82, .7), 340, 410, 840, '🔮 2027: 3 PATHS · SAME HABITS WIN', 'rgba(168,85,247,.6)', 28, 74)}</div>`]);
+D(83, (T, v) => { const s1 = pop(T, st(83)), s2 = pop(T, fr(T, 83, .4)); return ['', ov("YOU CAN'T CONTROL THE FED.", 0, 170, W, 50, C.grey, v * clamp(s1)) + bigc('YOU CAN CONTROL<br><span>WHERE YOUR MONEY SITS & WHAT YOU OWE</span>', 0, 270, W, 52, 'green', v * clamp(s2), s2)]; });
+D(84, (T, v) => { const s = pop(T, fr(T, 84, .3)); return ['', bigc('WILL THE FED HIKE ON DEC 9?', 0, 140, W, 62, 'white', v * clamp(pop(T, st(84))), pop(T, st(84))) +
+  chip('👍 YES', 470, 330, C.green, '#052E16', 52, v * clamp(s), -3, s * (1 + 0.04 * Math.sin(T * 6))) + chip('👎 NO', 810, 330, C.red, '#fff', 52, v * clamp(s), 3, s * (1 + 0.04 * Math.sin(T * 6 + 1))) + ov('💬 COMMENT BELOW · I\'LL PIN THE BEST ANSWERS', 0, 440, W, 30, C.gold, v * clamp(pop(T, fr(T, 84, .6))))]; });
+D(85, (T, v) => { const s1 = pop(T, fr(T, 85, .15)), s2 = pop(T, fr(T, 85, .3)); return ['', bigc('THE MONEY <span style="color:#FACC15">MAP</span>', 0, 140, W, 80, 'white', v) +
+  chip('👍 LIKE', 470, 340, '#334155', '#fff', 44, v * clamp(s1), 0, s1) + chip('🔔 SUBSCRIBE', 800, 340, C.red, '#fff', 44, v * clamp(s2), 0, s2 * (1 + 0.05 * Math.sin(T * 7))) + ov('Money news, explained for YOUR wallet', 0, 450, W, 30, '#CBD5E1', v * clamp(pop(T, fr(T, 85, .5))))]; });
+D(86, (T, v) => { const s = pop(T, st(86)); return ['', bigc('SEE YOU IN THE NEXT ONE', 0, 220, W, 70, 'gold', v * clamp(s), s) + ov('THE MONEY MAP', 0, 340, W, 34, C.white, v)]; });
+
+/* ---------- impacts: flash + shake ---------- */
+const HITS = [fr(0, 3, 0.15), st(6) + 0.05, st(16), st(22), st(32), st(39), st(47), st(51), st(61), st(67) + du(67) * .3, st(73), st(81)];
+function frame(T) {
+  for (const k in PH) PH[k].w.style.opacity = 0;
+  let g = '', o = '';
+  for (let i = 0; i < S.length; i++) { if (!S[i]) continue; const v = vis(T, i); if (v <= 0) continue; const r = S[i](T, v); g += r[0]; o += r[1]; }
+  let si = 0; for (let i = 0; i < TIM.length; i++) if (T >= st(i) - 0.15) si = i; const sec = secOf(si);
+  let sh = 0; for (const t0 of HITS) { const k = T - t0; if (k >= 0 && k < 0.35) sh = Math.max(sh, (1 - k / 0.35) * 9); }
+  document.getElementById('cam').style.transform = sh ? `translate(${Math.sin(T * 91) * sh}px,${Math.cos(T * 77) * sh}px)` : '';
+  let fl = 0; for (const t0 of HITS) { const k = T - t0; if (k >= 0 && k < 0.25) fl = Math.max(fl, 0.5 * (1 - k / 0.25)); }
+  document.getElementById('flash').style.opacity = fl;
+  document.getElementById('svg').innerHTML = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${DEFS}${background(T, sec[2])}${g}</svg>`;
+  document.getElementById('ov').innerHTML = o + `<div class="prog"><div style="width:${clamp(T / TOTAL) * 100}%"></div></div><div class="sec">${sec[1]}</div><div class="brand">THE MONEY <span class="y">MAP</span></div>` + captions(T);
+}
+window.TOTAL = TOTAL; window.READY = false; window.HITS = HITS;
+CREDITS = window.CREDITS || {};
+document.fonts.ready.then(initPhotos).then(() => { frame(2); window.READY = true; });
+window.render = frame;
+</script>
+</body></html>

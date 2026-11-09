@@ -14,6 +14,9 @@ Backup title (vidIQ 96): The Fed Is About to Make Everything More Expensive (Dec
 - It fits the channel's core audience: US families and what news means for their money.
 - vidIQ: "federal reserve" gets about 104K searches a month, "housing market" about 149K, "interest rates" about 47K, and "stock market" about 669K (+67%). Competitors mostly have 2–8 minute news clips, so there's a gap for a full, calm explainer.
 
+## Video length
+About 14:46 (voiceover at 1.1× speed).
+
 ## Upload timing (Pakistan time)
 Publish by **Wed Nov 11 or Thu Nov 12, about 10:00 PM PKT** (noon ET). Interest rises until Dec 9, then spikes again on decision day.
 After Dec 9: post a Short with the actual decision and link to this video.
@@ -23,18 +26,17 @@ The Federal Reserve meets on December 9, and markets put the odds of another rat
 
 ⏱️ Chapters
 0:00 The December 9 vote
-0:55 What's actually happening
-3:00 Why the Fed would raise rates
-4:40 What happened last time (2022–2023)
-6:30 Your credit card
-8:30 Your mortgage and the housing market
-10:50 Your car loan
-12:00 The winners: savers (HYSA, I bonds, CDs)
-14:40 Stocks and crypto
-16:30 3 ways 2027 could play out
-18:30 7 moves before December 9
-20:45 Bottom line
-(Adjust chapter times after the voiceover is synced; I'll update them.)
+0:47 What's actually happening
+2:16 Why the Fed would raise rates
+3:25 What happened last time (2022–2023)
+5:04 Your credit card
+6:13 Your mortgage and the housing market
+7:51 Your car loan
+8:23 The winners: savers (HYSA, I bonds, CDs)
+10:20 Stocks and crypto
+11:25 3 ways 2027 could play out
+12:45 7 moves before December 9
+14:05 Bottom line
 
 📌 Rates and odds as of Nov 9, 2026. Example calculations are rounded. This video is for education, not financial advice.
 Photo: Federal Reserve (public domain). Animation: The Money Map.

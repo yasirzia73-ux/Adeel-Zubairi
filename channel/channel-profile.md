@@ -10,26 +10,29 @@
 **Backup name:** Quiet Wealth (@QuietWealthUS)
 
 ## Description (paste into YouTube → Customization → Basic info)
+*Updated Nov 9, 2026. The first 2 lines show in search and on your channel page, so they carry the main keywords.*
 
-Money doesn't have to be confusing. The Money Map explains personal finance in simple, animated videos: investing, 401(k)s, budgeting, saving, credit cards, taxes and debt payoff, with real numbers you can check yourself.
+Money news, explained for YOUR wallet. The Money Map breaks down what the Fed, interest rates, inflation, the stock market, crypto and the housing market actually mean for your paycheck, savings and debt, in simple animated videos with real numbers.
 
-Meet Maya and Jake, two friends whose money choices show you what actually works, and what quietly costs you thousands.
+Every video answers one question: "What does this mean for my money, and what should I do now?"
 
-✅ Simple explanations, no jargon
-✅ Real math and real examples
-✅ Made for beginners, students and young earners in the US
+✅ Big money news explained in plain English, no jargon
+✅ Real math you can check yourself: credit cards, mortgages, savings, investing
+✅ Clear next steps, plus honest predictions (never hype)
+✅ Made for everyday Americans: families, young earners and beginners
 
-🎬 A new video every week, plus quick Shorts
-👉 Subscribe and start building your money map.
+🎬 New deep-dive videos every week, plus quick Shorts on the latest numbers
+👉 Subscribe so you're never surprised by what happens to your money.
 
 ⚠️ Educational content only, not financial advice. Do your own research or talk to a licensed professional before making financial decisions.
-📩 Business inquiries: [your email]
+📩 Business inquiries: MoneyMapHQ.USA@gmail.com
+📸 Instagram: @themoneymaphqusa
 
 ## Short bio (Instagram / TikTok, max 80 characters)
-Money, explained simply 💸 Investing · 401(k) · Budgeting · New videos weekly
+Money news, explained for YOUR wallet 💸 Fed · Rates · Investing · Crypto
 
-## Channel keywords (YouTube Studio → Settings → Channel)
-personal finance, money tips, investing for beginners, compound interest, 401k explained, budgeting, how to save money, credit card debt, financial literacy, retirement planning
+## Channel tags (YouTube Studio → Settings → Channel → Basic info → Keywords)
+personal finance, money news, federal reserve, interest rates, fed rate hike, inflation, stock market, housing market, mortgage rates, credit card debt, high yield savings account, investing for beginners, recession 2027, bitcoin, financial literacy, money tips, economy explained, what it means for your money, the money map, money map
 
 ## Videos so far
 1. Two Friends Earn $60K. One Invested for Only 10 Years and Still Won

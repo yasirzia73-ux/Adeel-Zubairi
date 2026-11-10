@@ -388,7 +388,135 @@ function cryptoScene(T) {
   return [g, o];
 }
 
+/* ================= FED SERIES: shared bits ================= */
+const fdur = i => Math.max(1, en(i) - st(i)), ffr = (i, f) => st(i) + fdur(i) * f;
+const fullVid = (T, i) => { const s = pop(T, ffr(i, 0.7), 0.4); return s <= 0 ? '' : chip('▶ FULL VIDEO: LINK ABOVE ☝️', 360, 800, C.red, '#fff', 30, clamp(s), -2, s * (1 + 0.04 * Math.sin(T * 7))); };
+const cardSVG = (x, y, s, txt) => `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-120" y="-75" width="240" height="150" rx="20" fill="#1E293B" stroke="#F8FAFC" stroke-width="7"/><rect x="-120" y="-45" width="240" height="30" fill="#020617"/><rect x="-92" y="4" width="48" height="36" rx="7" fill="#EAB308"/>${txt ? svgText(100, 56, txt, 40, '#F87171', 900, 'end') : ''}</g>`;
+const houseSVG = (x, y, s, col) => `<g transform="translate(${x} ${y}) scale(${s})"><polygon points="-90,-10 0,-90 90,-10" fill="${col}" stroke="#F8FAFC" stroke-width="6" stroke-linejoin="round"/><rect x="-70" y="-14" width="140" height="94" fill="#E2E8F0" stroke="#F8FAFC" stroke-width="6"/><rect x="-18" y="24" width="36" height="56" fill="#475569"/><rect x="-56" y="4" width="28" height="26" fill="#93C5FD"/><rect x="28" y="4" width="28" height="26" fill="#93C5FD"/></g>`;
+const checkRow = (T, t0, y, html, col) => { const s = pop(T, t0, 0.35); return s <= 0 ? '' : glass(60, y, 600, 96, `<div style="position:absolute;left:22px;top:20px;width:56px;height:56px;border-radius:50%;background:${col};color:#052E16;font-size:36px;line-height:56px;text-align:center">✓</div><div style="position:absolute;left:96px;right:18px;top:50%;transform:translateY(-50%);font-size:30px;font-weight:900;line-height:1.15">${html}</div>`, clamp(s), col, `transform:scale(${s})`); };
+
+/* ================= FED 1: call your card company ================= */
+function cardScene(T) {
+  let g = '', o = '';
+  let v = vis(T, 0, 1);
+  if (v > 0) {
+    const ring = T - st(0); for (let r = 0; r < 3; r++) { const f = (ring * 0.9 + r / 3) % 1; g += `<circle cx="360" cy="470" r="${110 + f * 200}" fill="none" stroke="${C.gold}" stroke-width="5" opacity="${v * (1 - f)}"/>`; }
+    o += `<div class="ov" style="left:210px;top:340px;width:300px;font-size:200px;opacity:${v};transform:rotate(${Math.sin(T * 22) * 7}deg) scale(${clamp(pop(T, st(0), 0.4))})">📞</div>`;
+    o += big3d('THE MOVE<br>NOBODY MAKES', 640, 70, '#FEF3C7', '#EAB308', '#854D0E', v * clamp(pop(T, st(0) + 0.3)), pop(T, st(0) + 0.3));
+    if (T > st(1) - 0.1) o += chip('CALL &amp; ASK FOR A LOWER RATE', 360, 850, C.green, '#052E16', 34, v, -2, pop(T, st(1) + 0.2));
+  }
+  v = vis(T, 2, 2);
+  if (v > 0) {
+    const p = easeOut(at(T, 2, 0.2, 1.6));
+    g += `<g opacity="${v}">${cardSVG(360, 380, 1.4 * clamp(pop(T, st(2))), '')}</g>`;
+    o += big3d((22.5 * p).toFixed(1) + '%', 560, 170, '#FECACA', '#DC2626', '#7F1D1D', v) + ov('AVERAGE NEW CARD APR', 0, 760, 720, 34, C.white, v);
+  }
+  v = vis(T, 3, 3);
+  if (v > 0) {
+    const p = clamp((T - st(3) - fdur(3) * 0.4) / (fdur(3) * 0.55)), bal = 6000 * (1 - p);
+    o += glass(50, 270, 300, 140, `<div style="margin:22px 24px 0;font-size:22px;color:#94A3B8;font-weight:800">YOU OWE</div><div style="margin:2px 24px;font-size:56px;font-weight:900">$6,000</div>`, v, 'rgba(255,255,255,.3)');
+    o += glass(370, 270, 300, 140, `<div style="margin:22px 24px 0;font-size:22px;color:#94A3B8;font-weight:800">YOU PAY</div><div style="margin:2px 24px;font-size:56px;font-weight:900">$200<span style="font-size:26px">/mo</span></div>`, v * clamp(pop(T, ffr(3, .15))), 'rgba(255,255,255,.3)');
+    g += `<g opacity="${v}"><rect x="60" y="460" width="600" height="56" rx="16" fill="#1E293B"/><rect x="60" y="460" width="${600 * bal / 6000}" height="56" rx="16" fill="${C.red}"/></g>`;
+    o += ov(`MONTH ${Math.round(45 * p)}`, 60, 540, 300, 40, C.white, v * clamp(p * 4), 'text-align:left');
+    o += big3d(money(2900 * easeOut(p)), 600, 120, '#FECACA', '#DC2626', '#7F1D1D', v * clamp(p * 3)) + ov('PAID IN INTEREST', 0, 740, 720, 32, C.white, v * clamp(p * 3));
+  }
+  v = vis(T, 4, 4);
+  if (v > 0) {
+    const p = easeOut(at(T, 4, 0.1, 1)), R = 180, cx = 360, cy = 520, L = 2 * Math.PI * R;
+    g += `<g opacity="${v}" transform="rotate(-90 ${cx} ${cy})"><circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="#3B82F6" stroke-width="90"/><circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="${C.red}" stroke-width="100" stroke-dasharray="${L * 0.326 * p} ${L}"/></g>`;
+    o += ov('$2,900<br><span style="font-size:26px;color:#CBD5E1">of $8,900 total</span>', 210, 470, 300, 54, '#F87171', v * clamp(p * 2));
+    o += stamp('NEARLY HALF, GONE', 360, 800, '#F87171', 40, pop(T, st(4) + 0.6), -4);
+  }
+  v = vis(T, 5, 5);
+  if (v > 0) {
+    o += big3d('JUST ASK.', 270, 100, '#DCFCE7', '#16A34A', '#14532D', v * clamp(pop(T, st(5))), pop(T, st(5)));
+    o += checkRow(T, ffr(5, .12), 410, 'DECENT PAYMENT HISTORY', C.green);
+    o += checkRow(T, ffr(5, .38), 525, 'RATE CUT BY SEVERAL POINTS', C.green);
+    o += checkRow(T, ffr(5, .6), 640, 'ONE 5-MINUTE PHONE CALL', C.green);
+    o += fullVid(T, 5);
+  }
+  return [g, o];
+}
+
+/* ================= FED 2: same house, $90K more ================= */
+function mortgageScene(T) {
+  let g = '', o = '';
+  let v = vis(T, 0, 0);
+  if (v > 0) {
+    photo('suburb', { op: v, x: 30, y: 250, w: 660, h: 330, p: (T - st(0)) / fdur(0), z0: 1.3, z1: 1.1, glow: C.red });
+    o += big3d('+$255<span style="font-size:.4em">/mo</span>', 600, 110, '#FECACA', '#DC2626', '#7F1D1D', v * clamp(pop(T, st(0) + 0.2)), pop(T, st(0) + 0.2));
+    const p = easeOut(at(T, 0, fdur(0) * 0.45, 1.6));
+    if (p > 0) o += big3d('+' + money(91800 * p), 730, 76, '#FEF3C7', '#EAB308', '#854D0E', v) + ov('OVER 30 YEARS · SAME HOUSE', 0, 822, 720, 28, C.white, v * clamp(p * 2));
+  }
+  v = vis(T, 1, 1);
+  if (v > 0) {
+    const p = easeOut(at(T, 1, 0.2, 1.4));
+    o += big3d((7.18 * p).toFixed(2) + '%', 270, 150, '#CFFAFE', '#06B6D4', '#164E63', v) + ov('30-YEAR FIXED · FREDDIE MAC', 0, 440, 720, 28, C.white, v);
+    const [cg] = glowChart([[0, .3], [.25, .7], [.5, .9], [.7, .8], [.85, .7], [1, .62]], easeOut(at(T, 1, 1.2, 2.5)), 60, 500, 600, 220, C.cyan, v);
+    g += cg;
+    o += chip('↓ 3 WEEKS IN A ROW', 470, 500, C.green, '#052E16', 26, v * clamp(pop(T, ffr(1, .45))), 0, pop(T, ffr(1, .45)));
+    o += chip('1 YEAR AGO: 6.22%', 360, 800, '#334155', '#fff', 32, v * clamp(pop(T, ffr(1, .75))), 0, pop(T, ffr(1, .75)));
+  }
+  v = vis(T, 2, 2);
+  if (v > 0) {
+    o += chip('$400,000 LOAN', 360, 270, '#334155', '#fff', 30, v, 0, 1);
+    [['6.22%', 2455, C.green, .25], ['7.18%', 2710, C.red, .65]].forEach(([r, pay, c, f], k) => { const s = pop(T, ffr(2, f)); if (s <= 0) return;
+      g += `<g opacity="${v * clamp(s)}">${houseSVG(190 + k * 340, 450, 1.25 * s, c)}</g>`;
+      o += ov('AT ' + r, 40 + k * 340, 570, 300, 30, C.grey, v * clamp(s)) + ov(money(pay) + '<span style="font-size:24px">/mo</span>', 40 + k * 340, 610, 300, 52, k ? '#F87171' : '#4ADE80', v * clamp(s)); });
+    if (T > ffr(2, .8)) o += stamp('+$255 EVERY MONTH', 360, 760, '#F87171', 40, pop(T, ffr(2, .8)), -4);
+  }
+  v = vis(T, 3, 3);
+  if (v > 0) {
+    o += glass(50, 260, 620, 220, `<div style="position:absolute;left:30px;top:30px;font-size:80px">🔒</div><div style="position:absolute;left:150px;top:44px;font-size:40px;font-weight:900">FIXED-RATE</div><div style="position:absolute;left:150px;top:100px;font-size:34px;font-weight:900;color:#4ADE80">PAYMENT DOESN'T CHANGE</div>`, v * clamp(pop(T, st(3) + 0.2)), 'rgba(34,197,94,.7)', `transform:scale(${pop(T, st(3) + 0.2)})`);
+    o += glass(50, 505, 620, 220, `<div style="position:absolute;left:30px;top:30px;font-size:80px">⚠️</div><div style="position:absolute;left:150px;top:44px;font-size:40px;font-weight:900">ARM / HELOC</div><div style="position:absolute;left:150px;top:100px;font-size:34px;font-weight:900;color:#FBBF24">CAN RISE WITH THE FED</div>`, v * clamp(pop(T, ffr(3, .45))), 'rgba(251,191,36,.7)', `transform:scale(${pop(T, ffr(3, .45))})`);
+    o += fullVid(T, 3);
+  }
+  return [g, o];
+}
+
+/* ================= FED 3: $57 vs $435 savings ================= */
+function savingsScene(T) {
+  let g = '', o = '';
+  let v = vis(T, 0, 1);
+  if (v > 0) {
+    const p = easeOut(at(T, 0, 0.2, 1.4)), p2 = easeOut(at(T, 0, fdur(0) * 0.5, 1.6));
+    o += ov('$10,000 SAVED · 1 YEAR', 0, 250, 720, 34, C.white, v);
+    o += glass(40, 310, 310, 300, `<div style="text-align:center;margin-top:34px;font-size:22px;color:#94A3B8;font-weight:800">AVERAGE<br>ACCOUNT</div><div style="text-align:center;font-size:96px;font-weight:900">$${Math.round(57 * p)}</div>`, v, 'rgba(255,255,255,.25)');
+    o += glass(370, 310, 310, 300, `<div style="text-align:center;margin-top:34px;font-size:22px;color:#94A3B8;font-weight:800">HIGH-YIELD<br>ACCOUNT</div><div style="text-align:center;font-size:96px;font-weight:900;color:#4ADE80">$${Math.round(435 * p2)}</div>`, v * clamp(pop(T, ffr(0, .45))), 'rgba(34,197,94,.7)', `transform:scale(${pop(T, ffr(0, .45))})`);
+    if (T > st(1) - 0.1) { o += big3d('≈ 8× MORE', 650, 100, '#DCFCE7', '#16A34A', '#14532D', v, pop(T, st(1))); g += confettiSVG(T, st(1), 360, 700, 50, v); }
+    for (let k = 0; k < 8; k++) { const f = ((T - st(0)) * 0.6 + k / 8) % 1; g += coinSVG(80 + k * 80, 640 + f * 200, 15, v * (1 - f) * 0.6); }
+  }
+  v = vis(T, 2, 2);
+  if (v > 0) {
+    photo('bank', { op: v, x: 30, y: 250, w: 660, h: 470, p: (T - st(2)) / fdur(2), z0: 1.25, z1: 1.08, glow: C.red });
+    o += stamp('WRONG PLACE', 360, 780, '#F87171', 48, pop(T, ffr(2, .6)), -5);
+  }
+  v = vis(T, 3, 3);
+  if (v > 0) {
+    const p = easeOut(at(T, 3, 0.3, 1.2)), p2 = easeOut(at(T, 3, fdur(3) * 0.4, 1.4));
+    g += isoBar(220, 760, 170, 30 * p, '#64748B', v) + isoBar(500, 760, 170, 360 * p2, C.green, v);
+    g += svgText(220, 810, 'NATIONAL AVG', 24, C.grey, 900, 'middle', `opacity="${v}"`) + svgText(510, 810, 'TOP HIGH-YIELD', 24, C.grey, 900, 'middle', `opacity="${v}"`);
+    o += ov('0.57%', 70, 760 - 30 * p - 51 - 60, 300, 48, C.white, v * clamp(p * 2)) + ov((4.35 * p2).toFixed(2) + '%', 350, 760 - 360 * p2 - 51 - 70, 300, 60, '#4ADE80', v * clamp(p2 * 2));
+    o += chip('SAME FDIC INSURANCE', 360, 862, C.cyan, '#083344', 30, v * clamp(pop(T, ffr(3, .7))), 0, pop(T, ffr(3, .7)));
+  }
+  v = vis(T, 4, 4);
+  if (v > 0) {
+    o += big3d('DO THIS 👇', 270, 90, '#FEF3C7', '#EAB308', '#854D0E', v * clamp(pop(T, st(4))), pop(T, st(4)));
+    o += checkRow(T, ffr(4, .05), 400, 'UNDER 1%? SWITCH TO HIGH-YIELD', C.green);
+    o += checkRow(T, ffr(4, .45), 515, 'TAKES ABOUT 10 MINUTES', C.green);
+    o += checkRow(T, ffr(4, .65), 630, 'HUNDREDS MORE A YEAR', C.green);
+    o += fullVid(T, 4);
+  }
+  return [g, o];
+}
+
 const REELS = {
+  card: { scene: cardScene, theme: ['#DC2626', '#22C55E', '#140A0E'], photos: [],
+    head: 'BANKS HOPE YOU<br><span class="y">NEVER MAKE THIS CALL</span>', disc: 'Example figures, rounded &middot; Rates as of Nov 2026 &middot; Not financial advice', shakes: [2], flashes: [0.02, 2] },
+  mortgage: { scene: mortgageScene, theme: ['#3B82F6', '#DC2626', '#0B1430'], photos: ['suburb'],
+    head: 'WHY THIS HOUSE COSTS<br><span class="r">$90,000 MORE</span>', disc: 'Freddie Mac avg rate, Nov 5, 2026 &middot; Example figures, rounded &middot; Not financial advice', shakes: [0.05], flashes: [0.02] },
+  savings: { scene: savingsScene, theme: ['#22C55E', '#0EA5E9', '#06140C'], photos: ['bank'],
+    head: 'YOU MAY BE MISSING<br><span class="r">$378 A YEAR</span> 🤔', disc: 'Bankrate rates, Nov 2026 &middot; Example figures, rounded &middot; Not financial advice', shakes: [1], flashes: [0.02, 1] },
   trump: { scene: trumpScene, theme: ['#1D4ED8', '#DC2626', '#0B1430'], photos: ['capitol', 'floor', 'whitehouse', 'trump', 'oil'],
     head: 'TRUMP LOST CONGRESS&hellip;<br><span class="g">WALL STREET EXPLODED</span>', disc: 'News reports as of Nov 4, 2026 &middot; Not financial advice', shakes: [0.05, 3], flashes: [0.02, 3] },
   musk: { scene: muskScene, theme: ['#7C3AED', '#06B6D4', '#0A0A1F'], photos: ['musk', 'musk2', 'capitol', 'rocket'],

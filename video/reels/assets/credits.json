@@ -82,5 +82,26 @@
   "creator": "NASA/Dominic Hart",
   "rights": "NASA imagery is generally not subject to copyright (public domain); no NASA endorsement implied",
   "credit": "NASA/Dominic Hart"
+ },
+ "bank": {
+  "source": "https://www.loc.gov/pictures/item/2018700370/",
+  "title": "Syracuse Savings Bank and Gridley Building, Clinton Square, Syracuse, New York",
+  "creator": "Highsmith, Carol M., 1946-, photographer",
+  "rights": "No known restrictions on publication.",
+  "credit": "Carol M. Highsmith / Library of Congress"
+ },
+ "suburb": {
+  "source": "https://www.loc.gov/pictures/item/2019690957/",
+  "title": "Aerial view of suburban sprawl near Franklin Park, north of Pittsburgh, Pennsylvania",
+  "creator": "Highsmith, Carol M., 1946-, photographer",
+  "rights": "No known restrictions on publication.",
+  "credit": "Carol M. Highsmith / Library of Congress"
+ },
+ "fed-eccles": {
+  "source": "https://commons.wikimedia.org/wiki/File:Eccles_Building_(26088200676).jpg",
+  "title": "Eccles Building",
+  "creator": "Federal Reserve",
+  "rights": "Public domain (U.S. government work)",
+  "credit": "Federal Reserve (public domain)"
  }
 }

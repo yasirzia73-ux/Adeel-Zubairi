@@ -80,3 +80,34 @@ Prices approx. as of Nov 7, 2026 · forecasts are opinions, not guarantees · no
 - Predictions: [Fortune (Capital Economics)](https://fortune.com/2026/09/13/stock-market-outlook-late-stage-bubble-crash-2027-treasury-yields-5-percent/), [Yahoo Finance (Rosenberg)](https://finance.yahoo.com/news/top-economist-says-sees-very-094501278.html), [Kalshi](https://kalshi.com/markets/kxrecssnber/recession/kxrecssnber-27)
 - Crypto: [Fortune (BTC price)](https://fortune.com/article/price-of-bitcoin-11-06-2026/), [CoinDesk (XRP)](https://www.coindesk.com/price/xrp), [The Block (ARK 2030)](https://www.theblock.co/post/351967/ark-invest-raises-2030-bull-case-bitcoin-price-projection-to-2-4-million-on-aggressive-modeling)
 - Photos: Library of Congress (Highsmith Archive), NASA Image Library, White House official portrait. See `assets/credits.json`.
+
+---
+
+# Fed series Reels (cut from the long Fed video)
+On each one, set **Related video** to the long Fed video and pin: "Full breakdown in the video linked above 👆"
+
+## Thu Nov 12: Reel 1, the 5-minute call
+**File:** `reel-fed-card.mp4` · **Cover:** `cover-card.png`
+**Title (vidIQ 91):** Why Almost Nobody Calls Their Credit Card Company (Big Mistake) 📞
+**Description:** The average new credit card offer charges about 22.5% APR. On a $6,000 balance at $200 a month, that's roughly $2,900 in interest. One 5-minute call could cut your rate. Most people never try. Full breakdown of the Fed's next move in the linked video.
+Example figures, rounded · Not financial advice.
+**Hashtags:** #shorts #creditcard #creditcarddebt #moneytips #personalfinance #debtfree #interestrates #fed
+**Pinned comment:** Have you ever asked for a lower rate? Did it work? 👇
+
+## Sat Nov 14: Reel 2, same house, $90K more
+**File:** `reel-fed-mortgage.mp4` · **Cover:** `cover-mortgage.png`
+**Title (vidIQ 95):** Why This House Costs $90,000 More (Same House!) 🏠
+**Description:** Mortgage rates averaged about 7.18% last week (Freddie Mac), up from about 6.22% a year ago. On a $400,000 loan, that's about $255 more a month, more than $90,000 over 30 years, for the exact same house. Fixed-rate vs ARM explained.
+Example figures, rounded · Not financial advice.
+**Hashtags:** #shorts #mortgage #mortgagerates #housingmarket #realestate #homebuying #fed #personalfinance
+**Pinned comment:** Would you buy now or wait for lower rates? 👇
+
+## Sun Nov 15: Reel 3, $57 vs $435
+**File:** `reel-fed-savings.mp4` · **Cover:** `cover-savings.png`
+**Title (vidIQ 88):** You Might Be Missing $378 a Year (Check Your Bank) 🤔
+**Description:** The average savings account pays about 0.57% (Bankrate). Top high-yield accounts pay around 4–4.35%, with the same FDIC insurance. On $10,000, that's about $57 vs $435 a year. Switching takes about 10 minutes.
+Example figures, rounded · Not financial advice.
+**Hashtags:** #shorts #savings #highyieldsavings #moneytips #personalfinance #savingmoney #banking #fed
+**Pinned comment:** What rate does YOUR savings account pay? 👇
+
+**Music:** original background music by The Money Map (royalty-free), so there's no need to add trending audio. If you add some anyway, keep it at 5–10%.

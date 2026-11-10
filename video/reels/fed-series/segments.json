@@ -1,0 +1,23 @@
+{
+ "card": [
+  [811.66, 813.12, "The one almost nobody does:"],
+  [813.50, 815.88, "Call your credit card company and ask for a lower rate."],
+  [325.86, 330.55, "Right now, the average new credit card offer charges about 22.5%."],
+  [332.05, 345.25, "Say you owe $6,000 and pay $200 a month. It takes about 45 months to pay off, almost 4 years, and you hand the bank roughly $2,900 in interest."],
+  [345.48, 348.55, "Nearly half of what you borrowed, gone, just in interest."],
+  [815.94, 824.95, "Just ask. If you have a decent payment history, many people get their rate cut, sometimes by several points, from a single five-minute phone call. Most people never try."]
+ ],
+ "mortgage": [
+  [419.46, 426.98, "That's $255 more every single month. Over 30 years, that's more than $90,000, for the exact same house."],
+  [391.10, 402.98, "Right now, the average 30-year fixed rate is about 7.18%, according to Freddie Mac's weekly survey. That's actually down three weeks in a row. A year ago, it was around 6.22%."],
+  [406.48, 419.20, "On a $400,000 loan, a 6.22% rate is about $2,455 a month for principal and interest. At 7.18%, it's about $2,710."],
+  [444.10, 456.20, "If you already have a fixed-rate mortgage, a Fed hike doesn't change your payment at all. You're locked. If you have an adjustable-rate mortgage or a home equity line of credit, pay attention, because those usually do move with the Fed."]
+ ],
+ "savings": [
+  [539.00, 545.55, "At the average rate, you earn about $57 a year. In a top high-yield account, you'd earn about $435."],
+  [545.80, 549.62, "That's almost eight times more, for doing nothing except moving your money."],
+  [514.80, 518.70, "But here's the catch: most Americans keep their savings in the wrong place."],
+  [519.10, 535.75, "The national average savings account pays about 0.57%, according to Bankrate. That's barely more than nothing. But the top high-yield savings accounts pay around 4 to 4.35%. Same safety, same FDIC insurance, up to the legal limit. Completely different result."],
+  [783.62, 791.75, "If your savings account pays less than 1%, open a high-yield savings account. It takes about ten minutes, and it could earn you hundreds of dollars more a year."]
+ ]
+}

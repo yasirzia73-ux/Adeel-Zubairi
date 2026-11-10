@@ -84,6 +84,37 @@ def events(rid, s, e):
         a(s[8], 'sub', 0.55); a(s[8] + 1.2, 'heart', 0.4); a(s[8] + 2.0, 'heart', 0.35)
         a(s[9] + 0.6, 'poppro', 0.5); a(s[9] + 2.4, 'dingpro', 0.3); a(s[9] + 3.4, 'dingpro', 0.3, 0, pitch=1.12)
         a(s[10], 'poppro', 0.45); a(s[10] + 1.6, 'poppro', 0.55); a(s[10] + 1.9, 'dingpro', 0.45)
+    if rid == 'card':
+        a(0.0, 'impact', 0.7); a(0.02, 'glitch', 0.3)
+        for k in range(6): a(0.3 + k * 0.45, 'tickhi', 0.25)                    # phone ringing feel
+        a(s[1], 'dingpro', 0.45); a(s[1] + 0.2, 'poppro', 0.4)
+        a(s[2] - 0.1, 'whooshD', 0.4); a(s[2] + 0.15, 'impact', 0.6)
+        for k in range(14): a(s[2] + 0.2 + k * 0.1, 'tickhi', 0.14)
+        a(s[3] - 0.1, 'whooshD', 0.35); a(s[3] + 0.3, 'poppro', 0.35); a(s[3] + 1.1, 'poppro', 0.35, 0, pitch=1.2)
+        for k in range(20): a(s[3] + (e[3] - s[3]) * 0.4 + k * 0.35, 'coin', 0.12, -0.4 + (k % 5) * 0.2)
+        a(s[4] - 0.1, 'whooshD', 0.35); a(s[4] + 0.6, 'stamp', 0.6); a(s[4] + 0.65, 'buzzer', 0.2)
+        a(s[5] - 0.1, 'whooshD', 0.35); a(s[5] + 0.1, 'impact', 0.55)
+        for k in range(3): a(s[5] + (e[5] - s[5]) * (0.12 + k * 0.24), 'dingpro', 0.35, 0, pitch=1 + k * 0.12)
+        a(s[5] + (e[5] - s[5]) * 0.7, 'poppro', 0.5)
+    if rid == 'mortgage':
+        a(0.0, 'impact', 0.75); a(0.02, 'glitch', 0.3); a(0.25, 'stamp', 0.5)
+        a(s[0] + (e[0] - s[0]) * 0.45 - 1.2, 'swell', 0.45); a(s[0] + (e[0] - s[0]) * 0.45, 'impact', 0.6)
+        for k in range(16): a(s[0] + (e[0] - s[0]) * 0.45 + k * 0.1, 'tickhi', 0.14)
+        a(s[1] - 0.1, 'whooshD', 0.4); a(s[1] + 0.2, 'poppro', 0.4)
+        a(s[2] - 0.1, 'whooshD', 0.35); a(s[2] + (e[2] - s[2]) * 0.25, 'poppro', 0.4, -0.3); a(s[2] + (e[2] - s[2]) * 0.65, 'poppro', 0.4, 0.3)
+        a(s[2] + (e[2] - s[2]) * 0.8, 'stamp', 0.55)
+        a(s[3] - 0.1, 'whooshD', 0.35); a(s[3] + 0.3, 'dingpro', 0.4); a(s[3] + (e[3] - s[3]) * 0.45, 'buzzer', 0.2)
+        a(s[3] + (e[3] - s[3]) * 0.7, 'poppro', 0.5)
+    if rid == 'savings':
+        a(0.0, 'impact', 0.7); a(0.02, 'glitch', 0.3)
+        for k in range(10): a(0.3 + k * 0.1, 'tickhi', 0.14)
+        a(s[0] + (e[0] - s[0]) * 0.45, 'cashpro', 0.5)
+        a(s[1], 'impact', 0.55); a(s[1] + 0.05, 'confetti', 0.45)
+        a(s[2] - 0.1, 'whooshD', 0.4); a(s[2] + (e[2] - s[2]) * 0.6, 'stamp', 0.55); a(s[2] + (e[2] - s[2]) * 0.62, 'buzzer', 0.2)
+        a(s[3] - 0.1, 'whooshD', 0.35); a(s[3] + (e[3] - s[3]) * 0.4, 'swell', 0.35); a(s[3] + (e[3] - s[3]) * 0.4 + 1.2, 'cashpro', 0.4)
+        a(s[4] - 0.1, 'whooshD', 0.35); a(s[4] + 0.1, 'impact', 0.5)
+        for k in range(3): a(s[4] + (e[4] - s[4]) * (0.05 + k * 0.3), 'dingpro', 0.35, 0, pitch=1 + k * 0.12)
+        a(s[4] + (e[4] - s[4]) * 0.7, 'poppro', 0.5)
     return ev
 
 def build(rid, sync, out):

@@ -134,3 +134,10 @@ Photos: U.S. Army (public domain); Carol M. Highsmith / Library of Congress.
 **Hashtags:** #shorts #gold #goldprice #investing #goldprediction #fed #personalfinance #moneynews
 **Pinned comment:** Would you buy gold at $4,000? 👇
 **Related video:** the long Fed video
+
+## YouTube tags for the 5 Reels
+- **Rate cut:** fed rate cut, federal reserve, interest rates, fed rate hike, fed meeting december, rate cut 2026, inflation, cpi report, christopher waller, goldman sachs fed forecast, mortgage rates, credit card interest, high yield savings, personal finance, money news, the money map
+- **Gold:** gold price, gold price prediction, gold price prediction 2027, gold price today, gold crash, should i buy gold, gold investing, gold forecast, goldman sachs gold, ubs gold forecast, gold vs interest rates, fed rate hike, investing for beginners, personal finance, the money map
+- **Card:** credit card interest, lower credit card apr, credit card debt, how to lower credit card interest rate, credit card tips, call credit card company, debt payoff, credit card apr, fed rate hike, money tips, personal finance, the money map
+- **Mortgage:** mortgage rates, mortgage rates today, mortgage rates 2026, housing market, first time home buyer, fixed rate vs adjustable rate mortgage, arm mortgage, heloc, home buying tips, fed rate hike, real estate, personal finance, the money map
+- **Savings:** high yield savings account, best high yield savings account, savings account interest, how to save money, emergency fund, fdic insured savings, money tips, banking tips, fed rate hike, personal finance, the money map

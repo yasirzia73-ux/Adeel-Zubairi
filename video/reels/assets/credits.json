@@ -103,5 +103,19 @@
   "creator": "Federal Reserve",
   "rights": "Public domain (U.S. government work)",
   "credit": "Federal Reserve (public domain)"
+ },
+ "knox": {
+  "source": "https://commons.wikimedia.org/wiki/File:An_exterior_view_of_the_United_States_Gold_Bullion_Depository_at_the_United_States_Army_Armor_Center.jpg",
+  "title": "United States Bullion Depository, Fort Knox",
+  "creator": "John Coffman (U.S. Army)",
+  "rights": "Public domain (U.S. government work)",
+  "credit": "U.S. Army / John Coffman (public domain)"
+ },
+ "mint": {
+  "source": "https://www.loc.gov/pictures/item/2017885401/",
+  "title": "Inside the Denver Mint, Denver, Colorado",
+  "creator": "Highsmith, Carol M., 1946-, photographer",
+  "rights": "No known restrictions on publication.",
+  "credit": "Carol M. Highsmith / Library of Congress"
  }
 }

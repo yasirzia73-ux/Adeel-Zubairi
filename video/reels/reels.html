@@ -510,7 +510,137 @@ function savingsScene(T) {
   return [g, o];
 }
 
+/* ================= HOT 1: the rate cut isn't coming ================= */
+const ring = (cx, cy, R, p, col, op, w = 40) => { const L = 2 * Math.PI * R; return `<g opacity="${op}" transform="rotate(-90 ${cx} ${cy})"><circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="#1E293B" stroke-width="${w}"/><circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="${col}" stroke-width="${w}" stroke-dasharray="${L * clamp(p)} ${L}" stroke-linecap="round"/><circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="${col}" stroke-width="${w * 1.8}" stroke-dasharray="${L * clamp(p)} ${L}" opacity=".2" filter="url(#blur8)"/></g>`; };
+function nocutScene(T) {
+  let g = '', o = '';
+  let v = vis(T, 0, 0);
+  if (v > 0) {
+    photo('fed-eccles', { op: v, x: 30, y: 250, w: 660, h: 380, p: (T - st(0)) / fdur(0), z0: 1.25, z1: 1.08, glow: C.red });
+    o += big3d('RATE CUT?', 650, 110, '#FFFFFF', '#CBD5E1', '#334155', v * clamp(pop(T, st(0) + 0.1)), pop(T, st(0) + 0.1));
+    o += stamp('BAD NEWS', 360, 820, '#F87171', 56, pop(T, ffr(0, .6)), -6);
+  }
+  v = vis(T, 1, 1);
+  if (v > 0) {
+    const p = easeOut(at(T, 1, 0.5, 1.8)) * 0.85;
+    g += ring(360, 520, 190, p, C.red, v, 48);
+    o += big3d(Math.round(p * 100) + '%', 450, 130, '#FECACA', '#DC2626', '#7F1D1D', v) + ov('DECEMBER<br><span class="r">HIKE</span> ODDS', 0, 760, 720, 36, C.white, v);
+    o += chip('🔥 HOT INFLATION REPORT · NOV 10', 360, 270, C.orange, '#1C1002', 26, v * clamp(pop(T, st(1) + 0.2)), -2, pop(T, st(1) + 0.2));
+  }
+  v = vis(T, 2, 2);
+  if (v > 0) {
+    g += ring(360, 520, 190, 0.008, C.green, v, 48);
+    o += big3d('&lt;1%', 440, 150, '#DCFCE7', '#16A34A', '#14532D', v, pop(T, st(2) + 0.3)) + ov('ODDS OF A <span class="g">CUT</span>', 0, 760, 720, 40, C.white, v);
+    o += stamp('ALMOST ZERO', 360, 300, '#F87171', 40, pop(T, ffr(2, .5)), 5);
+  }
+  v = vis(T, 3, 3);
+  if (v > 0) {
+    o += glass(50, 290, 620, 330, `<div style="position:absolute;left:34px;top:30px;font-size:24px;font-weight:800;color:${C.grey}">FED GOVERNOR</div><div style="position:absolute;left:34px;top:64px;font-size:44px;font-weight:900">CHRISTOPHER WALLER</div>
+      <div style="position:absolute;left:34px;top:140px;font-size:30px;font-weight:900;color:#93C5FD">🕊️ usually one of the most "dovish"</div><div style="position:absolute;left:34px;top:210px;right:30px;font-size:46px;font-weight:900;line-height:1.1">Leaning toward a <span class="r">HIKE</span></div>`, v * clamp(pop(T, st(3) + 0.2)), 'rgba(59,130,246,.6)', `transform:scale(${pop(T, st(3) + 0.2)})`);
+    o += stamp('EVEN HIM?!', 360, 720, C.gold, 50, pop(T, ffr(3, .65)), -5);
+  }
+  v = vis(T, 4, 4);
+  if (v > 0) {
+    o += ov('GOLDMAN SACHS FORECAST', 0, 255, 720, 30, C.grey, v);
+    [['DEC 2026', 'HIKE ↑', C.red, .1], ['MAR 2027', 'HIKE ↑', C.red, .3], ['DEC 2027', 'FIRST CUT ↓', C.green, .62]].forEach(([d, t, c, f], k) => {
+      const s = pop(T, ffr(4, f), 0.4); if (s <= 0) return;
+      o += glass(80, 310 + k * 170, 560, 140, `<div style="position:absolute;left:30px;top:22px;font-size:28px;font-weight:800;color:${C.grey}">${d}</div><div style="position:absolute;left:30px;top:58px;font-size:56px;font-weight:900;color:${c}">${t}</div>`, v * clamp(s), c, `transform:scale(${s})`);
+    });
+    g += `<line x1="40" y1="330" x2="40" y2="${330 + 380 * clamp(at(T, 4, 0, fdur(4)))}" stroke="${C.gold}" stroke-width="8" stroke-linecap="round" opacity="${v}"/>`;
+  }
+  v = vis(T, 5, 5);
+  if (v > 0) o += big3d('WHAT IT MEANS<br>FOR YOU 👇', 380, 76, '#FEF3C7', '#EAB308', '#854D0E', v * clamp(pop(T, st(5))), pop(T, st(5)));
+  v = vis(T, 6, 6);
+  if (v > 0) {
+    g += `<g opacity="${v}">${cardSVG(200, 380, 0.9 * clamp(pop(T, st(6))), '')}${houseSVG(200, 640, 1.0 * clamp(pop(T, ffr(6, .5))), C.blue)}</g>`;
+    o += ov('CARD RATES<br><span class="r">KEEP CLIMBING ↑</span>', 340, 330, 360, 34, C.white, v * clamp(pop(T, st(6) + 0.3)), 'text-align:left');
+    o += ov('MORTGAGES<br><span class="y">STUCK NEAR 7%</span>', 340, 600, 360, 34, C.white, v * clamp(pop(T, ffr(6, .55))), 'text-align:left');
+  }
+  v = vis(T, 7, 7);
+  if (v > 0) {
+    for (let k = 0; k < 10; k++) { const f = ((T - st(7)) * 0.7 + k / 10) % 1; g += coinSVG(70 + k * 64, 280 + f * 520, 16, v * (1 - f) * 0.8); }
+    o += big3d('SAVERS WIN', 300, 90, '#DCFCE7', '#16A34A', '#14532D', v * clamp(pop(T, st(7))), pop(T, st(7)));
+    o += big3d('4%+', 450, 170, '#FEF3C7', '#EAB308', '#854D0E', v * clamp(pop(T, ffr(7, .5))), pop(T, ffr(7, .5))) + ov('HIGH-YIELD SAVINGS', 0, 670, 720, 34, C.white, v * clamp(pop(T, ffr(7, .5))));
+  }
+  v = vis(T, 8, 8);
+  if (v > 0) {
+    o += stamp("DON'T PLAN AROUND A CUT", 360, 380, '#F87171', 38, pop(T, st(8) + 0.2), -4);
+    o += big3d('PLAN LIKE RATES<br>STAY HIGH', 520, 70, '#FEF3C7', '#EAB308', '#854D0E', v * clamp(pop(T, ffr(8, .5))), pop(T, ffr(8, .5)));
+  }
+  v = vis(T, 9, 9);
+  if (v > 0) { o += big3d('THE MONEY <span style="color:#FACC15">MAP</span>', 380, 56, '#fff', '#CBD5E1', '#334155', v); o += followBtn(T, st(9) + 0.8); o += chip('▶ FULL VIDEO: LINK ABOVE ☝️', 360, 790, C.red, '#fff', 30, v * clamp(pop(T, st(9) + 0.2)), -2, pop(T, st(9) + 0.2)); }
+  return [g, o];
+}
+
+/* ================= HOT 2: gold crash, bargain or trap ================= */
+const goldBar = (x, y, s, op = 1) => `<g opacity="${op}" transform="translate(${x} ${y}) scale(${s})"><polygon points="-70,0 70,0 52,-34 -52,-34" fill="#FDE68A"/><polygon points="-70,0 70,0 70,26 -70,26" fill="#CA8A04"/><polygon points="70,0 52,-34 52,-8 70,26" fill="#A16207"/><polygon points="-40,-30 40,-30 30,-12 -30,-12" fill="#FFF7CC" opacity=".6"/></g>`;
+const GOLD_PTS = [[0, .25], [.1, .3], [.2, .38], [.3, .5], [.38, .62], [.45, .82], [.5, .95], [.56, .7], [.64, .6], [.72, .48], [.8, .44], [.88, .4], [1, .43]];
+function goldScene(T) {
+  let g = '', o = '';
+  let v = vis(T, 0, 0);
+  if (v > 0) {
+    const k = T - st(0);
+    for (let i = 0; i < 9; i++) { const f = clamp((k - i * 0.12) / 1.2); g += goldBar(150 + (i % 3) * 210, 300 + Math.floor(i / 3) * 70 + 380 * easeOut(f) * (i % 2 ? 1 : 0.85), 1, v * (1 - 0.4 * f)); }
+    o += big3d('&minus;28%', 360, 180, '#FECACA', '#DC2626', '#7F1D1D', v * clamp(pop(T, st(0) + 0.3)), pop(T, st(0) + 0.3));
+    if (T > ffr(0, .55)) { o += chip('BARGAIN? 💰', 200, 800, C.green, '#052E16', 40, v, -5, pop(T, ffr(0, .55))); o += chip('TRAP? 🪤', 520, 800, C.red, '#fff', 40, v, 5, pop(T, ffr(0, .7))); }
+  }
+  v = vis(T, 1, 2);
+  if (v > 0) {
+    const inFall = T > st(2) - 0.1, p = inFall ? 0.5 + 0.5 * easeOut(at(T, 2, 0.1, fdur(2))) : 0.5 * easeOut(at(T, 1, 0.2, fdur(1) * 0.8));
+    photo('knox', { op: v * 0.95, x: 30, y: 250, w: 660, h: 260, p: (T - st(1)) / (fdur(1) + fdur(2)), z0: 1.2, z1: 1.05, glow: C.gold, filter: 'sepia(.8) saturate(1.6) hue-rotate(-8deg) brightness(.8) contrast(1.15)' });
+    const [cg] = glowChart(GOLD_PTS, p, 60, 540, 600, 280, inFall ? C.red : C.gold, v);
+    g += cg;
+    if (p > 0.48) o += chip('RECORD ~$5,590 · JAN 2026', 340, 540, C.gold, '#0B1020', 26, v, -3, 1);
+    if (inFall) o += big3d('$' + Math.round(lerp(5590, 4050, easeOut(at(T, 2, 0.1, fdur(2))))).toLocaleString(), 735, 92, '#FECACA', '#DC2626', '#7F1D1D', v) + ov('TODAY · PER OUNCE', 0, 840, 720, 26, C.white, v);
+  }
+  v = vis(T, 3, 3);
+  if (v > 0) {
+    const tilt = lerp(0, 14, easeOut(at(T, 3, fdur(3) * 0.35, 1.2)));
+    g += `<g opacity="${v}" transform="rotate(${tilt} 360 560)"><rect x="80" y="552" width="560" height="16" rx="8" fill="#94A3B8"/><rect x="90" y="480" width="200" height="72" rx="14" fill="${C.red}"/>${svgText(190, 528, 'RATES ↑', 34, '#fff')}${goldBar(530, 530, 1.2)}</g><polygon points="360,570 320,640 400,640" fill="#475569" opacity="${v}"/>`;
+    o += chip('GOLD PAYS NO INTEREST', 360, 300, C.gold, '#0B1020', 34, v * clamp(pop(T, st(3) + 0.3)), -2, pop(T, st(3) + 0.3));
+    o += ov('so money moves to things that <span class="g">DO</span>', 0, 720, 720, 34, C.white, v * clamp(pop(T, ffr(3, .6))));
+  }
+  v = vis(T, 4, 4);
+  if (v > 0) {
+    photo('fed-eccles', { op: v, x: 30, y: 250, w: 660, h: 400, p: (T - st(4)) / fdur(4), z0: 1.1, z1: 1.25, glow: C.red });
+    o += stamp('DEC 9: HIKE LIKELY', 360, 720, '#F87171', 44, pop(T, st(4) + 0.4), -4);
+    o += chip('MORE PRESSURE ON GOLD', 360, 830, '#334155', '#fff', 28, v * clamp(pop(T, ffr(4, .6))), 0, pop(T, ffr(4, .6)));
+  }
+  v = vis(T, 5, 7);
+  if (v > 0) {
+    photo('mint', { op: v * (T < st(6) - 0.1 ? 1 : 0), x: 30, y: 250, w: 660, h: 260, p: (T - st(5)) / fdur(5), z0: 1.15, z1: 1.3, glow: C.gold });
+    const by = 820, sc = 360 / 5590;
+    const bars = [['TODAY', 4050, '#64748B', st(5)], ['GOLDMAN', 4800, C.blue, ffr(5, .5)], ['UBS', 5400, C.green, st(6) + 0.2]];
+    if (T > st(6) - 0.1) {
+      g += `<line x1="60" y1="${by - 5590 * sc}" x2="660" y2="${by - 5590 * sc}" stroke="${C.gold}" stroke-width="4" stroke-dasharray="12 10" opacity="${v}"/>` + svgText(70, by - 5590 * sc - 14, 'RECORD $5,590', 24, C.gold, 900, 'start', `opacity="${v}"`);
+      bars.forEach(([lab, val, col, t0], k) => { const h = val * sc * easeOut(clamp((T - t0) / 0.8)); const x = 160 + k * 200;
+        g += isoBar(x, by, 130, h, col, v) + svgText(x, by + 40, lab, 26, C.grey, 900, 'middle', `opacity="${v}"`);
+        if (h > 80) g += svgText(x, by - h + 48, '$' + val.toLocaleString(), 32, '#fff', 900, 'middle', `opacity="${v}" stroke="#020617" stroke-width="6" paint-order="stroke fill"`); });
+    } else {
+      o += glass(60, 560, 600, 200, `<div style="position:absolute;left:34px;top:28px;font-size:26px;font-weight:800;color:${C.grey}">GOLDMAN SACHS · END OF 2027</div><div style="position:absolute;left:34px;top:70px;font-size:90px;font-weight:900;color:#4ADE80">$4,800</div>`, v * clamp(pop(T, ffr(5, .45))), 'rgba(34,197,94,.6)', `transform:scale(${pop(T, ffr(5, .45))})`);
+    }
+    if (T > st(7) - 0.1) o += big3d('+18% → +33%', 280, 80, '#DCFCE7', '#16A34A', '#14532D', v, pop(T, st(7))) + chip('STILL BELOW THE RECORD', 360, 870, '#334155', '#fff', 26, v * clamp(pop(T, ffr(7, .5))), 0, pop(T, ffr(7, .5)));
+  }
+  v = vis(T, 8, 8);
+  if (v > 0) {
+    const p = easeOut(at(T, 8, fdur(8) * 0.5, 1)), R = 160, cx = 360, cy = 560, L = 2 * Math.PI * R;
+    o += glass(60, 260, 600, 120, `<div style="text-align:center;margin-top:26px;font-size:28px;font-weight:900;white-space:nowrap">🛡️ PROTECTS · <span class="r">NOT</span> GET-RICH-QUICK</div>`, v * clamp(pop(T, st(8) + 0.2)), 'rgba(250,204,21,.6)', `transform:scale(${pop(T, st(8) + 0.2)})`);
+    g += `<g opacity="${v}" transform="rotate(-90 ${cx} ${cy})"><circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="#3B82F6" stroke-width="80"/><circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="${C.gold}" stroke-width="92" stroke-dasharray="${L * 0.08 * p} ${L}"/></g>` + svgText(cx, cy + 10, 'PORTFOLIO', 26, '#fff', 900, 'middle', `opacity="${v}"`);
+    if (p > 0.5) o += chip('GOLD = SMALL SLICE', 360, 800, C.gold, '#0B1020', 32, v, -3, pop(T, ffr(8, .65)));
+  }
+  v = vis(T, 9, 9);
+  if (v > 0) {
+    o += glass(90, 270, 540, 120, `<div style="text-align:center;margin-top:28px;font-size:40px;font-weight:900">💬 Buy gold at $4,000?</div>`, v * clamp(pop(T, st(9))), 'rgba(250,204,21,.6)', `transform:scale(${pop(T, st(9))})`);
+    o += big3d('THE MONEY <span style="color:#FACC15">MAP</span>', 450, 56, '#fff', '#CBD5E1', '#334155', v); o += followBtn(T, st(9) + 1.2);
+  }
+  return [g, o];
+}
+
 const REELS = {
+  nocut: { scene: nocutScene, theme: ['#DC2626', '#3B82F6', '#120A14'], photos: ['fed-eccles'],
+    head: 'THE RATE CUT<br><span class="r">ISN\'T COMING</span> 😬', disc: 'Market odds as of Nov 10–11, 2026 &middot; Forecasts are not guarantees &middot; Not financial advice', shakes: [0.05, 1, 2], flashes: [0.02, 2] },
+  gold: { scene: goldScene, theme: ['#EAB308', '#DC2626', '#140F04'], photos: ['knox', 'mint', 'fed-eccles'],
+    head: 'GOLD CRASHED 28%&hellip;<br><span class="y">BARGAIN OR TRAP?</span>', disc: 'Prices approx. as of Nov 10–11, 2026 &middot; Forecasts are not guarantees &middot; Not financial advice', shakes: [0.4, 2], flashes: [0.02, 2] },
   card: { scene: cardScene, theme: ['#DC2626', '#22C55E', '#140A0E'], photos: [],
     head: 'BANKS HOPE YOU<br><span class="y">NEVER MAKE THIS CALL</span>', disc: 'Example figures, rounded &middot; Rates as of Nov 2026 &middot; Not financial advice', shakes: [2], flashes: [0.02, 2] },
   mortgage: { scene: mortgageScene, theme: ['#3B82F6', '#DC2626', '#0B1430'], photos: ['suburb'],

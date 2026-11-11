@@ -111,3 +111,26 @@ Example figures, rounded · Not financial advice.
 **Pinned comment:** What rate does YOUR savings account pay? 👇
 
 **Music:** original background music by The Money Map (royalty-free), so there's no need to add trending audio. If you add some anyway, keep it at 5–10%.
+
+---
+
+# Hot Reels (Nov 11, 2026)
+
+## Reel: The rate cut isn't coming
+**File:** `reel-nocut.mp4` · **Cover:** `cover-nocut.png`
+**Title (vidIQ 90):** The Fed Rate Cut Isn't Coming (Here's Why) 😬
+**Description:** Waiting for a Fed rate cut? After a hot inflation report on Nov 10, traders put the odds of a December rate HIKE at about 85%, and the odds of a cut at under 1%. Even Fed Governor Waller is leaning toward a hike, and Goldman Sachs now sees the first cut in December 2027. Here's what it means for your credit card, mortgage and savings.
+Market odds as of Nov 10–11, 2026 · Forecasts are not guarantees · Not financial advice.
+**Hashtags:** #shorts #fed #interestrates #ratecut #federalreserve #inflation #personalfinance #moneynews
+**Pinned comment:** Will the Fed hike on Dec 9? 👇 YES or NO
+**Related video:** the long Fed video
+
+## Reel: Gold crashed 28%
+**File:** `reel-gold.mp4` · **Cover:** `cover-gold.png`
+**Title (vidIQ 91):** Gold Price Prediction 2027: Will Gold Bounce Back? 🪙
+**Description:** Gold hit a record of about $5,590 an ounce in January. Now it's around $4,050, down almost 30%. Why? Rate hikes. But Goldman Sachs targets $4,800 by the end of 2027 and UBS $5,400: 18–33% above today, but still below the record. Bargain or trap?
+Prices approx. as of Nov 10–11, 2026 · Forecasts are not guarantees · Not financial advice.
+Photos: U.S. Army (public domain); Carol M. Highsmith / Library of Congress.
+**Hashtags:** #shorts #gold #goldprice #investing #goldprediction #fed #personalfinance #moneynews
+**Pinned comment:** Would you buy gold at $4,000? 👇
+**Related video:** the long Fed video

@@ -619,7 +619,7 @@ function goldScene(T) {
     } else {
       o += glass(60, 560, 600, 200, `<div style="position:absolute;left:34px;top:28px;font-size:26px;font-weight:800;color:${C.grey}">GOLDMAN SACHS · END OF 2027</div><div style="position:absolute;left:34px;top:70px;font-size:90px;font-weight:900;color:#4ADE80">$4,800</div>`, v * clamp(pop(T, ffr(5, .45))), 'rgba(34,197,94,.6)', `transform:scale(${pop(T, ffr(5, .45))})`);
     }
-    if (T > st(7) - 0.1) o += big3d('+18% → +33%', 280, 80, '#DCFCE7', '#16A34A', '#14532D', v, pop(T, st(7))) + chip('STILL BELOW THE RECORD', 360, 870, '#334155', '#fff', 26, v * clamp(pop(T, ffr(7, .5))), 0, pop(T, ffr(7, .5)));
+    if (T > st(7) - 0.1) o += big3d('+18% → +33%', 280, 80, '#DCFCE7', '#16A34A', '#14532D', v, pop(T, st(7))) + chip('STILL BELOW THE RECORD', 360, 405, '#334155', '#fff', 26, v * clamp(pop(T, ffr(7, .5))), 0, pop(T, ffr(7, .5)));
   }
   v = vis(T, 8, 8);
   if (v > 0) {

@@ -141,3 +141,24 @@ Photos: U.S. Army (public domain); Carol M. Highsmith / Library of Congress.
 - **Card:** credit card interest, lower credit card apr, credit card debt, how to lower credit card interest rate, credit card tips, call credit card company, debt payoff, credit card apr, fed rate hike, money tips, personal finance, the money map
 - **Mortgage:** mortgage rates, mortgage rates today, mortgage rates 2026, housing market, first time home buyer, fixed rate vs adjustable rate mortgage, arm mortgage, heloc, home buying tips, fed rate hike, real estate, personal finance, the money map
 - **Savings:** high yield savings account, best high yield savings account, savings account interest, how to save money, emergency fund, fdic insured savings, money tips, banking tips, fed rate hike, personal finance, the money map
+
+---
+
+# Viral-format Shorts (text, no voice, 15–20s, loopable)
+
+## Penny vs $1 million
+**File:** `reel-viral-penny.mp4` · **Cover:** `cover-viral-penny.png`
+**Title (vidIQ 90):** Would You Take $1,000,000 or a Penny That Doubles Every Day? 🪙
+**Description:** A penny doubled every day for 30 days becomes $5,368,709.12. On day 25 it's still only $167,772… then compounding takes over. Which would you pick? 👇
+#shorts #money #compoundinterest #moneyfacts #personalfinance #investing #mindblown
+**Tags:** penny doubled every day, million dollars or penny, compound interest, power of compounding, money challenge, would you rather money, money facts, investing for beginners, personal finance, the money map
+**Pinned comment:** Be honest: which one did you pick first? 💵 or 🪙
+
+## $400K loan really costs $975K
+**File:** `reel-viral-house.mp4` · **Cover:** `cover-viral-house.png`
+**Title (vidIQ 88):** Why Your $400,000 House Will Really Cost You $975,000 🏠
+**Description:** A $400,000 mortgage at 7.18% for 30 years costs about $975,557 in total payments. $575,557 of that is just interest, more than the house itself. In the early years, most of your payment goes to interest.
+Example: principal & interest only, rate = Freddie Mac average (Nov 2026) · Not financial advice.
+#shorts #mortgage #realestate #housingmarket #homebuying #money #personalfinance
+**Tags:** mortgage interest, how much does a house really cost, 30 year mortgage, mortgage rates, mortgage calculator, home buying tips, first time home buyer, housing market, personal finance, the money map
+**Pinned comment:** Did you know the interest was MORE than the house? 👇

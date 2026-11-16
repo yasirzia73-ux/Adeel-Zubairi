@@ -117,5 +117,35 @@
   "creator": "Highsmith, Carol M., 1946-, photographer",
   "rights": "No known restrictions on publication.",
   "credit": "Carol M. Highsmith / Library of Congress"
+ },
+ "cr-mrbeast": {
+  "source": "https://commons.wikimedia.org/wiki/File:MrBeast_in_2026.png",
+  "creator": "Tyren Redd",
+  "rights": "CC BY 4.0",
+  "credit": "Tyren Redd / Wikimedia Commons, CC BY 4.0"
+ },
+ "cr-dharmann": {
+  "source": "https://commons.wikimedia.org/wiki/File:Dhar_Mann_Updated.jpg",
+  "creator": "Dhar Mann",
+  "rights": "CC BY-SA 4.0",
+  "credit": "Dhar Mann / Wikimedia Commons, CC BY-SA 4.0"
+ },
+ "cr-bartlett": {
+  "source": "https://commons.wikimedia.org/wiki/File:Steven_Bartlett_-_penalties_for_Soccer_Aid_for_UNICEF_2023.jpg",
+  "creator": "Soccer Aid for UNICEF",
+  "rights": "CC BY 3.0",
+  "credit": "Soccer Aid for UNICEF / Wikimedia Commons, CC BY 3.0"
+ },
+ "cr-markiplier": {
+  "source": "https://commons.wikimedia.org/wiki/File:Markiplier_by_Gage_Skidmore.jpg",
+  "creator": "Gage Skidmore",
+  "rights": "CC BY-SA 3.0",
+  "credit": "Gage Skidmore / Wikimedia Commons, CC BY-SA 3.0"
+ },
+ "cr-rhettlink": {
+  "source": "https://commons.wikimedia.org/wiki/File:Rhett_and_Link_2024_(D.C.).jpg",
+  "creator": "Sean Dudley",
+  "rights": "Public domain",
+  "credit": "Sean Dudley / Wikimedia Commons (public domain)"
  }
 }

@@ -162,3 +162,37 @@ Example: principal & interest only, rate = Freddie Mac average (Nov 2026) · Not
 #shorts #mortgage #realestate #housingmarket #homebuying #money #personalfinance
 **Tags:** mortgage interest, how much does a house really cost, 30 year mortgage, mortgage rates, mortgage calculator, home buying tips, first time home buyer, housing market, personal finance, the money map
 **Pinned comment:** Did you know the interest was MORE than the house? 👇
+
+---
+
+# Creator-money Shorts (Nov 16, 2026)
+Photos: Wikimedia Commons under Creative Commons, credited on screen. Keep the credit lines in the description as well.
+
+## MrBeast live earnings counter
+**File:** `reel-viral-mrbeast.mp4` · **Cover:** `cover-viral-mrbeast.png`
+**Title (vidIQ 90):** How Much MrBeast Earned While You Watched This 😳
+**Description:** Forbes estimates MrBeast earned about $300 million in a year. That's about $821,918 a day, $34,247 an hour… and $9.51 every second. Watch the counter. 💸
+Forbes Top Creators 2026 estimate (gross, Mar 2025–Mar 2026, before taxes & expenses).
+Photo: Tyren Redd / Wikimedia Commons, CC BY 4.0.
+#shorts #mrbeast #youtuber #money #moneyfacts #creatoreconomy #youtubemoney
+**Tags:** mrbeast, mrbeast net worth, how much does mrbeast make, mrbeast earnings, forbes top creators 2026, highest paid youtubers, youtube money, creator economy, money facts, the money map
+**Pinned comment:** How much did he earn while YOU watched? Comment the number 👇
+
+## Top 5 highest-paid YouTubers 2026
+**File:** `reel-viral-top5.mp4` · **Cover:** `cover-viral-top5.png`
+**Title (vidIQ 83):** Top 5 Highest-Paid YouTubers 2026 (#1 Will Shock You) 🤯
+**Description:** Forbes' 2026 list of the highest-paid creators: #5 Rhett & Link $37M, #4 Markiplier $38M, #3 Steven Bartlett $52M, #2 Dhar Mann $65M… and #1 MrBeast at $300M, more than #2–#5 combined.
+Source: Forbes Top Creators 2026 (gross earnings, Mar 2025–Mar 2026).
+Photos (Wikimedia Commons): Sean Dudley (public domain); Gage Skidmore CC BY-SA 3.0; Soccer Aid for UNICEF CC BY 3.0; Dhar Mann CC BY-SA 4.0; Tyren Redd CC BY 4.0.
+#shorts #mrbeast #markiplier #dharmann #youtuber #richestyoutubers #money
+**Tags:** highest paid youtubers 2026, forbes top creators, mrbeast, dhar mann, steven bartlett, markiplier, rhett and link, youtube earnings, how much youtubers make, creator economy, the money map
+**Pinned comment:** Who do you think will be #1 next year? 👇
+
+## What 1 million views pays
+**File:** `reel-viral-ytpay.mp4` · **Cover:** `cover-viral-ytpay.png`
+**Title (vidIQ 87):** How Much YouTube Pays for 1 Million Views (Shorts vs Long) 😳
+**Description:** 1 million views can pay about $1,500–$6,000 for gaming, $10,000–$30,000 for US finance videos… and only about $30–$100 for Shorts. That's why the biggest creators make long videos.
+Approximate 2026 RPM estimates from third-party data; actual pay varies by country, niche and season.
+#shorts #youtubemoney #youtubeshorts #howmuchyoutubepays #creator #money #sidehustle
+**Tags:** how much youtube pays, how much does youtube pay for 1 million views, youtube shorts money, youtube rpm, how much youtube paid me, youtube earnings, make money on youtube, youtube monetization, creator economy, the money map
+**Pinned comment:** Did you think Shorts paid more? 👇

@@ -90,7 +90,96 @@ function house(T) {
   return [g, o];
 }
 
+/* ================= MRBEAST: what he earned while you watched ================= */
+const PER_SEC = 300e6 / (365 * 24 * 3600);
+function mrbeast(T) {
+  let g = '', o = '';
+  if (T < 3.1) {
+    photo('cr-mrbeast', { op: 1, x: 90, y: 150, w: 540, h: 600, p: T / 3, z0: 1.15, z1: 1.05, y0: 4, y1: 4, glow: C.gold });
+    o += chip('FORBES 2026 · #1 CREATOR', 360, 160, '#FACC15', '#0B1020', 30, 1, -3, pop(T, 0.1));
+    o += big3d(usd(300e6 * easeOut(clamp(T / 1.6))), 790, 92, '#DCFCE7', '#16A34A', '#14532D', 1, 1 + (T > 1.6 ? 0.05 * Math.max(0, 1 - (T - 1.6) / 0.3) : 0));
+    o += ov('MADE IN ONE YEAR 🤯', 0, 910, 720, 44, '#fff', clamp(pop(T, 1.2)));
+    return [g, o];
+  }
+  if (T < 9.4) {
+    photo('cr-mrbeast', { op: 1, x: 230, y: 150, w: 260, h: 300, p: 0, z0: 1.3, z1: 1.3, y0: 6, y1: 6, r: 999, glow: C.gold, credit: false });
+    o += ov('THAT\'S…', 0, 470, 720, 40, '#CBD5E1', 1);
+    [['PER DAY', 300e6 / 365, 0], ['PER HOUR', 300e6 / 8760, 0], ['PER MINUTE', 300e6 / 525600, 0], ['PER SECOND', PER_SEC, 2]].forEach(([lab, val, dec], k) => {
+      const t0 = 3.3 + k * 1.4, s = pop(T, t0, 0.35); if (s <= 0) return;
+      const shown = val * easeOut(clamp((T - t0) / 0.8));
+      o += glass(60, 540 + k * 132, 600, 112, `<div style="position:absolute;left:28px;top:36px;font-size:30px;font-weight:800;color:#CBD5E1">${lab}</div><div style="position:absolute;right:28px;top:18px;font-size:62px;font-weight:900;color:${k === 3 ? '#FACC15' : '#4ADE80'}">${usd(shown, dec)}</div>`, clamp(s), k === 3 ? 'rgba(250,204,21,.8)' : 'rgba(34,197,94,.6)', `transform:scale(${s})`);
+    });
+    return [g, o];
+  }
+  // live counter: money earned since this Short started
+  photo('cr-mrbeast', { op: 1, x: 160, y: 170, w: 400, h: 460, p: (T - 9.4) / 10, z0: 1.12, z1: 1.25, y0: 5, y1: 5, glow: C.green });
+  for (let k = 0; k < 10; k++) { const f = ((T - 9.4) * 0.8 + k / 10) % 1; g += coinSVG(70 + k * 64, 640 + f * 420, 17, (1 - f) * 0.8); }
+  o += ov('WHILE YOU WATCHED THIS SHORT,<br>MRBEAST EARNED:', 0, 660, 720, 36, '#fff', clamp(pop(T, 9.5)));
+  o += big3d(usd(PER_SEC * T, 2), 790, 120, '#FEF3C7', '#EAB308', '#854D0E', 1, 1 + 0.03 * Math.sin(T * 12));
+  if (T > 16.2) o += chip('🔁 WATCH AGAIN: IT KEEPS GOING', 360, 1000, '#EF4444', '#fff', 30, 1, -2, pop(T, 16.2));
+  return [g, o];
+}
+
+/* ================= TOP 5: highest-paid YouTubers 2026 ================= */
+const TOP5 = [[5, 'RHETT &amp; LINK', 37, 'cr-rhettlink', 3.0], [4, 'MARKIPLIER', 38, 'cr-markiplier', 6.2], [3, 'STEVEN BARTLETT', 52, 'cr-bartlett', 9.4], [2, 'DHAR MANN', 65, 'cr-dharmann', 12.6], [1, 'MRBEAST', 300, 'cr-mrbeast', 15.8]];
+function top5(T) {
+  let g = '', o = '';
+  if (T < 3.0) {
+    o += big3d('TOP 5<br>HIGHEST-PAID<br>YOUTUBERS', 220, 92, '#FEF3C7', '#EAB308', '#854D0E', clamp(pop(T, 0.05)), pop(T, 0.05));
+    o += chip('2026', 360, 600, '#EF4444', '#fff', 44, 1, -3, pop(T, 0.5));
+    o += big3d('#1 MADE MORE THAN<br>#2–#5 COMBINED 🤯', 700, 54, '#FFFFFF', '#CBD5E1', '#334155', clamp(pop(T, 1.3)), pop(T, 1.3));
+    return [g, o];
+  }
+  if (T < 20.0) {
+    let cur = TOP5[0]; for (const x of TOP5) if (T >= x[4]) cur = x;
+    const [rank, name, m, img, t0] = cur, k = T - t0, first = rank === 1, s = pop(T, t0, 0.4);
+    const tall = false;
+    photo(img, { op: clamp(k / 0.15), x: 60, y: 260, w: 600, h: 520, p: k / 3.2, z0: tall ? 1.6 : 1.15, z1: tall ? 1.7 : 1.28, y0: tall ? 18 : 2, y1: tall ? 18 : 2, glow: first ? C.gold : '#FFFFFF' });
+    o += `<div class="ov" style="left:40px;top:150px;width:200px;font-size:110px;color:${first ? '#FACC15' : '#fff'};transform:scale(${s}) rotate(-6deg);text-shadow:0 6px 0 #000,0 0 30px ${first ? '#FACC15' : '#000'}">#${rank}</div>`;
+    o += ov(name, 0, 810, 720, 52, '#fff', clamp(s));
+    o += big3d('$' + Math.round(m * easeOut(clamp(k / (first ? 1.6 : 0.9)))) + ' MILLION', 880, first ? 92 : 76, first ? '#DCFCE7' : '#FEF3C7', first ? '#16A34A' : '#EAB308', first ? '#14532D' : '#854D0E', 1, first ? 1 + 0.04 * Math.max(0, 1 - (k - 1.6) / 0.4) : 1);
+    if (first && k > 1.8) g += confettiSVG(T, t0 + 1.8, 360, 500, 70);
+    // progress dots
+    TOP5.forEach(([r], i) => { g += `<circle cx="${210 + i * 75}" cy="1150" r="${r === rank ? 14 : 9}" fill="${r === rank ? C.gold : '#475569'}"/>`; });
+    return [g, o];
+  }
+  // compare: #1 vs #2-#5 combined
+  const p = easeOut(clamp((T - 20.2) / 1.2)), base = 1000, sc = 600 / 300;
+  g += isoBar(230, base, 190, 300 * sc * p, C.green) + isoBar(490, base, 190, 192 * sc * p, '#64748B');
+  g += svgText(230, base + 46, '#1 MRBEAST', 28, '#CBD5E1') + svgText(490, base + 46, '#2–#5 COMBINED', 28, '#CBD5E1');
+  if (p > 0.3) { g += svgText(245, base - 300 * sc * p - 70, '$300M', 48, '#4ADE80') + svgText(505, base - 192 * sc * p - 70, '$192M', 48, '#E2E8F0'); }
+  o += big3d('ONE CREATOR &gt; FOUR', 150, 54, '#FEF3C7', '#EAB308', '#854D0E', clamp(pop(T, 20.1)), pop(T, 20.1), 'white-space:nowrap');
+  return [g, o];
+}
+
+/* ================= YT PAY: what 1 million views pays ================= */
+function ytpay(T) {
+  let g = '', o = '';
+  const play = (x, y, s, op = 1) => `<g opacity="${op}" transform="translate(${x} ${y}) scale(${s})"><rect x="-90" y="-62" width="180" height="124" rx="36" fill="#EF4444"/><polygon points="-26,-36 -26,36 40,0" fill="#fff"/></g>`;
+  if (T < 2.9) {
+    g += play(360, 380, 1.4 * clamp(pop(T, 0.05)));
+    o += big3d(Math.round(1e6 * easeOut(clamp(T / 1.6))).toLocaleString('en-US'), 560, 110, '#FFFFFF', '#CBD5E1', '#334155', 1);
+    o += ov('VIEWS ON YOUTUBE =', 0, 700, 720, 48, '#CBD5E1', 1);
+    o += big3d('$ ???', 770, 150, '#FEF3C7', '#EAB308', '#854D0E', clamp(pop(T, 1.5)), pop(T, 1.5) * (1 + 0.04 * Math.sin(T * 14)));
+    return [g, o];
+  }
+  o += ov('1 MILLION VIEWS PAYS…', 0, 150, 720, 46, '#fff', 1);
+  const rows = [['🎮', 'GAMING VIDEO', '$1,500 – $6,000', '#60A5FA', 3.0], ['💰', 'FINANCE VIDEO (US)', '$10,000 – $30,000', '#4ADE80', 5.6], ['📱', 'YOUTUBE SHORTS', '$30 – $100', '#F87171', 8.6]];
+  rows.forEach(([ic, lab, val, col, t0], k) => { const s = pop(T, t0, 0.4); if (s <= 0) return;
+    o += glass(50, 250 + k * 210, 620, 180, `<div style="position:absolute;left:26px;top:40px;font-size:80px">${ic}</div><div style="position:absolute;left:140px;top:30px;font-size:28px;font-weight:800;color:#CBD5E1">${lab}</div><div style="position:absolute;left:140px;top:72px;font-size:${k === 2 ? 66 : 48}px;font-weight:900;white-space:nowrap;color:${col}">${val}</div>`, clamp(s), col, `transform:scale(${s})`); });
+  if (T > 9.4) o += stamp('YES, REALLY 😳', 360, 905, '#F87171', 44, pop(T, 9.4), 6);
+  if (T > 12.2) o += chip('THAT\'S WHY BIG CREATORS MAKE LONG VIDEOS', 360, 1000, '#FACC15', '#0B1020', 24, 1, -2, pop(T, 12.2));
+  if (T > 14.4) o += chip('FOLLOW FOR MORE MONEY FACTS 💸', 360, 1080, '#EF4444', '#fff', 28, 1, 2, pop(T, 14.4));
+  return [g, o];
+}
+
 const CFG = {
+  mrbeast: { scene: mrbeast, total: 19.5, theme: ['#22C55E', '#EAB308', '#06110A'], photos: ['cr-mrbeast'], hits: [0.05, 1.6, 3.3, 7.5, 9.4],
+    foot: 'Forbes Top Creators 2026 estimate: ~$300M gross earnings (Mar 2025–Mar 2026), before taxes & expenses' },
+  top5: { scene: top5, total: 24.5, theme: ['#EAB308', '#EF4444', '#110B04'], photos: ['cr-rhettlink', 'cr-markiplier', 'cr-bartlett', 'cr-dharmann', 'cr-mrbeast'], hits: [0.05, 3.0, 6.2, 9.4, 12.6, 15.8, 17.4, 20.2],
+    foot: 'Source: Forbes Top Creators 2026 (gross earnings, Mar 2025–Mar 2026) · Photos: Wikimedia Commons' },
+  ytpay: { scene: ytpay, total: 17.5, theme: ['#EF4444', '#22C55E', '#120808'], photos: [], hits: [0.05, 1.5, 3.0, 5.6, 8.6],
+    foot: 'Approximate 2026 RPM estimates (third-party data); varies by country, niche & season' },
   penny: { scene: penny, total: 19.5, theme: ['#EAB308', '#22C55E', '#0D0A04'], photos: [], hits: [0.05, 2.8, 7.6 + 8 * 0.8, 15.6],
     foot: 'Math example: $0.01 doubled daily, day 30 = $5,368,709.12' },
   house: { scene: house, total: 15.5, theme: ['#3B82F6', '#DC2626', '#0B1430'], photos: ['suburb'], hits: [0.05, 3.4, 11.6],

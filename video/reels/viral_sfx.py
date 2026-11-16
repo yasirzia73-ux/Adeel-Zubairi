@@ -9,7 +9,37 @@ SR = P.SR; ALL = dict(LIB); ALL.update({k: f() for k, f in P.LIB_FN.items()})
 def resample(x, r): idx = np.arange(0, len(x) - 1, r); return np.interp(idx, np.arange(len(x)), x)
 rid, out = sys.argv[1], sys.argv[2]; ev = []
 def a(t, n, g=0.5, pan=0.0, pitch=1.0): ev.append((t, n, g, pan, pitch))
-if rid == 'penny':
+if rid == 'mrbeast':
+    total = 19.5
+    a(0.0, 'impact', 0.7); a(0.05, 'shutter', 0.45)
+    for k in range(14): a(0.1 + k * 0.1, 'tickhi', 0.2, 0, 1 + k * 0.03)
+    a(1.6, 'impact', 0.8); a(1.65, 'cashpro', 0.6); a(2.2, 'dingpro', 0.4)
+    for k in range(4): a(3.3 + k * 1.4, 'poppro', 0.5, (k % 2) * 0.6 - 0.3, 1 + k * 0.1); a(3.35 + k * 1.4, 'coin', 0.3)
+    a(9.0, 'swell', 0.45); a(9.4, 'impact', 0.7)
+    t = 9.5
+    while t < 19.3: a(t, 'coin', 0.18, ((int(t * 10) % 5) - 2) * 0.25); t += 0.42
+    a(16.2, 'poppro', 0.5); a(16.25, 'dingpro', 0.4)
+elif rid == 'top5':
+    total = 24.5
+    a(0.0, 'impact', 0.7); a(0.05, 'whooshD', 0.4); a(0.5, 'stamp', 0.5); a(1.3, 'poppro', 0.5); a(2.4, 'swell', 0.4)
+    for k, t0 in enumerate([3.0, 6.2, 9.4, 12.6]):
+        a(t0 - 0.1, 'whooshD', 0.4); a(t0, 'shutter', 0.45); a(t0 + 0.15, 'stamp', 0.45)
+        for j in range(8): a(t0 + 0.1 + j * 0.1, 'tickhi', 0.15)
+        a(t0 + 0.95, 'cashpro', 0.35)
+    a(15.0, 'heart', 0.5); a(15.4, 'swell', 0.5); a(15.8, 'impact', 0.95); a(15.85, 'glitch', 0.35)
+    for j in range(16): a(15.9 + j * 0.1, 'tickhi', 0.15 + j * 0.01)
+    a(17.4, 'impact', 0.7); a(17.45, 'confetti', 0.6); a(17.5, 'cashpro', 0.6)
+    a(20.0, 'whooshD', 0.45); a(20.2, 'impact', 0.6); a(21.4, 'dingpro', 0.45)
+elif rid == 'ytpay':
+    total = 17.5
+    a(0.0, 'impact', 0.6); a(0.05, 'poppro', 0.5)
+    for k in range(16): a(0.1 + k * 0.1, 'tickhi', 0.2, 0, 1 + k * 0.03)
+    a(1.5, 'impact', 0.7); a(1.55, 'glitch', 0.35); a(2.0, 'heart', 0.5); a(2.6, 'swell', 0.4)
+    a(3.0, 'whooshD', 0.4); a(3.05, 'poppro', 0.5); a(3.2, 'coin', 0.4)
+    a(5.6, 'whooshD', 0.4); a(5.65, 'poppro', 0.5); a(5.8, 'cashpro', 0.55)
+    a(8.0, 'swell', 0.45); a(8.6, 'impact', 0.85); a(8.65, 'rewind', 0.45); a(9.4, 'stamp', 0.6); a(9.45, 'buzzer', 0.3)
+    a(12.2, 'poppro', 0.45); a(14.4, 'poppro', 0.5); a(14.45, 'dingpro', 0.4)
+elif rid == 'penny':
     total = 19.5
     a(0.0, 'impact', 0.6); a(0.05, 'whooshD', 0.4); a(0.45, 'poppro', 0.5, -0.4); a(0.95, 'poppro', 0.5, 0.4, 1.2); a(1.0, 'glitch', 0.25)
     a(1.4, 'heart', 0.5); a(2.0, 'heart', 0.45); a(2.5, 'swell', 0.35)

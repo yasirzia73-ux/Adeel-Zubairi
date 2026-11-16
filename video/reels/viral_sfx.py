@@ -1,5 +1,5 @@
 """SFX for the text-only viral Shorts. Usage: python3 viral_sfx.py <id> <out.wav>"""
-import sys, math, wave
+import sys, math, wave, json
 import numpy as np
 sys.path.insert(0, '/home/user/Adeel-Zubairi/video/sfx')
 import sfx_pro as P
@@ -58,6 +58,9 @@ else:
     while t < 11.6: a(t, 'tickhi', 0.22 + 0.15 * (t - 3.4) / 8.2, 0, 1 + 0.4 * (t - 3.4) / 8.2); t += max(0.07, 0.22 - 0.02 * k); k += 1
     a(3.4 + 8.2 * 0.08, 'buzzer', 0.25)
     a(10.6, 'swell', 0.5); a(11.6, 'impact', 0.9); a(11.62, 'glitch', 0.35); a(12.0, 'stamp', 0.6); a(12.05, 'buzzer', 0.3); a(13.0, 'poppro', 0.5); a(13.05, 'dingpro', 0.4)
+if len(sys.argv) > 3:   # optional warp file: map visual-time events onto the voiceover timeline
+    W = json.load(open(sys.argv[3]))[rid]; vo = [a for a, b in W]; vis = [b for a, b in W]
+    ev = [(float(np.interp(t, vis, vo)), n, g, pan, pitch) for t, n, g, pan, pitch in ev]; total = vo[-1]
 mix = np.zeros((int((total + 1) * SR), 2))
 for t, n, g, pan, pitch in ev:
     x = ALL[n]; x = resample(x, pitch) if pitch != 1.0 else x; x = x * g; s0 = int(max(0, t) * SR); x = x[:len(mix) - s0]

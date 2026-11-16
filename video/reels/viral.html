@@ -22,6 +22,7 @@
 <body><div id="stage"><div id="cam"><div id="bg"></div><div id="svg"></div><div id="photos"></div><div id="ov"></div></div><div id="flash"></div></div>
 <script src="data.js"></script>
 <script src="engine.js"></script>
+<script src="creators-nov16/warp.js"></script>
 <script>
 const ID = new URLSearchParams(location.search).get('id') || 'penny';
 const usd = (n, c = 0) => '$' + n.toLocaleString('en-US', { minimumFractionDigits: c, maximumFractionDigits: c });
@@ -115,7 +116,7 @@ function mrbeast(T) {
   photo('cr-mrbeast', { op: 1, x: 160, y: 170, w: 400, h: 460, p: (T - 9.4) / 10, z0: 1.12, z1: 1.25, y0: 5, y1: 5, glow: C.green });
   for (let k = 0; k < 10; k++) { const f = ((T - 9.4) * 0.8 + k / 10) % 1; g += coinSVG(70 + k * 64, 640 + f * 420, 17, (1 - f) * 0.8); }
   o += ov('WHILE YOU WATCHED THIS SHORT,<br>MRBEAST EARNED:', 0, 660, 720, 36, '#fff', clamp(pop(T, 9.5)));
-  o += big3d(usd(PER_SEC * T, 2), 790, 120, '#FEF3C7', '#EAB308', '#854D0E', 1, 1 + 0.03 * Math.sin(T * 12));
+  o += big3d(usd(PER_SEC * (window.TRAW ?? T), 2), 790, 120, '#FEF3C7', '#EAB308', '#854D0E', 1, 1 + 0.03 * Math.sin(T * 12));
   if (T > 16.2) o += chip('🔁 WATCH AGAIN: IT KEEPS GOING', 360, 1000, '#EF4444', '#fff', 30, 1, -2, pop(T, 16.2));
   return [g, o];
 }
@@ -186,8 +187,11 @@ const CFG = {
     foot: 'Example: $400,000, 30-yr fixed at 7.18% (Freddie Mac avg, Nov 2026), principal & interest only · Not financial advice' },
 };
 const R = CFG[ID];
-function frame(T) {
+const WP = (window.WARP || {})[ID];
+const warp = T => { if (!WP) return T; for (let i = 1; i < WP.length; i++) if (T <= WP[i][0]) { const [a0, b0] = WP[i - 1], [a1, b1] = WP[i]; return b0 + (b1 - b0) * (T - a0) / (a1 - a0); } return WP[WP.length - 1][1] + (T - WP[WP.length - 1][0]); };
+function frame(TR) {
   for (const k in PH) PH[k].w.style.opacity = 0;
+  window.TRAW = TR; const T = warp(TR);
   const [g, o] = R.scene(T);
   let sh = 0; for (const t0 of R.hits) { const k = T - t0; if (k >= 0 && k < 0.35) sh = Math.max(sh, (1 - k / 0.35) * 14); }
   if (ID === 'penny' && T > 7.6 && T < 15.7) { const k = (T - 7.6) % 0.8; if (k < 0.2) sh = Math.max(sh, (1 - k / 0.2) * 6); }
@@ -197,7 +201,7 @@ function frame(T) {
   document.getElementById('svg').innerHTML = `<svg width="720" height="1280" viewBox="0 0 720 1280">${DEFS}${background(T, R.theme)}${g}</svg>`;
   document.getElementById('ov').innerHTML = o + `<div class="brand">THE MONEY <span class="y">MAP</span></div><div class="foot">${R.foot}</div>`;
 }
-window.TOTAL = R.total; window.READY = false;
+window.TOTAL = WP ? WP[WP.length - 1][0] : R.total; window.READY = false;
 document.fonts.ready.then(() => initPhotos(R.photos, window.CREDITS || {})).then(() => { frame(0.5); window.READY = true; });
 window.render = frame;
 </script>

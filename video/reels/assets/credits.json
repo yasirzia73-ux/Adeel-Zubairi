@@ -147,5 +147,26 @@
   "creator": "Sean Dudley",
   "rights": "Public domain",
   "credit": "Sean Dudley / Wikimedia Commons (public domain)"
+ },
+ "gta-skyline": {
+  "source": "https://www.loc.gov/pictures/item/2020721050/",
+  "title": "Aerial view of the Miami skyline from Biscayne Bay",
+  "creator": "Highsmith, Carol M., 1946-, photographer",
+  "rights": "No known restrictions on publication.",
+  "credit": "Carol M. Highsmith / Library of Congress"
+ },
+ "gta-beach": {
+  "source": "https://www.loc.gov/pictures/item/2011630947/",
+  "title": "Hotels on South Beach, Miami Beach, Florida",
+  "creator": "Highsmith, Carol M., 1946-, photographer",
+  "rights": "No known restrictions on publication.",
+  "credit": "Carol M. Highsmith / Library of Congress"
+ },
+ "gta-deco": {
+  "source": "https://www.loc.gov/pictures/item/2011631001/",
+  "title": "Art Deco Cavalier Hotel, Miami Beach, Florida",
+  "creator": "Highsmith, Carol M., 1946-, photographer",
+  "rights": "No known restrictions on publication.",
+  "credit": "Carol M. Highsmith / Library of Congress"
  }
 }

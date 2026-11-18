@@ -9,7 +9,21 @@ SR = P.SR; ALL = dict(LIB); ALL.update({k: f() for k, f in P.LIB_FN.items()})
 def resample(x, r): idx = np.arange(0, len(x) - 1, r); return np.interp(idx, np.arange(len(x)), x)
 rid, out = sys.argv[1], sys.argv[2]; ev = []
 def a(t, n, g=0.5, pan=0.0, pitch=1.0): ev.append((t, n, g, pan, pitch))
-if rid == 'mrbeast':
+if rid == 'gta6':
+    total = 23
+    a(0.0, 'impact', 0.8); a(0.02, 'glitch', 0.4); a(0.3, 'stamp', 0.6); a(0.9, 'poppro', 0.5); a(1.5, 'heart', 0.5); a(2.2, 'heart', 0.45); a(2.5, 'swell', 0.45)
+    a(3.0, 'whooshD', 0.45); a(3.05, 'shutter', 0.4)
+    for k in range(16): a(3.2 + k * 0.1, 'tickhi', 0.18, 0, 1 + k * 0.03)
+    a(4.8, 'impact', 0.75); a(4.85, 'cashpro', 0.5); a(5.2, 'poppro', 0.45)
+    a(7.0, 'whooshD', 0.45); a(7.1, 'poppro', 0.55, 0, 0.8); a(7.2, 'cash', 0.4); a(8.4, 'stamp', 0.6); a(8.45, 'buzzer', 0.25)
+    a(10.6, 'whooshD', 0.4); a(10.8, 'poppro', 0.4, -0.3)
+    for k in range(20): a(11.8 + k * 0.11, 'tickhi', 0.15 + k * 0.01)
+    a(14.0, 'impact', 0.85); a(14.05, 'confetti', 0.5); a(14.1, 'cashpro', 0.5)
+    a(15.4, 'whooshD', 0.4)
+    for k in range(12): a(15.6 + k * 0.11, 'tickhi', 0.16)
+    a(17.0, 'dingpro', 0.45); a(17.2, 'poppro', 0.45)
+    a(19.3, 'swell', 0.4); a(19.5, 'impact', 0.6); a(20.6, 'poppro', 0.5); a(20.65, 'dingpro', 0.4)
+elif rid == 'mrbeast':
     total = 19.5
     a(0.0, 'impact', 0.7); a(0.05, 'shutter', 0.45)
     for k in range(14): a(0.1 + k * 0.1, 'tickhi', 0.2, 0, 1 + k * 0.03)

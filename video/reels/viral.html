@@ -174,7 +174,62 @@ function ytpay(T) {
   return [g, o];
 }
 
+/* ================= GTA 6: the billion-dollar launch ================= */
+function gta6(T) {
+  let g = '', o = '';
+  const neon = 'saturate(1.25) contrast(1.15) hue-rotate(-25deg) brightness(.75)';
+  if (T < 3.0) {
+    photo('gta-skyline', { op: 1, x: 0, y: 0, w: 720, h: 1280, p: T / 3, z0: 1.35, z1: 1.15, r: 0, credit: true, filter: neon + ' sepia(.35)' });
+    o += `<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(236,72,153,.35),rgba(18,5,26,.85) 70%)"></div>`;
+    o += chip('🎮 GTA 6 LAUNCH', 360, 200, '#EC4899', '#fff', 40, 1, -3, pop(T, 0.05));
+    o += big3d('TOMORROW.', 340, 104, '#FDF2F8', '#EC4899', '#831843', clamp(pop(T, 0.3)), pop(T, 0.3) * (1 + 0.03 * Math.sin(T * 10)), 'white-space:nowrap');
+    o += glass(210, 560, 300, 300, `<div style="background:#EC4899;height:80px;border-radius:24px 24px 0 0;font-size:46px;font-weight:900;line-height:80px;text-align:center">NOV</div><div style="color:#12051A;background:#F8FAFC;height:214px;border-radius:0 0 24px 24px;font-size:150px;font-weight:900;line-height:214px;text-align:center">19</div>`, clamp(pop(T, 0.9)), 'rgba(236,72,153,.9)', `transform:scale(${pop(T, 0.9)}) rotate(-4deg)`);
+    o += ov('2026 · PS5 &amp; XBOX SERIES X|S', 0, 900, 720, 34, '#F9A8D4', clamp(pop(T, 1.5)));
+    return [g, o];
+  }
+  if (T < 7.0) {
+    photo('gta-deco', { op: 1, x: 60, y: 170, w: 600, h: 430, p: (T - 3) / 4, z0: 1.25, z1: 1.08, glow: '#EC4899', filter: neon });
+    const p = easeOut(clamp((T - 3.2) / 1.6));
+    o += ov('COST TO MAKE (ESTIMATED)', 0, 640, 720, 34, '#F9A8D4', 1);
+    o += big3d(usd(1e9 * p) + (p >= 1 ? '+' : ''), 690, 70, '#ECFEFF', '#22D3EE', '#164E63', 1, 1 + (p >= 1 ? 0.04 * Math.max(0, 1 - (T - 4.8) / 0.3) : 0), 'white-space:nowrap');
+    if (T > 5.2) o += chip('ONE OF THE MOST EXPENSIVE GAMES EVER', 360, 860, '#8B5CF6', '#fff', 26, 1, -2, pop(T, 5.2));
+    return [g, o];
+  }
+  if (T < 10.6) {
+    const s = pop(T, 7.1, 0.5), sw = Math.sin((T - 7) * 2.4) * 6;
+    o += ov('THE PRICE TAG', 0, 220, 720, 46, '#fff', 1);
+    o += `<div style="position:absolute;left:110px;top:330px;width:500px;height:300px;border-radius:30px 120px 120px 30px;background:linear-gradient(160deg,#FDE047,#F59E0B);box-shadow:0 14px 0 #92400E,0 30px 60px rgba(0,0,0,.5);transform:scale(${s}) rotate(${sw}deg);transform-origin:10% 50%"><div style="position:absolute;right:30px;top:128px;width:40px;height:40px;border-radius:50%;background:#12051A"></div><div style="position:absolute;left:34px;top:70px;font-size:128px;font-weight:900;color:#12051A;white-space:nowrap">$79<span style="font-size:62px">.99</span></div></div>`;
+    o += stamp('+$10 vs THE USUAL $69.99', 360, 760, '#F87171', 36, pop(T, 8.4), -4);
+    return [g, o];
+  }
+  if (T < 15.4) {
+    const p1 = easeOut(clamp((T - 10.8) / 0.8)), p2 = easeOut(clamp((T - 11.8) / 2.2)), base = 1000, sc = 560 / 1540;
+    o += ov('PRE-ORDERS, BEFORE IT\'S EVEN OUT', 0, 200, 720, 32, '#fff', 1, 'white-space:nowrap');
+    g += isoBar(230, base, 180, 815.7 * sc * p1, '#64748B') + isoBar(500, base, 180, 1540 * sc * p2, '#EC4899');
+    g += svgText(230, base + 46, 'GTA V · DAY 1', 26, '#CBD5E1') + svgText(500, base + 46, 'GTA 6 · PRE-ORDERS', 26, '#F9A8D4');
+    if (p1 > 0.2) g += svgText(245, base - 815.7 * sc * p1 - 66, '$816M', 44, '#E2E8F0');
+    if (p2 > 0.05) g += svgText(515, base - 1540 * sc * p2 - 66, '$' + (1.54 * p2).toFixed(2) + 'B', 52, '#F9A8D4');
+    if (T > 14.0) o += chip('ALMOST 2× THE OLD RECORD 🤯', 360, 1125, '#FACC15', '#12051A', 32, 1, -3, pop(T, 14.0));
+    return [g, o];
+  }
+  if (T < 19.4) {
+    const p = easeOut(clamp((T - 15.6) / 1.4)) * 0.98, R = 170, cx = 360, cy = 460, L = 2 * Math.PI * R;
+    g += `<g transform="rotate(-90 ${cx} ${cy})"><circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="#1E293B" stroke-width="44"/><circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="#22C55E" stroke-width="44" stroke-linecap="round" stroke-dasharray="${L * p} ${L}"/></g>`;
+    o += big3d(Math.round(p * 100) + '%', 395, 120, '#DCFCE7', '#16A34A', '#14532D', 1);
+    o += ov('ODDS IT BREAKS GTA V\'S<br>FIRST-DAY RECORD', 0, 660, 720, 34, '#fff', 1);
+    if (T > 17.2) o += glass(60, 800, 600, 150, `<div style="position:absolute;left:28px;top:22px;font-size:24px;font-weight:800;color:#CBD5E1">TAKE-TWO STOCK (TTWO)</div><div style="position:absolute;left:28px;top:62px;font-size:52px;font-weight:900">$224 <span style="color:#F9A8D4">→</span> <span class="g">$330</span></div><div style="position:absolute;right:28px;top:76px;font-size:22px;font-weight:800;color:#CBD5E1">BofA target</div>`, clamp(pop(T, 17.2)), 'rgba(34,197,94,.7)', `transform:scale(${pop(T, 17.2)})`);
+    return [g, o];
+  }
+  photo('gta-beach', { op: 1, x: 0, y: 0, w: 720, h: 1280, p: (T - 19.4) / 4, z0: 1.1, z1: 1.25, r: 0, filter: neon + ' sepia(.25)' });
+  o += `<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(18,5,26,0),rgba(18,5,26,.65) 80%)"></div>`;
+  o += big3d('WOULD YOU<br>PAY $80? 👇', 560, 96, '#FDF2F8', '#EC4899', '#831843', clamp(pop(T, 19.5)), pop(T, 19.5));
+  o += chip('FOLLOW FOR MORE MONEY NEWS 💸', 360, 900, '#8B5CF6', '#fff', 30, 1, -2, pop(T, 20.6));
+  return [g, o];
+}
+
 const CFG = {
+  gta6: { scene: gta6, total: 23, theme: ['#EC4899', '#8B5CF6', '#12051A'], photos: ['gta-skyline', 'gta-deco', 'gta-beach'], hits: [0.05, 0.3, 3.2, 4.8, 7.1, 8.4, 10.8, 14.0, 15.6, 19.5],
+    foot: 'Estimates: budget (analysts), pre-orders (Sensor Tower), odds (Polymarket), target (BofA) · Not affiliated with Rockstar · Not financial advice' },
   mrbeast: { scene: mrbeast, total: 19.5, theme: ['#22C55E', '#EAB308', '#06110A'], photos: ['cr-mrbeast'], hits: [0.05, 1.6, 3.3, 7.5, 9.4],
     foot: 'Forbes Top Creators 2026 estimate: ~$300M gross earnings (Mar 2025–Mar 2026), before taxes & expenses' },
   top5: { scene: top5, total: 24.5, theme: ['#EAB308', '#EF4444', '#110B04'], photos: ['cr-rhettlink', 'cr-markiplier', 'cr-bartlett', 'cr-dharmann', 'cr-mrbeast'], hits: [0.05, 3.0, 6.2, 9.4, 12.6, 15.8, 17.4, 20.2],

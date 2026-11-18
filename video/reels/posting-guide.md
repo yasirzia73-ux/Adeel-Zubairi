@@ -205,7 +205,7 @@ Approximate 2026 RPM estimates from third-party data; actual pay varies by count
 (On launch day use: "GTA 6 Is OUT… And It Already Made $1.5 BILLION 🤯")
 **Description:** GTA 6 launches November 19, 2026 on PS5 and Xbox Series X|S. Estimated budget: over $1 billion. Price: $79.99, $10 more than most big games. Pre-orders: about $1.54 billion (Sensor Tower estimate), almost double GTA V's $815.7M first day. Polymarket traders gave it a 98% chance of breaking the first-day record. Would you pay $80? 👇
 Estimates, not official Take-Two figures. Not affiliated with Rockstar Games. Not financial advice.
-Photos: Carol M. Highsmith / Library of Congress (Miami).
+Images: Rockstar Games / GTA 6 artwork, used for news commentary.
 #shorts #gta6 #gtavi #gaming #money #taketwo #rockstargames
 **Tags:** gta 6, gta 6 release date, gta 6 price, gta 6 launch, gta 6 pre orders, gta vi, gta 6 budget, take two stock, ttwo stock, most expensive video game, gaming news, the money map
 **Pinned comment:** Are you buying GTA 6 on day one? YES or NO 👇

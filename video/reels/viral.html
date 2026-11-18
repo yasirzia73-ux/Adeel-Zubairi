@@ -177,10 +177,11 @@ function ytpay(T) {
 /* ================= GTA 6: the billion-dollar launch ================= */
 function gta6(T) {
   let g = '', o = '';
+  window.BGX = T >= 7.0 && T < 10.6 ? { src: 'gta6-b', z: 1.08 + (T - 7) * 0.02, x: 50, dim: .55 } : T >= 10.6 && T < 15.4 ? { src: 'gta6-a', z: 1.02 + (T - 10.6) * 0.02, x: 58, dim: .7 } : T >= 15.4 && T < 19.4 ? { src: 'gta6-c', z: 1.1 + (T - 15.4) * 0.02, x: 30, dim: .72 } : null;
   const neon = 'saturate(1.25) contrast(1.15) hue-rotate(-25deg) brightness(.75)';
   if (T < 3.0) {
-    photo('gta-skyline', { op: 1, x: 0, y: 0, w: 720, h: 1280, p: T / 3, z0: 1.35, z1: 1.15, r: 0, credit: true, filter: neon + ' sepia(.35)' });
-    o += `<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(236,72,153,.35),rgba(18,5,26,.85) 70%)"></div>`;
+    photo('gta6-c', { op: 1, x: 0, y: 0, w: 720, h: 1280, p: T / 3, z0: 1.25, z1: 1.05, x0: 6, x1: -2, r: 0, credit: true, filter: 'saturate(1.15) contrast(1.05)' });
+    o += `<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(18,5,26,.15),rgba(236,72,153,.12) 40%,rgba(18,5,26,.8) 80%)"></div>`;
     o += chip('🎮 GTA 6 LAUNCH', 360, 200, '#EC4899', '#fff', 40, 1, -3, pop(T, 0.05));
     o += big3d('TOMORROW.', 340, 104, '#FDF2F8', '#EC4899', '#831843', clamp(pop(T, 0.3)), pop(T, 0.3) * (1 + 0.03 * Math.sin(T * 10)), 'white-space:nowrap');
     o += glass(210, 560, 300, 300, `<div style="background:#EC4899;height:80px;border-radius:24px 24px 0 0;font-size:46px;font-weight:900;line-height:80px;text-align:center">NOV</div><div style="color:#12051A;background:#F8FAFC;height:214px;border-radius:0 0 24px 24px;font-size:150px;font-weight:900;line-height:214px;text-align:center">19</div>`, clamp(pop(T, 0.9)), 'rgba(236,72,153,.9)', `transform:scale(${pop(T, 0.9)}) rotate(-4deg)`);
@@ -188,7 +189,7 @@ function gta6(T) {
     return [g, o];
   }
   if (T < 7.0) {
-    photo('gta-deco', { op: 1, x: 60, y: 170, w: 600, h: 430, p: (T - 3) / 4, z0: 1.25, z1: 1.08, glow: '#EC4899', filter: neon });
+    photo('gta6-d', { op: 1, x: 40, y: 190, w: 640, h: 380, p: (T - 3) / 4, z0: 1.05, z1: 1.18, glow: '#EC4899', filter: 'saturate(1.1)' });
     const p = easeOut(clamp((T - 3.2) / 1.6));
     o += ov('COST TO MAKE (ESTIMATED)', 0, 640, 720, 34, '#F9A8D4', 1);
     o += big3d(usd(1e9 * p) + (p >= 1 ? '+' : ''), 690, 70, '#ECFEFF', '#22D3EE', '#164E63', 1, 1 + (p >= 1 ? 0.04 * Math.max(0, 1 - (T - 4.8) / 0.3) : 0), 'white-space:nowrap');
@@ -220,7 +221,7 @@ function gta6(T) {
     if (T > 17.2) o += glass(60, 800, 600, 150, `<div style="position:absolute;left:28px;top:22px;font-size:24px;font-weight:800;color:#CBD5E1">TAKE-TWO STOCK (TTWO)</div><div style="position:absolute;left:28px;top:62px;font-size:52px;font-weight:900">$224 <span style="color:#F9A8D4">→</span> <span class="g">$330</span></div><div style="position:absolute;right:28px;top:76px;font-size:22px;font-weight:800;color:#CBD5E1">BofA target</div>`, clamp(pop(T, 17.2)), 'rgba(34,197,94,.7)', `transform:scale(${pop(T, 17.2)})`);
     return [g, o];
   }
-  photo('gta-beach', { op: 1, x: 0, y: 0, w: 720, h: 1280, p: (T - 19.4) / 4, z0: 1.1, z1: 1.25, r: 0, filter: neon + ' sepia(.25)' });
+  photo('gta6-e', { op: 1, x: 0, y: 0, w: 720, h: 1280, p: (T - 19.4) / 4, z0: 1.05, z1: 1.2, r: 0, filter: 'saturate(1.1)' });
   o += `<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(18,5,26,0),rgba(18,5,26,.65) 80%)"></div>`;
   o += big3d('WOULD YOU<br>PAY $80? 👇', 560, 96, '#FDF2F8', '#EC4899', '#831843', clamp(pop(T, 19.5)), pop(T, 19.5));
   o += chip('FOLLOW FOR MORE MONEY NEWS 💸', 360, 900, '#8B5CF6', '#fff', 30, 1, -2, pop(T, 20.6));
@@ -228,8 +229,8 @@ function gta6(T) {
 }
 
 const CFG = {
-  gta6: { scene: gta6, total: 23, theme: ['#EC4899', '#8B5CF6', '#12051A'], photos: ['gta-skyline', 'gta-deco', 'gta-beach'], hits: [0.05, 0.3, 3.2, 4.8, 7.1, 8.4, 10.8, 14.0, 15.6, 19.5],
-    foot: 'Estimates: budget (analysts), pre-orders (Sensor Tower), odds (Polymarket), target (BofA) · Not affiliated with Rockstar · Not financial advice' },
+  gta6: { scene: gta6, total: 23, theme: ['#EC4899', '#8B5CF6', '#12051A'], photos: ['gta6-c', 'gta6-d', 'gta6-e'], hits: [0.05, 0.3, 3.2, 4.8, 7.1, 8.4, 10.8, 14.0, 15.6, 19.5],
+    foot: 'Images: Rockstar Games artwork (news commentary) · Estimates: analysts, Sensor Tower, Polymarket, BofA · Not affiliated with Rockstar' },
   mrbeast: { scene: mrbeast, total: 19.5, theme: ['#22C55E', '#EAB308', '#06110A'], photos: ['cr-mrbeast'], hits: [0.05, 1.6, 3.3, 7.5, 9.4],
     foot: 'Forbes Top Creators 2026 estimate: ~$300M gross earnings (Mar 2025–Mar 2026), before taxes & expenses' },
   top5: { scene: top5, total: 24.5, theme: ['#EAB308', '#EF4444', '#110B04'], photos: ['cr-rhettlink', 'cr-markiplier', 'cr-bartlett', 'cr-dharmann', 'cr-mrbeast'], hits: [0.05, 3.0, 6.2, 9.4, 12.6, 15.8, 17.4, 20.2],
@@ -254,6 +255,7 @@ function frame(TR) {
   let fl = 0; for (const t0 of R.hits) { const k = T - t0; if (k >= 0 && k < 0.25) fl = Math.max(fl, 0.6 * (1 - k / 0.25)); }
   document.getElementById('flash').style.opacity = fl;
   document.getElementById('svg').innerHTML = `<svg width="720" height="1280" viewBox="0 0 720 1280">${DEFS}${background(T, R.theme)}${g}</svg>`;
+  if (window.BGX) { const b = window.BGX; document.getElementById('bg').style.background = `linear-gradient(180deg, rgba(18,5,26,${b.dim}), rgba(18,5,26,${Math.min(.95, b.dim + .2)})), url(assets/${b.src}.jpg) ${b.x}% 50% / auto ${b.z * 100}% no-repeat, #12051A`; }
   document.getElementById('ov').innerHTML = o + `<div class="brand">THE MONEY <span class="y">MAP</span></div><div class="foot">${R.foot}</div>`;
 }
 window.TOTAL = WP ? WP[WP.length - 1][0] : R.total; window.READY = false;

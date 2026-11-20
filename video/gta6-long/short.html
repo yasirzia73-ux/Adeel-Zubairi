@@ -64,11 +64,10 @@ function frame(t) {
   document.getElementById('ov').innerHTML = o;
 }
 window.READY = false; window.TOTAL = TOTAL;
-document.getElementById('f').addEventListener('load', async () => {
-  const w = document.getElementById('f').contentWindow;
-  while (!w.READY) await new Promise(r => setTimeout(r, 50));
+(async () => {
+  let w; while (!((w = document.getElementById('f').contentWindow) && w.READY)) await new Promise(r => setTimeout(r, 50));
   F = w; await document.fonts.ready; frame(0.6); window.READY = true;
-});
+})();
 window.render = frame;
 </script>
 </body></html>

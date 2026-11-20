@@ -58,3 +58,36 @@ GTA 6 could make up to $5 BILLION in one week 🤯 Be honest: are you buying it 
 - Add the video to a "Money Behind the News" playlist.
 - Post the GTA 6 Short (`reel-viral-gta6.mp4`) the same day and link it to this video ("Related video").
 - Rockstar artwork is used as commentary with a credit. If a Content ID claim arrives, it usually only affects monetization. Reply with fair use (commentary/analysis) only if you're comfortable doing so.
+
+---
+
+# 2-minute Short (cut from the long video)
+
+**File:** `video/gta6-long/gta6-short-2min.mp4` (1080×1920, about 2:00)
+
+## Title (vidIQ 93)
+GTA 6 Is a $5 Billion Money Machine (Here's How) 🤯
+
+Backups: "How GTA 6 Makes More Money Than Hollywood 💸" (87), "GTA 6 Could Make $5 BILLION in ONE Week 🤯" (86)
+
+## Description
+GTA 6 is out, and it could make up to $5 BILLION in its first week 🤯 But the game isn't even the biggest money maker... 🔁
+
+💸 $1–1.5B budget (estimate) · 🏷️ $79.99 price · 🛒 $1.4B+ pre-orders · 💥 up to $5.2B launch week (Newzoo forecast) · 🔁 GTA Online: $5B+
+
+▶ Full 8-minute breakdown on the channel.
+💬 Are you buying it? Comment below!
+
+⚠️ Educational only, not financial advice. Figures are estimates as of Nov 19, 2026. GTA 6 artwork © Rockstar Games (news commentary).
+
+#GTA6 #Shorts #GTAVI #MoneyExplained #Gaming
+
+## Tags
+gta 6, gta 6 shorts, gta 6 money, gta 6 sales, gta 6 5 billion, gta 6 price, gta 6 pre orders, gta 6 budget, gta online money, grand theft auto 6, gta vi, rockstar games, take two, video game business, money explained, the money map
+
+## Pinned comment
+Would you spend REAL money on virtual cash in GTA 6? 👀 Full 8-min breakdown is on the channel 👆
+
+## Tips
+- In YouTube Studio, set the Short's **Related video** to the long GTA 6 video, so viewers go from the Short to the long video.
+- Post it 2–3 hours after the long video (same day), around 10–11 PM PKT.

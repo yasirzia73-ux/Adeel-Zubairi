@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>GTA 6 Short</title>
+<style>
+  html, body { margin: 0; padding: 0; background: #0B0612; overflow: hidden; }
+  #stage { position: relative; width: 720px; height: 1280px; overflow: hidden; font-family: "Montserrat", sans-serif; color: #F8FAFC; }
+  #bgimg { position: absolute; inset: -40px; background: url(assets/gta6-a.jpg) center/cover; filter: blur(22px) brightness(.38) saturate(1.2); }
+  #tint { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(11,6,18,.55) 0%, rgba(11,6,18,.15) 40%, rgba(11,6,18,.75) 100%); }
+  #frame { position: absolute; left: 0; top: 400px; width: 720px; height: 432px; overflow: hidden; box-shadow: 0 0 0 3px #EC4899, 0 0 40px rgba(236,72,153,.55), 0 30px 60px rgba(0,0,0,.6); }
+  #frame iframe { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; border: 0; transform: scale(.6); transform-origin: 0 0; left: -24px; }
+  .hd { position: absolute; left: 0; width: 720px; text-align: center; font-weight: 900; }
+  .t1 { top: 92px; font-size: 44px; letter-spacing: 1px; text-shadow: 0 4px 0 #000, 0 8px 20px rgba(0,0,0,.6); }
+  .t2 { top: 148px; font-size: 64px; line-height: 1.05; }
+  .t2 span { background: linear-gradient(180deg, #DCFCE7, #22C55E); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 5px 0 #14532D) drop-shadow(0 10px 18px rgba(0,0,0,.55)); }
+  .t3 { top: 222px; font-size: 54px; color: #FACC15; text-shadow: 0 5px 0 #854D0E, 0 10px 18px rgba(0,0,0,.6); }
+  .sec { position: absolute; left: 50%; top: 330px; transform: translateX(-50%); padding: 8px 20px; border-radius: 999px; background: #EC4899; color: #fff; font-weight: 900; font-size: 22px; white-space: nowrap; box-shadow: 0 5px 0 #831843; }
+  .cap { position: absolute; left: 30px; right: 30px; top: 885px; text-align: center; font-weight: 900; font-size: 50px; line-height: 1.25; }
+  .cap .w { display: inline-block; margin: 0 5px 8px; padding: 0 8px; border-radius: 12px; color: #fff; text-shadow: 0 0 6px #000, 0 4px 0 #000, 2px 2px 0 #000, -2px 2px 0 #000, 2px -2px 0 #000, -2px -2px 0 #000; }
+  .cap .w.cur { background: #FACC15; color: #0B1020; text-shadow: none; box-shadow: 0 5px 0 #A16207; }
+  .prog { position: absolute; left: 0; top: 832px; width: 720px; height: 8px; background: rgba(255,255,255,.12); }
+  .prog div { height: 8px; background: linear-gradient(90deg, #EC4899, #FACC15); }
+  .brand { position: absolute; left: 0; width: 720px; top: 40px; text-align: center; font-weight: 900; font-size: 20px; letter-spacing: 3px; color: rgba(248,250,252,.8); }
+  .disc { position: absolute; left: 50%; top: 1080px; transform: translateX(-50%); padding: 7px 16px; border-radius: 10px; background: rgba(2,6,23,.8); border: 2px solid rgba(250,204,21,.5); font-weight: 800; font-size: 16px; white-space: nowrap; }
+  .end { position: absolute; left: 50%; top: 1050px; transform: translateX(-50%); padding: 12px 26px; border-radius: 999px; background: #DC2626; font-weight: 900; font-size: 24px; white-space: nowrap; box-shadow: 0 6px 0 #7F1D1D; }
+</style></head>
+<body><div id="stage"><div id="bgimg"></div><div id="tint"></div><div id="frame"><iframe id="f" src="gta.html?bare=1"></iframe></div><div id="ov"></div></div>
+<script src="sync.js"></script>
+<script src="short-segments.js"></script>
+<script>
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const easeBack = x => { x = clamp(x); const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); };
+const pop = (t, t0, d = 0.4) => { const x = (t - t0) / d; return x <= 0 ? 0 : easeBack(x); };
+const SEGS = window.SHORT.segs, TOTAL = window.SHORT.total, PARAS = window.FED.paras, LINES = window.FED.lines;
+const SECS = [[0, 'LAUNCH DAY · NOV 19'], [9, '💸 THE BUDGET'], [13, '🏷️ THE $80 PRICE'], [18, '🛒 PRE-ORDERS'], [23, '💥 THE $5 BILLION WEEK'], [28, '🔁 THE REAL MONEY MACHINE'], [45, '💬 YOUR TURN']];
+function segAt(t) { let k = 0; for (let j = 0; j < SEGS.length; j++) if (t >= SEGS[j].s) k = j; return k; }
+function longT(t) { const s = SEGS[segAt(t)]; return Math.min(s.b, s.a + (t - s.s)); }
+function captions(lt, i) {
+  const L = LINES[i]; if (lt < L.start - 0.05 || lt > L.end + 0.3) return '';
+  const words = PARAS[i].replace(/\s+/g, ' ').split(' '), a = L.start, b = L.end, total = PARAS[i].length;
+  const times = []; let acc = 0; for (const w of words) { times.push(a + (b - a) * acc / total); acc += w.length + 1; }
+  const chunks = []; let cur = [];
+  words.forEach((w, k) => { cur.push(k); if (cur.length >= 4 || /[.?!:,]$/.test(w)) { chunks.push(cur); cur = []; } }); if (cur.length) chunks.push(cur);
+  let ci = 0; for (let c = 0; c < chunks.length; c++) if (lt >= times[chunks[c][0]] - 0.05) ci = c;
+  let wi = 0; for (let k = 0; k < words.length; k++) if (lt >= times[k]) wi = k;
+  const s = pop(lt, times[chunks[ci][0]] - 0.05, 0.25);
+  return `<div class="cap" style="transform:scale(${0.85 + 0.15 * clamp(s)})">${chunks[ci].map(k => `<span class="w${k === wi ? ' cur' : ''}">${words[k].toUpperCase()}</span>`).join(' ')}</div>`;
+}
+let F;
+function frame(t) {
+  const k = segAt(t), seg = SEGS[k], lt = longT(t); F.render(lt);
+  let sec = SECS[0][1]; for (const [i, n] of SECS) if (seg.i >= i) sec = n;
+  const zoom = 1 + 0.06 * Math.sin(t * 0.15);
+  document.getElementById('bgimg').style.transform = `scale(${zoom}) translate(${Math.sin(t * 0.1) * 20}px, 0)`;
+  const s1 = pop(t, 0.05, 0.45), s2 = pop(t, 0.25, 0.45), s3 = pop(t, 0.5, 0.45), pulse = 1 + 0.025 * Math.sin(t * 5);
+  const kc = t - seg.s, ss = kc < 0.4 ? pop(t, seg.s, 0.35) : 1;
+  let o = `<div class="brand">THE MONEY <span style="color:#FACC15">MAP</span></div>`;
+  o += `<div class="hd t1" style="transform:scale(${s1});opacity:${clamp(s1)}">COULD GTA 6 MAKE</div>`;
+  o += `<div class="hd t2" style="transform:scale(${s2 * pulse});opacity:${clamp(s2)}"><span>$5 BILLION</span></div>`;
+  o += `<div class="hd t3" style="transform:scale(${s3});opacity:${clamp(s3)}">IN 1 WEEK? 🤯</div>`;
+  o += `<div class="sec" style="transform:translateX(-50%) scale(${ss})">${sec}</div>`;
+  o += `<div class="prog"><div style="width:${clamp(t / TOTAL) * 100}%"></div></div>`;
+  o += captions(lt, seg.i);
+  if (t < 6) o += `<div class="disc" style="opacity:${clamp(Math.min(t / 0.3, (6 - t) / 0.4))}">⚠️ <span style="color:#FACC15">Not financial advice.</span> Figures are estimates.</div>`;
+  if (seg.i === 45) { const se = pop(t, seg.s + 1.2, 0.4); o += `<div class="end" style="transform:translateX(-50%) scale(${se * (1 + 0.04 * Math.sin(t * 6))});opacity:${clamp(se)}">▶ FULL 8-MIN BREAKDOWN ON THE CHANNEL</div>`; }
+  document.getElementById('ov').innerHTML = o;
+}
+window.READY = false; window.TOTAL = TOTAL;
+document.getElementById('f').addEventListener('load', async () => {
+  const w = document.getElementById('f').contentWindow;
+  while (!w.READY) await new Promise(r => setTimeout(r, 50));
+  F = w; await document.fonts.ready; frame(0.6); window.READY = true;
+});
+window.render = frame;
+</script>
+</body></html>

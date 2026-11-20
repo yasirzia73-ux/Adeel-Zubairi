@@ -433,6 +433,7 @@ function frame(T) {
   let fl = 0; for (const t0 of HITS) { const k = T - t0; if (k >= 0 && k < 0.25) fl = Math.max(fl, 0.5 * (1 - k / 0.25)); }
   document.getElementById('flash').style.opacity = fl;
   document.getElementById('svg').innerHTML = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${DEFS}${background(T, sec[2])}${g}</svg>`;
+  if (BARE) { document.getElementById('ov').innerHTML = o + wipe(T); return; }
   document.getElementById('ov').innerHTML = o + `<div class="prog"><div style="width:${clamp(T / TOTAL) * 100}%"></div></div><div class="sec">${sec[1]}</div><div class="brand">THE MONEY <span class="y">MAP</span></div>` + captions(T) + wipe(T) + disclaimer(T);
 }
 function disclaimer(T) {
@@ -444,6 +445,7 @@ function wipe(T) {
     return `<svg style="position:absolute;left:0;top:0" width="1280" height="720"><polygon points="${x},0 ${x + 380},0 ${x + 120},720 ${x - 260},720" fill="${col}" opacity=".92"/><polygon points="${x + 400},0 ${x + 460},0 ${x + 200},720 ${x + 140},720" fill="#FACC15" opacity=".95"/></svg>`; }
   return '';
 }
+const BARE = location.search.includes('bare');
 window.TOTAL = TOTAL; window.READY = false; window.HITS = HITS; window.SECS = SECS; window.CHAP = CHAP;
 document.fonts.ready.then(initPhotos).then(() => { frame(2); window.READY = true; });
 window.render = frame;

@@ -47,7 +47,8 @@ function captions(lt, i) {
 let F;
 function frame(t) {
   const k = segAt(t), seg = SEGS[k], lt = longT(t); F.render(lt);
-  let sec = SECS[0][1]; for (const [i, n] of SECS) if (seg.i >= i) sec = n;
+  let pi = seg.i; for (let m = seg.i; m <= (seg.j ?? seg.i); m++) if (lt >= LINES[m].start - 0.15) pi = m;
+  let sec = SECS[0][1]; for (const [i, n] of SECS) if (pi >= i) sec = n;
   const zoom = 1 + 0.06 * Math.sin(t * 0.15);
   document.getElementById('bgimg').style.transform = `scale(${zoom}) translate(${Math.sin(t * 0.1) * 20}px, 0)`;
   const s1 = pop(t, 0.05, 0.45), s2 = pop(t, 0.25, 0.45), s3 = pop(t, 0.5, 0.45), pulse = 1 + 0.025 * Math.sin(t * 5);
@@ -58,7 +59,7 @@ function frame(t) {
   o += `<div class="hd t3" style="transform:scale(${s3});opacity:${clamp(s3)}">IN 1 WEEK? 🤯</div>`;
   o += `<div class="sec" style="transform:translateX(-50%) scale(${ss})">${sec}</div>`;
   o += `<div class="prog"><div style="width:${clamp(t / TOTAL) * 100}%"></div></div>`;
-  o += captions(lt, seg.i);
+  o += captions(lt, pi);
   if (t < 6) o += `<div class="disc" style="opacity:${clamp(Math.min(t / 0.3, (6 - t) / 0.4))}">⚠️ <span style="color:#FACC15">Not financial advice.</span> Figures are estimates.</div>`;
   if (seg.i === 45) { const se = pop(t, seg.s + 1.2, 0.4); o += `<div class="end" style="transform:translateX(-50%) scale(${se * (1 + 0.04 * Math.sin(t * 6))});opacity:${clamp(se)}">▶ FULL 8-MIN BREAKDOWN ON THE CHANNEL</div>`; }
   document.getElementById('ov').innerHTML = o;

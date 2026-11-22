@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>Black Friday BNPL</title>
+<style>
+  html, body { margin: 0; padding: 0; background: #05070D; overflow: hidden; }
+  #stage { position: relative; width: 720px; height: 1280px; overflow: hidden; font-family: "Montserrat", sans-serif; color: #F8FAFC; }
+  #cam, #bg, #svg, #photos, #ov { position: absolute; inset: 0; }
+  #svg { z-index: 1; } #ov { z-index: 3; }
+  #svg svg { position: absolute; left: 0; top: 0; }
+  .ph { position: absolute; overflow: hidden; background: #000; }
+  .ph img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform-origin: 50% 50%; }
+  .ph .vig { position: absolute; inset: 0; background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.5) 100%); }
+  .ph .credit { position: absolute; right: 10px; bottom: 7px; font-size: 11px; font-weight: 700; color: rgba(255,255,255,.75); text-shadow: 0 1px 2px #000; }
+  .ov { position: absolute; font-weight: 900; line-height: 1.08; }
+  .card { position: absolute; border-radius: 22px; border: 2px solid rgba(255,255,255,.18); background: linear-gradient(160deg, rgba(255,255,255,.13), rgba(255,255,255,.04));
+          backdrop-filter: blur(12px); box-shadow: 0 18px 44px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.22); box-sizing: border-box; }
+  .chip { position: absolute; font-weight: 900; padding: 8px 20px; border-radius: 999px; white-space: nowrap; box-shadow: 0 6px 0 rgba(0,0,0,.35), 0 14px 26px rgba(0,0,0,.4); transform-origin: 50% 50%; }
+  .stamp { position: absolute; font-weight: 900; padding: 6px 20px; border: 6px solid; border-radius: 14px; background: rgba(5,7,13,.85); white-space: nowrap; }
+  .y { color: #FACC15; } .g { color: #4ADE80; } .r { color: #F87171; } .c { color: #22D3EE; } .gr { color: #94A3B8; }
+  .cap { position: absolute; left: 30px; right: 30px; top: 880px; text-align: center; font-weight: 900; font-size: 50px; line-height: 1.25; }
+  .cap .w { display: inline-block; margin: 0 4px; padding: 0 6px; border-radius: 9px; color: #fff;
+            text-shadow: 0 0 5px #000, 0 3px 0 #000, 2px 2px 0 #000, -2px 2px 0 #000, 2px -2px 0 #000, -2px -2px 0 #000; }
+  .cap .w.cur { background: #FACC15; color: #0B1020; text-shadow: none; box-shadow: 0 4px 0 #A16207; }
+  .prog { position: absolute; left: 0; top: 0; width: 720px; height: 8px; background: rgba(255,255,255,.08); }
+  .prog div { height: 6px; background: linear-gradient(90deg, #FACC15, #F97316); }
+  .sec { position: absolute; left: 50%; transform: translateX(-50%); white-space: nowrap; top: 80px; padding: 7px 16px; border-radius: 12px; background: rgba(2,6,23,.78); border: 2px solid rgba(250,204,21,.45); font-weight: 900; font-size: 17px; letter-spacing: .5px; }
+  .brand { position: absolute; left: 0; width: 720px; text-align: center; top: 34px; font-weight: 900; font-size: 16px; color: rgba(248,250,252,.75); letter-spacing: 1px; }
+  #flash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; }
+</style></head>
+<body><div id="stage"><div id="cam"><div id="bg"></div><div id="svg"></div><div id="photos"></div><div id="ov"></div></div><div id="flash"></div></div>
+<script src="sync.js"></script>
+<script>
+const W = 720, H = 1280;
+const C = { navy: '#0B1020', gold: '#FACC15', green: '#22C55E', red: '#EF4444', blue: '#3B82F6', cyan: '#22D3EE', white: '#F8FAFC', grey: '#94A3B8', orange: '#F97316', purple: '#A855F7', btc: '#F7931A', pink: '#EC4899' };
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const lerp = (a, b, p) => a + (b - a) * p;
+const ease = x => { x = clamp(x); return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
+const easeOut = x => 1 - Math.pow(1 - clamp(x), 3);
+const easeBack = x => { x = clamp(x); const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); };
+const pop = (T, t0, d = 0.4) => { const x = (T - t0) / d; return x <= 0 ? 0 : easeBack(x); };
+const money = n => '$' + Math.round(n).toLocaleString('en-US');
+const rnd = (s => () => { s = (s * 16807) % 2147483647; return s / 2147483647; })(42);
+
+/* ---------- timing ---------- */
+const SY = window.FED; const PARAS = SY.paras, TIM = SY.lines.map(l => [l.start, l.end]), TOTAL = SY.total;
+const st = i => TIM[i][0], en = i => TIM[i][1], du = i => Math.max(1, en(i) - st(i));
+function vis(T, i, j = i) { const a = st(i) - 0.15, b = j + 1 < TIM.length ? st(j + 1) - 0.12 : TOTAL + 1; if (T < a || T > b) return 0; return clamp(Math.min((T - a) / 0.22, (b - T) / 0.15)); }
+const at = (T, i, off = 0, d = 0.4) => clamp((T - st(i) - off) / d);
+const fr = (T, i, f) => st(i) + du(i) * f;   // time at fraction f of paragraph i
+
+/* ---------- photos ---------- */
+const PH = {}; const PHOTOS = ['mall', 'macys', 'mall2'];
+let FULLON = false;
+let CREDITS = { mall: 'Photo: Carol M. Highsmith / Library of Congress', macys: 'Photo: Carol M. Highsmith / Library of Congress', mall2: 'Photo: Carol M. Highsmith / Library of Congress' };
+function initPhotos() {
+  const L = document.getElementById('photos');
+  for (const n of PHOTOS) {
+    const w = document.createElement('div'); w.className = 'ph'; w.style.opacity = 0;
+    const img = document.createElement('img'); img.src = `assets/${n}.jpg`; w.appendChild(img);
+    const vg = document.createElement('div'); vg.className = 'vig'; w.appendChild(vg);
+    const cr = document.createElement('div'); cr.className = 'credit'; cr.textContent = CREDITS[n] || ''; w.appendChild(cr);
+    L.appendChild(w); PH[n] = { w, img };
+  }
+  return Promise.all(Object.values(PH).map(p => p.img.decode().catch(() => {})));
+}
+function photo(n, o) {
+  const P = PH[n]; if (!P || o.op <= 0) return; const s = P.w.style, p = clamp(o.p ?? 0);
+  s.opacity = o.op; s.left = o.x + 'px'; s.top = o.y + 'px'; s.width = o.w + 'px'; s.height = o.h + 'px'; s.borderRadius = (o.r ?? 22) + 'px';
+  s.boxShadow = o.glow ? `0 0 0 3px ${o.glow}, 0 0 44px ${o.glow}66, 0 26px 50px rgba(0,0,0,.6)` : '0 26px 50px rgba(0,0,0,.55)';
+  s.transform = `perspective(1400px) rotateY(${o.tilt ?? 0}deg)`; s.zIndex = o.z ?? 2;
+  const z = lerp(o.z0 ?? 1.05, o.z1 ?? 1.18, p), px = lerp(o.x0 ?? 0, o.x1 ?? 0, p), py = lerp(o.y0 ?? 0, o.y1 ?? 0, p);
+  P.img.style.transform = `translate(${px}%, ${py}%) scale(${z})`; P.img.style.filter = o.filter || 'saturate(1.08) contrast(1.05)';
+  P.w.querySelector('.credit').style.display = o.credit === false ? 'none' : 'block';
+}
+const full = (n, T, i, o = {}) => { FULLON = true; return photo(n, Object.assign({ z: 0, op: o.op ?? 1, x: 0, y: 0, w: W, h: H, r: 0, p: (T - st(i)) / Math.max(4, du(i)), z0: 1.06, z1: 1.2, filter: 'saturate(1.05) brightness(.4) contrast(1.05)' }, o)); };
+
+/* ---------- building blocks ---------- */
+const svgT = (x, y, s, size, fill, weight = 900, anchor = 'middle', extra = '') =>
+  `<text x="${x}" y="${y}" font-family="Montserrat" font-weight="${weight}" font-size="${size}" fill="${fill}" text-anchor="${anchor}" ${extra}>${s}</text>`;
+const ov = (html, x, y, w, size, color = C.white, op = 1, extra = '') =>
+  `<div class="ov" style="left:${x}px;top:${y}px;width:${w}px;font-size:${size}px;color:${color};opacity:${op};text-align:center;${extra}">${html}</div>`;
+function big(html, x, y, w, size, from, to, depth, op = 1, s = 1, extra = '') {
+  let sh = ''; for (let i = 1; i <= 7; i++) sh += `0 ${i}px 0 ${depth},`; sh += '0 12px 16px rgba(0,0,0,.55)';
+  return `<div class="ov" style="left:${x}px;top:${y}px;width:${w}px;font-size:${size}px;opacity:${op};transform:scale(${s});text-align:center;${extra}"><span style="position:relative;display:inline-block">
+    <span style="position:absolute;left:0;top:0;width:100%;color:transparent;text-shadow:${sh}">${html}</span>
+    <span style="position:relative;background:linear-gradient(180deg,${from},${to});-webkit-background-clip:text;background-clip:text;color:transparent">${html}</span></span></div>`;
+}
+const BIG = { gold: ['#FEF3C7', '#EAB308', '#854D0E'], red: ['#FECACA', '#DC2626', '#7F1D1D'], green: ['#DCFCE7', '#16A34A', '#14532D'], white: ['#FFFFFF', '#CBD5E1', '#334155'], blue: ['#DBEAFE', '#3B82F6', '#1E3A8A'], cyan: ['#CFFAFE', '#06B6D4', '#164E63'], pink: ['#FCE7F3', '#EC4899', '#831843'], purple: ['#F3E8FF', '#A855F7', '#581C87'] };
+const bigc = (html, x, y, w, size, col, op = 1, s = 1) => big(html, x, y, w, size, ...BIG[col], op, s);
+const card = (x, y, w, h, inner, op = 1, accent = 'rgba(255,255,255,.18)', s = 1) =>
+  `<div class="card" style="left:${x}px;top:${y}px;width:${w}px;height:${h}px;opacity:${op};border-color:${accent};transform:scale(${s})">${inner}</div>`;
+const chip = (txt, x, y, bg, fg, size = 24, op = 1, rot = 0, s = 1) =>
+  `<div class="chip" style="left:${x}px;top:${y}px;background:${bg};color:${fg};font-size:${size}px;opacity:${op};transform:translate(-50%,-50%) rotate(${rot}deg) scale(${s})">${txt}</div>`;
+const stamp = (txt, x, y, col, size, s, rot = -6) => s <= 0 ? '' :
+  `<div class="stamp" style="left:${x}px;top:${y}px;color:${col};border-color:${col};font-size:${size}px;opacity:${clamp(s)};transform:translate(-50%,-50%) rotate(${rot}deg) scale(${s})">${txt}</div>`;
+function lineChart(pts, p, x, y, w, h, color, op = 1, fill = true, sw = 6) {
+  const P = pts.map(([fx, fy]) => [x + fx * w, y + h - fy * h]); const n = Math.max(1, (P.length - 1) * clamp(p)); const k = Math.floor(n), f = n - k;
+  let d = `M${P[0][0]} ${P[0][1]}`; for (let i = 1; i <= k; i++) d += ` L${P[i][0]} ${P[i][1]}`;
+  let e = P[k]; if (k < P.length - 1 && f > 0) { e = [lerp(P[k][0], P[k + 1][0], f), lerp(P[k][1], P[k + 1][1], f)]; d += ` L${e[0]} ${e[1]}`; }
+  const id = 'ga' + color.slice(1) + Math.round(x);
+  const area = fill ? `<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${color}" stop-opacity=".5"/><stop offset="1" stop-color="${color}" stop-opacity="0"/></linearGradient></defs><path d="${d} L${e[0]} ${y + h} L${P[0][0]} ${y + h}Z" fill="url(#${id})"/>` : '';
+  return [`<g opacity="${op}">${area}<path d="${d}" stroke="${color}" stroke-width="${sw * 2.6}" fill="none" opacity=".22" filter="url(#b8)" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="${d}" stroke="${color}" stroke-width="${sw}" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="${e[0]}" cy="${e[1]}" r="9" fill="#fff" stroke="${color}" stroke-width="4"/></g>`, e];
+}
+function bar3d(cx, by, w, h, col, op = 1) {
+  const d = w * 0.3;
+  return `<g opacity="${op}"><polygon points="${cx - w / 2},${by} ${cx + w / 2},${by} ${cx + w / 2},${by - h} ${cx - w / 2},${by - h}" fill="${col}"/>
+    <polygon points="${cx + w / 2},${by} ${cx + w / 2 + d},${by - d} ${cx + w / 2 + d},${by - h - d} ${cx + w / 2},${by - h}" fill="${col}" style="filter:brightness(.62)"/>
+    <polygon points="${cx - w / 2},${by - h} ${cx + w / 2},${by - h} ${cx + w / 2 + d},${by - h - d} ${cx - w / 2 + d},${by - h - d}" fill="${col}" style="filter:brightness(1.35)"/></g>`;
+}
+function gauge(cx, cy, R, val, col, op = 1, label = '') {
+  const a0 = Math.PI, a1 = Math.PI + Math.PI * clamp(val), arc = (a, b) => `M${cx + R * Math.cos(a)} ${cy + R * Math.sin(a)} A${R} ${R} 0 ${b - a > Math.PI ? 1 : 0} 1 ${cx + R * Math.cos(b)} ${cy + R * Math.sin(b)}`;
+  const na = a1, nx = cx + (R - 30) * Math.cos(na), ny = cy + (R - 30) * Math.sin(na);
+  return `<g opacity="${op}"><path d="${arc(a0, 2 * Math.PI - 0.001)}" stroke="#1E293B" stroke-width="44" fill="none" stroke-linecap="round"/>
+    ${val > 0.005 ? `<path d="${arc(a0, a1)}" stroke="${col}" stroke-width="44" fill="none" stroke-linecap="round"/><path d="${arc(a0, a1)}" stroke="${col}" stroke-width="70" fill="none" opacity=".2" filter="url(#b8)"/>` : ''}
+    <line x1="${cx}" y1="${cy}" x2="${nx}" y2="${ny}" stroke="#fff" stroke-width="8" stroke-linecap="round"/><circle cx="${cx}" cy="${cy}" r="16" fill="#fff"/>
+    ${svgT(cx, cy + 70, label, 26, C.grey)}</g>`;
+}
+const lab = (t, cx, by, h, w, size, col, op) => ov(t, cx - 170, by - h - w * 0.3 - size - 18, 340, size, col, op);
+/* icons (SVG) */
+const icCard = (x, y, s = 1, col = '#1E293B', txt = '') => `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-80" y="-50" width="160" height="100" rx="14" fill="${col}" stroke="#F8FAFC" stroke-width="5"/><rect x="-80" y="-30" width="160" height="20" fill="#020617"/><rect x="-62" y="2" width="32" height="24" rx="5" fill="#EAB308"/>${txt ? svgT(66, 38, txt, 26, '#F87171', 900, 'end') : ''}</g>`;
+const icHouse = (x, y, s = 1, col = C.blue) => `<g transform="translate(${x} ${y}) scale(${s})"><polygon points="-80,-10 0,-80 80,-10" fill="${col}" stroke="#F8FAFC" stroke-width="5" stroke-linejoin="round"/><rect x="-62" y="-14" width="124" height="84" fill="#E2E8F0" stroke="#F8FAFC" stroke-width="5"/><rect x="-16" y="20" width="32" height="50" fill="#475569"/><rect x="-50" y="2" width="26" height="24" fill="#93C5FD"/><rect x="24" y="2" width="26" height="24" fill="#93C5FD"/></g>`;
+const icCar = (x, y, s = 1, col = C.red) => `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-90 20 L-80 -10 Q-70 -40 -40 -42 L40 -42 Q70 -40 80 -10 L90 20 Z" fill="${col}" stroke="#F8FAFC" stroke-width="5" stroke-linejoin="round"/><rect x="-90" y="10" width="180" height="30" rx="10" fill="${col}" stroke="#F8FAFC" stroke-width="5"/><path d="M-55 -12 L-45 -34 L-5 -34 L-5 -12 Z M5 -12 L5 -34 L45 -34 L55 -12 Z" fill="#BAE6FD"/><circle cx="-50" cy="42" r="20" fill="#0F172A" stroke="#F8FAFC" stroke-width="5"/><circle cx="50" cy="42" r="20" fill="#0F172A" stroke="#F8FAFC" stroke-width="5"/></g>`;
+const icPiggy = (x, y, s = 1) => `<g transform="translate(${x} ${y}) scale(${s})"><ellipse cx="0" cy="0" rx="90" ry="66" fill="#F9A8D4" stroke="#F8FAFC" stroke-width="5"/><circle cx="84" cy="-6" r="24" fill="#F472B6" stroke="#F8FAFC" stroke-width="4"/><circle cx="78" cy="-8" r="4" fill="#831843"/><circle cx="90" cy="-8" r="4" fill="#831843"/><circle cx="40" cy="-26" r="7" fill="#0F172A"/><polygon points="-10,-60 10,-92 26,-58" fill="#F472B6"/><rect x="-60" y="52" width="22" height="34" rx="6" fill="#F472B6"/><rect x="34" y="52" width="22" height="34" rx="6" fill="#F472B6"/><rect x="-26" y="-70" width="52" height="10" rx="5" fill="#831843"/></g>`;
+const icBTC = (x, y, r = 50, op = 1) => `<g opacity="${op}"><circle cx="${x + 5}" cy="${y + 6}" r="${r}" fill="#9A5A07"/><circle cx="${x}" cy="${y}" r="${r}" fill="${C.btc}" stroke="#FFD08A" stroke-width="4"/>${svgT(x, y + r * 0.36, '₿', r * 1.05, '#fff')}</g>`;
+const coin = (x, y, r = 16, op = 1) => `<g opacity="${op}"><ellipse cx="${x}" cy="${y + r * 0.2}" rx="${r}" ry="${r * 0.9}" fill="#A16207"/><circle cx="${x}" cy="${y}" r="${r}" fill="${C.gold}" stroke="#CA8A04" stroke-width="3"/>${svgT(x, y + r * 0.42, '$', r * 1.1, '#854D0E')}</g>`;
+const person = (x, y, s, col, op = 1) => `<g opacity="${op}" transform="translate(${x} ${y}) scale(${s})"><circle cx="0" cy="-34" r="16" fill="${col}"/><path d="M-26 20 Q-26 -14 0 -14 Q26 -14 26 20 Z" fill="${col}"/></g>`;
+const icCal = (x, y, s, mon, day, op = 1) => card(x, y, 200 * s, 200 * s, `<div style="background:#DC2626;height:${60 * s}px;border-radius:20px 20px 0 0;font-size:${38 * s}px;font-weight:900;line-height:${60 * s}px;text-align:center">${mon}</div><div style="color:#0B1020;background:#F8FAFC;height:${136 * s}px;border-radius:0 0 20px 20px;font-size:${110 * s}px;font-weight:900;line-height:${136 * s}px;text-align:center">${day}</div>`, op, 'rgba(255,255,255,.5)');
+function check(ok) { return `<span style="display:inline-block;width:42px;height:42px;border-radius:50%;background:${ok ? C.green : C.red};color:${ok ? '#052E16' : '#fff'};text-align:center;line-height:42px;font-size:28px;margin-right:14px;vertical-align:middle">${ok ? '✓' : '✗'}</span>`; }
+const row = (T, t0, x, y, w, html, accent, size = 30, h = 76) => { const s = pop(T, t0, 0.35); return s <= 0 ? '' : card(x, y, w, h, `<div style="position:absolute;left:22px;right:18px;top:50%;transform:translateY(-50%);font-size:${size}px;font-weight:900">${html}</div>`, clamp(s), accent, s); };
+function chapter(T, i, num, title, col = C.gold) {
+  const k = T - st(i), s = pop(T, st(i), 0.5);
+  let g = `<g opacity="${clamp(s)}"><circle cx="640" cy="290" r="${150 + 10 * Math.sin(k * 3)}" fill="${col}" opacity=".08"/><circle cx="640" cy="290" r="${110 + 6 * Math.sin(k * 3 + 1)}" fill="${col}" opacity=".12"/></g>`;
+  let o = (num ? `<div class="ov" style="left:540px;top:${210}px;width:200px;height:160px;font-size:130px;color:${col};text-align:center;transform:scale(${s});text-shadow:0 0 40px ${col}88">${num}</div>` : '') +
+    bigc(title, 0, num ? 400 : 250, W, num ? 64 : 76, 'white', clamp(pop(T, st(i) + 0.25)), pop(T, st(i) + 0.25));
+  return [g, o];
+}
+
+/* ---------- background ---------- */
+const PARTS = Array.from({ length: 50 }, () => [rnd() * W, rnd() * H, 2 + rnd() * 6, 8 + rnd() * 30, rnd() * 6.28]);
+function background(T, theme) {
+  const [c1, c2] = theme, gx = 30 + 20 * Math.sin(T * 0.21), gy = 35 + 15 * Math.cos(T * 0.17);
+  document.getElementById('bg').style.background = `radial-gradient(circle at ${gx}% ${gy}%, ${c1}66 0%, transparent 46%), radial-gradient(circle at ${100 - gx}% ${85 - gy * 0.5}%, ${c2}55 0%, transparent 50%), linear-gradient(180deg, #0B1430 0%, #05070D 100%)`;
+  let g = '';
+  if (!FULLON) for (let i = -12; i <= 12; i++) g += `<line x1="640" y1="420" x2="${640 + i * 150}" y2="720" stroke="${c1}" stroke-opacity=".13" stroke-width="1.5"/>`;
+  for (let k = 0; k < 7; k++) { const f = (k + (T * 0.5) % 1) / 7, y = 420 + Math.pow(f, 2.2) * 300; g += `<line x1="0" y1="${y}" x2="1280" y2="${y}" stroke="${c1}" stroke-opacity="${0.04 + 0.15 * f}" stroke-width="1.5"/>`; }
+  for (const [x, y, r, sp, ph] of PARTS) { const yy = ((y - T * sp) % H + H) % H; g += `<circle cx="${x + Math.sin(T * .5 + ph) * 10}" cy="${yy}" r="${r}" fill="${c2}" opacity="${0.1 + 0.1 * Math.sin(T + ph)}"/>`; }
+  const sx = ((T * 140) % 2200) - 500; g += `<rect x="${sx}" y="-200" width="140" height="1200" fill="url(#sw)" transform="rotate(18 ${sx} 360)" opacity=".3"/>`;
+  return g;
+}
+const DEFS = `<defs><filter id="b8" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="8"/></filter>
+ <linearGradient id="sw" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".15"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>`;
+
+/* ---------- captions ---------- */
+function captions(T) {
+  let k = -1; for (let i = 0; i < TIM.length; i++) if (T >= st(i) - 0.05 && T <= en(i) + 0.25) k = i;
+  if (k < 0) return '';
+  const words = PARAS[k].replace(/\s+/g, ' ').split(' '), a = st(k), b = en(k), total = PARAS[k].length;
+  const times = []; let acc = 0; for (const w of words) { times.push(a + (b - a) * acc / total); acc += w.length + 1; }
+  const chunks = []; let cur = [];
+  words.forEach((w, i) => { cur.push(i); if (cur.length >= 8 || /[.?!:]$/.test(w) || (cur.length >= 5 && /,$/.test(w))) { chunks.push(cur); cur = []; } }); if (cur.length) chunks.push(cur);
+  let ci = 0; for (let c = 0; c < chunks.length; c++) if (T >= times[chunks[c][0]] - 0.05) ci = c;
+  let wi = 0; for (let i = 0; i < words.length; i++) if (T >= times[i]) wi = i;
+  return `<div class="cap">${chunks[ci].map(i => `<span class="w${i === wi ? ' cur' : ''}">${words[i]}</span>`).join(' ')}</div>`;
+}
+/* ---------- vertical overrides ---------- */
+CREDITS = { 'gta6-a': 'Image: Rockstar Games (news commentary)', 'gta6-b': 'Image: Rockstar Games (news commentary)', 'gta6-c': 'Image: Rockstar Games (news commentary)',
+  'gta6-d': 'Image: Rockstar Games (news commentary)', 'gta6-e': 'Image: Rockstar Games (news commentary)', nyse: 'Photo: Carol M. Highsmith / Library of Congress' };
+function background(T, theme) {
+  const [c1, c2] = theme, gx = 30 + 20 * Math.sin(T * 0.21), gy = 35 + 15 * Math.cos(T * 0.17);
+  document.getElementById('bg').style.background = `radial-gradient(circle at ${gx}% ${gy}%, ${c1}66 0%, transparent 46%), radial-gradient(circle at ${100 - gx}% ${85 - gy * 0.5}%, ${c2}55 0%, transparent 50%), linear-gradient(180deg, #160A24 0%, #05070D 100%)`;
+  let g = '';
+  for (const [x, y, r, sp, ph] of PARTS) { const yy = ((y - T * sp) % H + H) % H; g += `<circle cx="${x + Math.sin(T * .5 + ph) * 10}" cy="${yy}" r="${r}" fill="${c2}" opacity="${0.1 + 0.1 * Math.sin(T + ph)}"/>`; }
+  return g;
+}
+function captions(T) {
+  let k = -1; for (let i = 0; i < TIM.length; i++) if (T >= st(i) - 0.05 && T <= en(i) + 0.25) k = i;
+  if (k < 0) return '';
+  const words = PARAS[k].replace(/\s+/g, ' ').split(' '), a = st(k), b = en(k), total = PARAS[k].length;
+  const times = []; let acc = 0; for (const w of words) { times.push(a + (b - a) * acc / total); acc += w.length + 1; }
+  const chunks = []; let cur = [];
+  words.forEach((w, i) => { cur.push(i); if (cur.length >= 4 || /[.?!:,]$/.test(w)) { chunks.push(cur); cur = []; } }); if (cur.length) chunks.push(cur);
+  let ci = 0; for (let c = 0; c < chunks.length; c++) if (T >= times[chunks[c][0]] - 0.05) ci = c;
+  let wi = 0; for (let i = 0; i < words.length; i++) if (T >= times[i]) wi = i;
+  const s = pop(T, times[chunks[ci][0]] - 0.05, 0.25);
+  return `<div class="cap" style="transform:scale(${0.85 + 0.15 * clamp(s)})">${chunks[ci].map(i => `<span class="w${i === wi ? ' cur' : ''}">${words[i].toUpperCase()}</span>`).join(' ')}</div>`;
+}
+const fr2 = (i, f) => st(i) + du(i) * f;
+const P = (T, i, f, d = 0.4) => pop(T, fr2(i, f), d);
+const cnt = (T, i, off, d, a, b) => lerp(a, b, easeOut(at(T, i, off, d)));
+const bgp = (n, T, i, v, o = {}) => full(n, T, i, Object.assign({ op: v }, o));
+const barL = (t, cx, y, col, op, size = 22) => svgT(cx, y, t, size, col, 900, 'middle', `opacity="${op}"`);
+const wrap = (v, h) => `<div style="opacity:${v}">${h}</div>`;
+const SECS = [[0, '🛍️ BLACK FRIDAY · NOV 27', [C.gold, C.red]], [2, '💳 BUY NOW, PAY LATER', [C.pink, C.purple]], [3, '🪤 THE TRAP', [C.red, C.orange]], [6, '📏 THE RULE', [C.green, C.gold]]];
+const secOf = i => { let s = SECS[0]; for (const x of SECS) if (i >= x[0]) s = x; return s; };
+const tv = (cx, cy, s, txt, op) => `<g opacity="${op}" transform="translate(${cx} ${cy}) scale(${s})"><rect x="-190" y="-120" width="380" height="230" rx="16" fill="#0F172A" stroke="#F8FAFC" stroke-width="8"/>
+  <rect x="-172" y="-102" width="344" height="194" rx="8" fill="url(#tvg)"/><rect x="-60" y="110" width="120" height="14" fill="#CBD5E1"/><rect x="-110" y="124" width="220" height="12" rx="6" fill="#94A3B8"/>
+  <defs><linearGradient id="tvg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1D4ED8"/><stop offset="1" stop-color="#A855F7"/></linearGradient></defs>${txt}</g>`;
+
+const S = []; const D = (i, f) => { S[i] = f; };
+// 0 $12.9B this Friday
+D(0, (T, v) => { bgp('macys', T, 0, v, { z0: 1.3, z1: 1.08, filter: 'saturate(1.1) brightness(.4)' });
+  const n = cnt(T, 0, 0.4, 2.2, 0, 12.9), s0 = pop(T, st(0) + 0.05), s3 = P(T, 0, .55);
+  return ['', chip('🛍️ BLACK FRIDAY · THIS FRIDAY', 360, 200, '#0B0B0B', '#FACC15', 30, v * clamp(s0), -2, s0) +
+    bigc(`$${n.toFixed(1)}`, 0, 290, W, 150, 'green', v * clamp(at(T, 0, 0.35, .25))) + bigc('BILLION', 0, 450, W, 90, 'green', v * clamp(at(T, 0, 0.35, .25))) +
+    chip('SPENT ONLINE · IN ONE DAY 🤯', 360, 650, C.gold, '#0B1020', 34, v * clamp(s3), 2, s3) + chip('ADOBE FORECAST', 360, 750, '#334155', '#fff', 20, v * clamp(s3), 0, 1)]; });
+// 1 $807M not paid yet
+D(1, (T, v) => { const n = cnt(T, 1, 0.1, 1.6, 0, 807);
+  return ['', ov('ABOUT', 0, 230, W, 40, C.grey, v) + bigc(`$${Math.round(n)}M`, 0, 290, W, 140, 'gold', v) + ov("WON'T BE PAID…", 0, 470, W, 52, C.white, v * clamp(P(T, 1, .35))) +
+    stamp('NOT YET 😬', 360, 640, '#F87171', 64, P(T, 1, .65), -6)]; });
+// 2 BNPL explained
+D(2, (T, v) => { bgp('mall2', T, 2, v, { filter: 'saturate(1) brightness(.3)', z0: 1.05, z1: 1.2 }); let o = '';
+  o += bigc('BUY NOW,<br>PAY LATER', 0, 170, W, 84, 'pink', v * clamp(P(T, 2, .02)), P(T, 2, .02));
+  for (let k = 0; k < 4; k++) { const s = P(T, 2, .3 + k * .07, 0.3); o += `<div class="card" style="left:${48 + k * 162}px;top:430px;width:140px;height:150px;opacity:${v * clamp(s)};transform:scale(${s});border-color:rgba(236,72,153,.7);text-align:center">
+    <div style="margin-top:22px;font-size:20px;font-weight:800;color:#94A3B8">PAY ${k + 1}/4</div><div style="font-size:44px;font-weight:900">$100</div></div>`; }
+  o += chip('0% INTEREST ✅', 360, 650, C.green, '#052E16', 34, v * clamp(P(T, 2, .6)), -2, P(T, 2, .6));
+  o += bigc('SOUNDS PERFECT?', 0, 720, W, 56, 'white', v * clamp(P(T, 2, .82)), P(T, 2, .82));
+  return ['', o]; });
+// 3 the trap: $400 TV feels like $100
+D(3, (T, v) => { const split = P(T, 3, .42), brain = P(T, 3, .72);
+  const inner = svgT(0, 22, '$400', 80, '#fff', 900, 'middle', `opacity="${1 - 0.65 * clamp(split)}"`) + (split > 0 ? `<line x1="-120" y1="0" x2="${-120 + 240 * clamp(split)}" y2="0" stroke="${C.red}" stroke-width="12" stroke-linecap="round"/>` : '');
+  let o = stamp('STORES LOVE IT 🪤', 360, 180, '#F87171', 40, P(T, 3, .02), -4);
+  for (let k = 0; k < 4; k++) { const s = pop(T, fr2(3, .45) + k * 0.08, 0.3); o += chip('$100', 120 + k * 160, 600, C.pink, '#fff', 36, v * clamp(s), (k - 1.5) * 4, s); }
+  o += `<div class="ov" style="left:0;top:680px;width:${W}px;text-align:center;font-size:48px;opacity:${v * clamp(brain)};transform:scale(${brain})">🧠 hears: <span style="color:#4ADE80">"$100"</span></div>`;
+  return [tv(360, 390, 1, inner, v * clamp(P(T, 3, .1))), o]; });
+// 4 payments stack up
+D(4, (T, v) => { const L = [['📺 TV', 'DEC 4', 100], ['👟 Shoes', 'DEC 6', 35], ['🎁 Mom’s gift', 'DEC 9', 25], ['📺 TV', 'DEC 18', 100], ['👟 Shoes', 'DEC 20', 35], ['🎁 Mom’s gift', 'DEC 23', 25]];
+  let o = ov('YOUR DECEMBER · EXAMPLE', 0, 150, W, 24, C.grey, v);
+  L.forEach(([t, d, a], k) => { const f = k < 3 ? .05 + k * .1 : .55 + (k - 3) * .08; o += row(T, fr2(4, f), 60, 195 + k * 92, 600, `${t} <span style="color:#94A3B8;font-size:22px">· ${d}</span><span style="float:right;color:#F87171">$${a}</span>`, 'rgba(239,68,68,.5)', 28, 78); });
+  return ['', wrap(v, o) + chip('6 PAYMENTS · 6 DATES 😵', 360, 790, C.red, '#fff', 32, v * clamp(P(T, 4, .82)), -2, P(T, 4, .82))]; });
+// 5 late fees, credit score
+D(5, (T, v) => { const p = lerp(0.82, 0.5, easeOut(at(T, 5, du(5) * 0.55, 1.4)));
+  return [gauge(360, 610, 200, p, p > 0.7 ? C.green : C.orange, v * clamp(P(T, 5, .5)), 'CREDIT SCORE (SOME PLANS)'),
+    stamp('MISS ONE = LATE FEES 💸', 360, 220, '#F87171', 40, P(T, 5, .05), -5) + chip('📉 CAN HURT YOUR CREDIT', 360, 340, C.orange, '#1C1002', 30, v * clamp(P(T, 5, .55)), 2, P(T, 5, .55))]; });
+// 6 the rule
+D(6, (T, v) => { const s1 = P(T, 6, .1), s2 = P(T, 6, .5);
+  return ['', chip('📏 THE RULE', 360, 200, C.gold, '#0B1020', 36, v * clamp(pop(T, st(6))), 0, pop(T, st(6))) +
+    card(60, 270, 600, 170, `<div style="text-align:center;margin-top:34px;font-size:30px;font-weight:800;color:#CBD5E1">CAN'T AFFORD IT IN</div><div style="text-align:center;font-size:58px;font-weight:900">1 PAYMENT?</div>`, v * clamp(s1), 'rgba(255,255,255,.4)', s1) +
+    bigc("YOU CAN'T AFFORD IT<br>IN 4.", 0, 490, W, 50, 'red', v * clamp(s2), s2)]; });
+// 7 only if money is already there
+D(7, (T, v) => { const n = cnt(T, 7, du(7) * 0.3, 1.5, 0, 400), s = P(T, 7, .05);
+  return ['', card(80, 220, 560, 230, `<div style="margin:30px 34px 0;font-size:24px;color:#94A3B8;font-weight:800">🏦 YOUR CHECKING ACCOUNT</div><div style="margin:6px 34px 0;font-size:96px;font-weight:900;color:#4ADE80">$${Math.round(n)}</div>`, v * clamp(s), 'rgba(34,197,94,.7)', s) +
+    chip('✅ ALREADY THERE?', 360, 530, C.green, '#052E16', 40, v * clamp(P(T, 7, .5)), -2, P(T, 7, .5)) + ov('THEN BNPL IS OK', 0, 600, W, 44, C.white, v * clamp(P(T, 7, .62)))]; });
+// 8 comment
+D(8, (T, v) => { bgp('mall', T, 8, v, { filter: 'saturate(1.05) brightness(.36)', z0: 1.05, z1: 1.18 }); const s = P(T, 8, .02), s2 = P(T, 8, .45);
+  return ['', bigc('SHOPPING THIS<br>BLACK FRIDAY?', 0, 220, W, 74, 'gold', v * clamp(s), s) + chip("💬 TELL ME WHAT YOU'RE BUYING", 360, 520, '#334155', '#fff', 30, v * clamp(s2), 0, s2) +
+    chip('🔔 SUBSCRIBE · THE MONEY MAP', 360, 640, C.red, '#fff', 32, v * clamp(P(T, 8, .65)), 0, P(T, 8, .65) * (1 + 0.04 * Math.sin(T * 6)))]; });
+
+const HITS = [st(0) + 2.65, fr2(1, .65), fr2(3, .42), st(5), fr2(6, .5)];
+function frame(T) {
+  for (const k in PH) PH[k].w.style.opacity = 0; FULLON = false;
+  let g = '', o = '';
+  for (let i = 0; i < S.length; i++) { if (!S[i]) continue; const v = vis(T, i); if (v <= 0) continue; const r = S[i](T, v);
+    const k = T - (st(i) - 0.15), q = 1 - easeOut(k / 0.42), dir = i % 2 ? 1 : -1, dx = q * 70 * dir, sc = 1 + q * 0.06, bl = q * 6;
+    g += `<g transform="translate(${dx} 0) translate(360 640) scale(${sc}) translate(-360 -640)">${r[0]}</g>`;
+    o += `<div style="position:absolute;inset:0;transform:translateX(${dx}px) scale(${sc});filter:${bl > 0.3 ? `blur(${bl.toFixed(1)}px)` : 'none'}">${r[1]}</div>`; }
+  let si = 0; for (let i = 0; i < TIM.length; i++) if (T >= st(i) - 0.15) si = i; const sec = secOf(si);
+  let sh = 0; for (const t0 of HITS) { const k = T - t0; if (k >= 0 && k < 0.35) sh = Math.max(sh, (1 - k / 0.35) * 10); }
+  const kp = T - st(si), punch = kp >= 0 && kp < 0.4 ? (1 - easeOut(kp / 0.4)) * 0.04 : 0;
+  document.getElementById('cam').style.transform = `translate(${sh ? Math.sin(T * 91) * sh : 0}px,${sh ? Math.cos(T * 77) * sh : 0}px) scale(${1 + punch})`;
+  let fl = 0; for (const t0 of HITS) { const k = T - t0; if (k >= 0 && k < 0.25) fl = Math.max(fl, 0.35 * (1 - k / 0.25)); }
+  document.getElementById('flash').style.opacity = fl;
+  document.getElementById('svg').innerHTML = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${DEFS}${background(T, sec[2])}${g}</svg>`;
+  const disc = T < 5 ? `<div style="position:absolute;left:50%;top:1080px;transform:translateX(-50%);opacity:${clamp(Math.min(T / 0.3, (5 - T) / 0.4))};padding:7px 16px;border-radius:10px;background:rgba(2,6,23,.8);border:2px solid rgba(250,204,21,.5);font-weight:800;font-size:16px;white-space:nowrap">⚠️ <span class="y">Not financial advice.</span> Spending figures are Adobe forecasts.</div>` : '';
+  document.getElementById('ov').innerHTML = o + `<div class="prog"><div style="width:${clamp(T / TOTAL) * 100}%"></div></div><div class="sec">${sec[1]}</div><div class="brand">THE MONEY <span class="y">MAP</span></div>` + captions(T) + disc;
+}
+window.TOTAL = TOTAL; window.READY = false; window.HITS = HITS;
+document.fonts.ready.then(initPhotos).then(() => { frame(2); window.READY = true; });
+window.render = frame;
+</script>
+</body></html>

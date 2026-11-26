@@ -1,6 +1,6 @@
 # GTA 6 vs minimum wage Short
 
-**File:** `gta6-min-wage-short.mp4` (1080×1920, 0:32, text + beat) · **Cover:** `cover.png` · **VO script:** `voiceover-paste.txt`
+**File:** `gta6-min-wage-short.mp4` (1080×1920, 0:40, Jeremy voiceover + beat + SFX) · **Cover:** `cover.png` · **VO script:** `voiceover-paste.txt`
 Math: $3.79B ÷ 86,400 s = $43,865/s · ÷ $7.25/hr (federal minimum wage, unchanged since 2009) = 6,050 hours · ÷ 2,080 hrs/yr (40 h × 52 wk) ≈ 2.9 years.
 
 ## Title

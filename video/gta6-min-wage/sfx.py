@@ -27,6 +27,8 @@ a(s[4] + 2.4, 'buzzer', 0.3)
 a(s[5] + 0.1, 'poppro', 0.35); a(s[5] + 0.0 + 0.8 - 0.9, 'swell', 0.35); a(s[5] + 0.8, 'impact', 0.75); a(s[5] + 0.85, 'cashpro', 0.45)
 a(s[6] + 0.3, 'cashpro', 0.45); a(s[6] + 1.4, 'dingpro', 0.45)
 for k in range(8): a(s[6] + 2.0 + k * 0.5, 'cashpro', 0.12)
+OLD=[0,4.5,9,13.5,18,22.5,27,32.5]; NEW=[0,8.6,13.75,20.05,28.1,33.85,35.8,40.4]
+ev=[(float(np.interp(t,OLD,NEW)),n,g,p) for t,n,g,p in ev]; total=40.4
 mix = np.zeros((int((total + 2) * SR), 2))
 for t, n, g, pan in ev:
     x = ALL[n] * g; s0 = int(max(0, t) * SR); x = x[:len(mix) - s0]
